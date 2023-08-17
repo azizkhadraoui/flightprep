@@ -1,31 +1,24 @@
-import React, { useState } from 'react';
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from './firebase';
+import React from "react";
+import "./App.css";
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import Home from "./Home";
+import Login from "./l";
+import SignUp from "./h";
+import { AuthProvider } from "./Auth";
+import PrivateRoute from "./PrivateRoute";
 
-const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-
-  const onLogin = (e) => {
-    e.preventDefault();
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        console.log(userCredential.user);
-      })
-      .catch((error) => {
-        setError(error.message); // Set the error state
-      });
-  }
-
+const App = () => {
   return (
-    <form onSubmit={onLogin}>
-      <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-      <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-      <button type="submit">Login2</button>
-      {error && <p>{error}</p>} {/* Show the error message if there is one */}
-    </form>
+    <AuthProvider>
+      <Router>
+        <div>
+          <PrivateRoute exact path="/" component={Home} />
+          <Route exact path="/login" component={Login} />
+          <Route exact path="/signup" component={SignUp} />
+        </div>
+      </Router>
+    </AuthProvider>
   );
-}
+};
 
-export default Login;
+export default App;
