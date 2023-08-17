@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import app from "./base";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+
+// Initialize Firebase app and services
 const auth = getAuth(app);
-
-
 const db = getFirestore(app);
 
 const Infos = () => {
@@ -14,26 +14,32 @@ const Infos = () => {
   const [address, setAddress] = useState("");
   const [city, setCity] = useState("");
   const [zipCode, setZipCode] = useState("");
-  const [country, setCountry] = useState("");
+  const [country, setCountry] = useState("usa"); // Default country
   const [phoneNumber, setPhoneNumber] = useState("");
 
   const handleSave = async () => {
     try {
-      const user = app.currentUser;
+      const user = auth.currentUser; // Use 'auth' instead of 'app'
       if (user) {
         const userId = user.uid;
         const userRef = doc(db, "users", userId);
-        await setDoc(userRef, {
+
+        // Create a data object to be saved in Firestore
+        const userData = {
           name,
           familyName,
-          age,
+          age: parseInt(age), // Parse age as an integer
           address,
           city,
           zipCode,
           country,
           phoneNumber
-        });
+        };
+
+        await setDoc(userRef, userData);
         console.log("User information saved successfully!");
+      } else {
+        console.log("User not authenticated.");
       }
     } catch (error) {
       console.error("Error saving user information:", error);
