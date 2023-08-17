@@ -2,12 +2,15 @@ import React, { useState } from "react";
 import app from "./base";
 import { getFirestore, doc, setDoc } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
+import { useHistory } from "react-router-dom"; 
 
 // Initialize Firebase app and services
 const auth = getAuth(app);
 const db = getFirestore(app);
 
+
 const Infos = () => {
+  const history = useHistory();
   const [name, setName] = useState("");
   const [familyName, setFamilyName] = useState("");
   const [age, setAge] = useState("");
@@ -16,6 +19,7 @@ const Infos = () => {
   const [zipCode, setZipCode] = useState("");
   const [country, setCountry] = useState("usa"); // Default country
   const [phoneNumber, setPhoneNumber] = useState("");
+  const [email, setemail] = useState("");
 
   const handleSave = async () => {
     try {
@@ -23,6 +27,8 @@ const Infos = () => {
       if (user) {
         const userId = user.uid;
         const userRef = doc(db, "users", userId);
+        const email = user.email;
+        setemail(email)
 
         // Create a data object to be saved in Firestore
         const userData = {
@@ -33,11 +39,13 @@ const Infos = () => {
           city,
           zipCode,
           country,
-          phoneNumber
+          phoneNumber,
+          email
         };
 
         await setDoc(userRef, userData);
         console.log("User information saved successfully!");
+        history.push("/");
       } else {
         console.log("User not authenticated.");
       }
