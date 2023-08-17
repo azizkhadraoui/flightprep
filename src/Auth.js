@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from "react";
 import app from "./base.js";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";
 
 const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+const facebookProvider = new FacebookAuthProvider();
 
 export const AuthContext = React.createContext();
 
@@ -11,13 +14,29 @@ export const AuthProvider = ({ children }) => {
   const [pending, setPending] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       setCurrentUser(user);
       setPending(false);
     });
 
     return () => unsubscribe(); // Clean up the listener when unmounting
   }, []);
+
+  const signInWithGoogle = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider);
+    } catch (error) {
+      console.error("Google Sign In Error:", error);
+    }
+  };
+
+  const signInWithFacebook = async () => {
+    try {
+      await signInWithPopup(auth, facebookProvider);
+    } catch (error) {
+      console.error("Facebook Sign In Error:", error);
+    }
+  };
 
   if (pending) {
     return <>Loading...</>;
@@ -26,7 +45,9 @@ export const AuthProvider = ({ children }) => {
   return (
     <AuthContext.Provider
       value={{
-        currentUser
+        currentUser,
+        signInWithGoogle,
+        signInWithFacebook
       }}
     >
       {children}
