@@ -10,10 +10,16 @@ const facebookProvider = new FacebookAuthProvider();
 const SignUp = ({ history }) => {
   const handleSignUp = useCallback(async (event) => {
     event.preventDefault();
-    const { email, password } = event.target.elements;
+    const { email, password, confirmPassword } = event.target.elements;
+
+    if (password.value !== confirmPassword.value) {
+      alert("Passwords do not match.");
+      return;
+    }
+
     try {
       await createUserWithEmailAndPassword(auth, email.value, password.value);
-      history.push("/");
+      history.push("/infos");
     } catch (error) {
       alert(error.message);
     }
@@ -48,6 +54,10 @@ const SignUp = ({ history }) => {
         <label>
           Password
           <input name="password" type="password" placeholder="Password" />
+        </label>
+        <label>
+          Confirm Password
+          <input name="confirmPassword" type="password" placeholder="Confirm Password" />
         </label>
         <button type="submit">Sign Up</button>
       </form>
