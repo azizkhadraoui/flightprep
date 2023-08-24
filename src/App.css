@@ -36,3 +36,7 @@
     transform: rotate(360deg);
   }
 }
+.inputEmail{
+  border-radius: 50px !important;
+  width: 200px;
+}
