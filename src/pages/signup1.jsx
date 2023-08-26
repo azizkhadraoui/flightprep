@@ -1,28 +1,40 @@
-import React, {useState, useRef} from 'react'
+import React, {useState, useCallback} from 'react'
 import Input from '@mui/joy/Input';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
-import { Link } from '@mui/material';
 import Navbar from '../components/navbar/Navbar';
 import 'antd/dist/reset.css'
 import { DatePicker } from 'antd';
 import { Collapse } from '@mui/material';
-import TextField from '@mui/material';
 import countries from '../countries';
+import app from '../base';
+import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { useHistory } from "react-router-dom";
+import {createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";
+import { withRouter } from "react-router";
+import Auth  from '../Auth.js';
 
 
 const Signup1 = ()=> {
+
+  const auth = getAuth(app);
+  const db = getFirestore(app);
   
   const [selectedDate, setSelectedDate] = useState(null);
-  const [countryOpen, setCountryOpen] = useState(false); // State for country list
+  const [formattedBirthdate, setFormattedBirthdate] = useState("");
+  const [countryOpen, setCountryOpen] = useState(false); 
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredCountries, setFilteredCountries] = useState(countries);
   const [currentSection, setCurrentSection] = useState(0);
 
   const handleDateChange = (date) => {
-    setSelectedDate(date);
+    setSelectedDate(date); 
+    const formattedDate = date ? date.format('YYYY-MM-DD') : "";
+    setFormattedBirthdate(formattedDate); 
   };
+  
   const toggleCountryList = () => {
     setCountryOpen(!countryOpen);
   };
@@ -34,11 +46,75 @@ const Signup1 = ()=> {
       setFilteredCountries(countries);
     }
   };
+  const history = useHistory();
+  const [firstname, setName] = useState("");
+  const [lastname, setLastName] = useState("");
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [zipCode, setZipCode] = useState("");
+  const [country, setCountry] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [email, setemail] = useState("");
+  const [password, setPassword]= useState("");
+  
+
+  const handleSave = async (e) => {
+    e.preventDefault(); // Prevent the form from submitting normally
+  
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      const userId = user.uid;
+      const userRef = doc(db, "users", userId);
+  
+      const userData = {
+        firstname,
+        lastname,
+        birthdate: new Date(formattedBirthdate),
+        address,
+        city,
+        zipCode,
+        country,
+        phoneNumber,
+        email,
+      };
+  
+      await setDoc(userRef, userData);
+      console.log("User information saved successfully!");
+      history.push("/");
+    } catch (error) {
+      console.error("Error signing up:", error);
+    }
+  };
+
+  const handleGoogleSignUp = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+    } catch (error) {
+      console.error("Error signing up with Google:", error);
+    }
+  };
+  const handleFacebookSignUp = async () => {
+    const provider = new FacebookAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+    } catch (error) {
+      console.error("Error signing up with Facebook:", error);
+    }
+  };
+  
+
+  
+
   const sections = [
     (
       <form key={0}>
         <div style={{ display: 'flex', gap: '20px', marginBottom: '16px' }}>
           <Input
+          value={firstname} onChange={(e) => setName(e.target.value)}
           className='inputFirstName'
           name='firstname'
           type='text'
@@ -57,6 +133,7 @@ const Signup1 = ()=> {
           }}
           />
           <Input
+          value={lastname} onChange={(e) => setLastName(e.target.value)}
           className='inputLastName'
           name='lastname'
           type='text'
@@ -76,6 +153,7 @@ const Signup1 = ()=> {
           />
           </div>
         <Input
+          value={email} onChange={(e) => setemail(e.target.value)}
           className='inputEmail'
           name='email'
           type='email'
@@ -94,8 +172,9 @@ const Signup1 = ()=> {
         />
         
         <DatePicker
+            
             placeholder="Birth Date"
-            value={selectedDate}
+            selected={selectedDate}
             onChange={handleDateChange}
             inputStyle={{ color: '#FFF' }}
             style={{
@@ -107,7 +186,7 @@ const Signup1 = ()=> {
               padding: '20px 16px',
               marginBottom: '16px',
               backgroundColor: 'transparent',
-              color: 'white',
+              color: '#FFF',
             }}
           />
       </form>
@@ -115,6 +194,7 @@ const Signup1 = ()=> {
     (
       <form key={1}>
         <Input
+          value={address} onChange={(e) => setAddress(e.target.value)}
           className='inputAddress'
           name='address'
           type='text'
@@ -132,6 +212,7 @@ const Signup1 = ()=> {
           }}
         />
         <Input
+          value={city} onChange={(e) => setCity(e.target.value)}
           className='inputCity'
           name='city'
           type='text'
@@ -149,6 +230,7 @@ const Signup1 = ()=> {
           }}
         />
         <Input
+          value={zipCode} onChange={(e) => setZipCode(e.target.value)}
           className='inputZipCode'
           name='zipcode'
           type='number'
@@ -195,7 +277,7 @@ const Signup1 = ()=> {
           }}
         >
           <select>
-            <option value="">Select a country</option>
+            <option value={country} onChange={(e) => setCountry(e.target.value)}>Select a country</option>
             {filteredCountries.map((country) => (
               <option key={country.code} value={country.code}>
                 {country.name}
@@ -206,6 +288,7 @@ const Signup1 = ()=> {
       </Collapse>
     </div>
       <Input
+      value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)}
         placeholder="Phone Number"
         type="tel"
         style={{
@@ -225,6 +308,7 @@ const Signup1 = ()=> {
     (
       <form key={2}>
         <Input
+        value={password} onChange={(e) => setPassword(e.target.value)}
       className='inputPassword'
       name='password'
       type='password'
@@ -285,6 +369,11 @@ const Signup1 = ()=> {
       setCurrentSection(currentSection - 1);
     }
   };
+
+
+
+
+
   return (
     <div
       style={{
@@ -303,7 +392,7 @@ const Signup1 = ()=> {
         <div style={{ display: 'flex', gap: '20px', marginBottom: '16px' }}>
           <Button
             variant="contained"
-            //onClick={}
+            onClick={handleFacebookSignUp}
             style={{
               width: '192px',
               height: '42px',
@@ -332,7 +421,7 @@ const Signup1 = ()=> {
           </Button>
           <Button
             variant="contained"
-            //onClick={handleGoogleLogin}
+            onClick={handleGoogleSignUp}
             style={{
               width: '192px',
               height: '42px',
@@ -411,7 +500,7 @@ const Signup1 = ()=> {
             Or
           </Typography>
         <Divider style={{ width: '100%', margin: '24px 0' }} />
-        <form /*</div>onSubmit={handleLogin}*/>
+        <form onSubmit={handleSave}>
         <div style={{ textAlign: 'center' }}>{sections[currentSection]}</div>
       <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
         <Button variant="contained" onClick={handlePrevious} disabled={currentSection === 0}>
