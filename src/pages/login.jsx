@@ -12,6 +12,7 @@ import { AuthContext } from "../Auth";
 import {signOut, getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";
 import { getFirestore, updateDoc, doc, getDoc } from "firebase/firestore";
 
+
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 const facebookProvider = new FacebookAuthProvider();
@@ -282,7 +283,7 @@ function Login({history}) {
         </form>
         <Typography
           component={Link}
-          href="#"
+          href="/reset" 
           variant="body1"
           sx={{
             color: 'rgba(255, 255, 255, 0.30)',

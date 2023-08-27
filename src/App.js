@@ -8,6 +8,7 @@ import { AuthProvider } from "./Auth";
 import PrivateRoute from "./PrivateRoute";
 import Infos from "./infos";
 import Login from "./pages/login";
+import ResetPassword from './pages/password_reset';
 
 const App = () => {
   return (
@@ -17,7 +18,7 @@ const App = () => {
           <PrivateRoute exact path="/" component={Home} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/signup" component={Signup1} />
-          <PrivateRoute exact path="/infos" component={Infos} />
+          <Route exact path="/reset" component={ResetPassword} />
         </div>
       </Router>
     </AuthProvider>

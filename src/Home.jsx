@@ -27,7 +27,7 @@ const Home = () => {
     const firestore = getFirestore(app);
     const userDocRef = doc(firestore, "users", auth.currentUser.uid);
     console.log(firestore, userDocRef)
-    await updateDoc(userDocRef, { set: status });
+    await updateDoc(userDocRef, { userstatus: status });
   };
 
   return (
