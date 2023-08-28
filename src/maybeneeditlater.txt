@@ -1,0 +1,857 @@
+import React, {useState, useCallback, useContext, useLayoutEffect} from 'react'
+import Input from '@mui/joy/Input';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import Typography from '@mui/material/Typography';
+import Navbar from '../components/navbar/Navbar';
+import 'antd/dist/reset.css'
+import { DatePicker } from 'antd';
+import { Collapse } from '@mui/material';
+import countries from '../countries';
+import app from '../base';
+import { getFirestore, doc, setDoc } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { useNavigate } from "react-router-dom";
+import {createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";
+import { AuthContext } from '../Auth';
+
+const Signup1 = ()=> {
+  const navigate = useNavigate();
+
+  const { currentUser } = useContext(AuthContext);
+
+  useLayoutEffect(() => {
+    currentUser && navigate('/')
+  }, [currentUser]);
+
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  
+  const [selectedDate, setSelectedDate] = useState(null);
+  const [formattedBirthdate, setFormattedBirthdate] = useState("");
+  const [countryOpen, setCountryOpen] = useState(false); 
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredCountries, setFilteredCountries] = useState(countries);
+  const [currentSection, setCurrentSection] = useState(0);
+
+  const handleSignUp = useCallback(async (event) => {
+    event.preventDefault();
+    const { email, password, confirmPassword } = event.target.elements;
+
+    if (password.value !== confirmPassword.value) {
+      alert("Passwords do not match.");
+      return;
+    }
+
+    try {
+      await createUserWithEmailAndPassword(auth, email.value, password.value);
+      navigate("/");
+    } catch (error) {
+      alert(error.message);
+    }
+  });
+
+
+  const handleDateChange = (date) => {
+    setSelectedDate(date); 
+    const formattedDate = date ? date.format('YYYY-MM-DD') : "";
+    setFormattedBirthdate(formattedDate); 
+  };
+  
+  const toggleCountryList = () => {
+    setCountryOpen(!countryOpen);
+  };
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+    if (event.target.value) {
+      setFilteredCountries(countries.filter(country => country.name.toLowerCase().includes(event.target.value.toLowerCase())));
+    } else {
+      setFilteredCountries(countries);
+    }
+  };
+  const [firstname, setName] = useState("");
+  const [lastname, setLastName] = useState("");
+  const [address, setAddress] = useState("");
+  const [city, setCity] = useState("");
+  const [zipCode, setZipCode] = useState("");
+  const [country, setCountry] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [email, setemail] = useState("");
+  const [password, setPassword]= useState("");
+  
+
+  const handleSave = async (e) => {
+    e.preventDefault(); // Prevent the form from submitting normally
+  
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      const userId = user.uid;
+      const userRef = doc(db, "users", userId);
+  
+      const userData = {
+        firstname,
+        lastname,
+        birthdate: new Date(formattedBirthdate),
+        address,
+        city,
+        zipCode,
+        country,
+        phoneNumber,
+        email,
+      };
+  
+      await setDoc(userRef, userData);
+      console.log("User information saved successfully!");
+      navigate("/");
+    } catch (error) {
+      console.error("Error signing up:", error);
+    }
+  };
+
+  const handleGoogleSignUp = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+    } catch (error) {
+      console.error("Error signing up with Google:", error);
+    }
+  };
+  const handleFacebookSignUp = async () => {
+    const provider = new FacebookAuthProvider();
+    try {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+    } catch (error) {
+      console.error("Error signing up with Facebook:", error);
+    }
+  };
+  
+
+  
+
+  const sections = [
+    (
+      <form key={0}>
+        <div style={{ display: 'flex', gap: '20px', marginBottom: '16px' }}>
+          <Input
+          value={firstname} onChange={(e) => setName(e.target.value)}
+          className='inputFirstName'
+          name='firstname'
+          type='text'
+          placeholder="First Name"
+          style={{
+            backgroundColor: 'transparent',
+            color: '#FFF',
+            width: '192px',
+              height: '42px',
+              flexShrink: 0,
+              borderRadius: '62px',
+              border: '1px solid #FFF',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+          }}
+          />
+          <Input
+          value={lastname} onChange={(e) => setLastName(e.target.value)}
+          className='inputLastName'
+          name='lastname'
+          type='text'
+          placeholder="Last Name"
+          style={{
+            backgroundColor: 'transparent',
+            color: '#FFF',
+            width: '192px',
+              height: '42px',
+              flexShrink: 0,
+              borderRadius: '62px',
+              border: '1px solid #FFF',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center'
+          }}
+          />
+          </div>
+          <form onSubmit={handleSignUp} >
+        <Input
+          value={email} onChange={(e) => setemail(e.target.value)}
+          className='inputEmail'
+          name='email'
+          type='email'
+          placeholder="Email"
+          style={{
+            width: '408px',
+            height: '42px',
+            flexShrink: 0,
+            borderRadius: '62px',
+            border: '1px solid #FFF',
+            padding: '0 16px',
+            marginBottom: '16px',
+            backgroundColor: 'transparent',
+            color: '#FFF'
+          }}
+        />
+        </form>
+        
+        <DatePicker
+            
+            placeholder="Birth Date"
+            selected={selectedDate}
+            onChange={handleDateChange}
+            inputStyle={{ color: '#FFF' }}
+            style={{
+              width: '408px',
+              height: '42px',
+              flexShrink: 0,
+              borderRadius: '62px',
+              border: '1px solid #FFF',
+              padding: '20px 16px',
+              marginBottom: '16px',
+              backgroundColor: 'transparent',
+              color: '#FFF',
+            }}
+          />
+      </form>
+    ),
+    (
+      <form key={1}>
+        <Input
+          value={address} onChange={(e) => setAddress(e.target.value)}
+          className='inputAddress'
+          name='address'
+          type='text'
+          placeholder="Address"
+          style={{
+            width: '408px',
+            height: '42px',
+            flexShrink: 0,
+            borderRadius: '62px',
+            border: '1px solid #FFF',
+            padding: '0 16px',
+            marginBottom: '16px',
+            backgroundColor: 'transparent',
+            color: '#FFF'
+          }}
+        />
+        <Input
+          value={city} onChange={(e) => setCity(e.target.value)}
+          className='inputCity'
+          name='city'
+          type='text'
+          placeholder="City"
+          style={{
+            width: '408px',
+            height: '42px',
+            flexShrink: 0,
+            borderRadius: '62px',
+            border: '1px solid #FFF',
+            padding: '0 16px',
+            marginBottom: '16px',
+            backgroundColor: 'transparent',
+            color: '#FFF'
+          }}
+        />
+        <Input
+          value={zipCode} onChange={(e) => setZipCode(e.target.value)}
+          className='inputZipCode'
+          name='zipcode'
+          type='number'
+          placeholder="ZIP Code"
+          style={{
+            width: '408px',
+            height: '42px',
+            flexShrink: 0,
+            borderRadius: '62px',
+            border: '1px solid #FFF',
+            padding: '0 16px',
+            marginBottom: '16px',
+            backgroundColor: 'transparent',
+            color: '#FFF'
+          }}
+        />
+        <div>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <Button
+          variant="contained"
+          onClick={toggleCountryList}
+          style={{
+            flexShrink: 0,
+          }}
+        >
+          Toggle Countries
+        </Button>
+        <Input
+          fullWidth
+          placeholder="Search for a country"
+          value={searchTerm}
+          onChange={handleSearch}
+        />
+      </div>
+      <Collapse in={countryOpen}>
+        <div
+          style={{
+            width: '100%',
+            maxHeight: '150px',
+            overflowY: 'auto',
+            marginTop: '8px',
+            border: '1px solid #ccc',
+            borderRadius: '4px',
+          }}
+        >
+          <select>
+            <option value={country} onChange={(e) => setCountry(e.target.value)}>Select a country</option>
+            {filteredCountries.map((country) => (
+              <option key={country.code} value={country.code}>
+                {country.name}
+              </option>
+            ))}
+          </select>
+        </div>
+      </Collapse>
+    </div>
+      <Input
+      value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)}
+        placeholder="Phone Number"
+        type="tel"
+        style={{
+          width: '408px',
+          height: '42px',
+          flexShrink: 0,
+          borderRadius: '62px',
+          border: '1px solid #FFF',
+          padding: '0 16px',
+          marginBottom: '16px',
+          backgroundColor: 'transparent',
+          color: '#FFF'
+        }}
+      />
+      </form>
+    ),
+    (
+      <form key={2}>
+        <form onSubmit={handleSignUp}>
+        <Input
+        value={password} onChange={(e) => setPassword(e.target.value)}
+      className='inputPassword'
+      name='password'
+      type='password'
+      placeholder="Password"
+      style={{
+        width: '408px',
+        height: '42px',
+        flexShrink: 0,
+        borderRadius: '62px',
+        border: '1px solid #FFF',
+        padding: '0 16px',
+        marginBottom: '16px',
+        backgroundColor: 'transparent',
+        color: '#FFF'
+      }}
+    />
+    <Input
+      className='inputConfirmPassword'
+      name='confirmPassword'
+      type='password'
+      placeholder="Confirm Password"
+      style={{
+        width: '408px',
+        height: '42px',
+        flexShrink: 0,
+        borderRadius: '62px',
+        border: '1px solid #FFF',
+        padding: '0 16px',
+        marginBottom: '16px',
+        backgroundColor: 'transparent',
+        color: '#FFF'
+      }}
+    />
+    </form>
+        <Button
+          variant="contained"
+          type='submit'
+          style={{
+            width: '110.586px',
+            height: '42.162px',
+            flexShrink: 0,
+            borderRadius: '62px',
+            background: '#F1870C',
+          }}
+        >
+          Sign Up
+        </Button>
+      </form>
+    ),
+  ];
+  const handleNext = () => {
+    if (currentSection < sections.length - 1) {
+      setCurrentSection(currentSection + 1);
+    }
+  };
+
+  const handlePrevious = () => {
+    if (currentSection > 0) {
+      setCurrentSection(currentSection - 1);
+    }
+  };
+
+
+
+
+
+  return (
+    !currentUser ?
+    <div
+      style={{
+        backgroundImage: `url("/loginbackground.svg")`, // Update the path if needed
+        backgroundSize: 'cover',
+        backgroundPosition: 'center center',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
+      }}
+    >
+      <Navbar />
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', gap: '20px', marginBottom: '16px' }}>
+          <Button
+            variant="contained"
+            onClick={handleFacebookSignUp}
+            style={{
+              width: '192px',
+              height: '42px',
+              flexShrink: 0,
+              borderRadius: '62px',
+              border: '1px solid #F1870C',
+              background: '#F1870C',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <img src="/facebookicon.svg" alt="" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
+            <span
+              style={{
+                color: '#FFF',
+                fontFamily: 'Trispace',
+                fontSize: '12px',
+                fontStyle: 'normal',
+                fontWeight: 700,
+                lineHeight: 'normal',
+              }}
+            >
+              Sign Up with Facebook
+            </span>
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleGoogleSignUp}
+            style={{
+              width: '192px',
+              height: '42px',
+              flexShrink: 0,
+              borderRadius: '62px',
+              border: '1px solid #F1870C',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'transparent',
+            }}
+          >
+            <img src="/gmailicon.svg" alt="" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
+            <span
+              style={{
+                color: '#FFF',
+                fontFamily: 'Trispace',
+                fontSize: '12px',
+                fontStyle: 'normal',
+                fontWeight: 700,
+                lineHeight: 'normal',
+              }}
+            >
+              Sign Up with Gmail
+            </span>
+          </Button>
+          <Button
+            variant="contained"
+            style={{
+              width: '192px',
+              height: '42px',
+              flexShrink: 0,
+              borderRadius: '62px',
+              border: '1px solid #F1870C',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'transparent',
+            }}
+          >
+            <img src="/appleicon.svg" alt="" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
+            <span
+              style={{
+                color: '#FFF',
+                fontFamily: 'Trispace',
+                fontSize: '12px',
+                fontStyle: 'normal',
+                fontWeight: 700,
+                lineHeight: 'normal',
+                background: 'transparent',
+              }}
+            >
+              Sign Up with Apple
+            </span>
+          </Button>
+        </div>
+        <Divider
+            style={{
+              width: '192px',
+              marginTop: '20px',
+              backgroundColor: '#F1870C',
+            }}
+          />
+          <Typography
+            variant="body1"
+            sx={{
+              color: '#F1870C',
+              fontFamily: 'Mulish',
+              fontSize: '16.518px',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              lineHeight: 'normal',
+              margin: '8px 0',
+            }}
+          >
+            Or
+          </Typography>
+        <Divider style={{ width: '100%', margin: '24px 0' }} />
+        <form onSubmit={handleSave}>
+        <div style={{ textAlign: 'center' }}>{sections[currentSection]}</div>
+      <div style={{ display: 'flex', justifyContent: 'center', marginTop: '16px' }}>
+        <Button variant="contained" onClick={handlePrevious} disabled={currentSection === 0}>
+          Previous
+        </Button>
+        <Button
+          variant="contained"
+          onClick={handleNext}
+          disabled={currentSection === sections.length - 1}
+        >
+          {currentSection === sections.length - 1 ? 'Sign Up' : 'Next'}
+        </Button>
+          
+      </div>
+        </form>
+        
+      </div>
+    </div> : (<p>salem</p>)
+  )
+}
+
+export default Signup1;
+
+
+
+
+
+import React from 'react';
+import Navbar from '../components/navbar/Navbar';
+import Input from '@mui/joy/Input';
+import Button from '@mui/material/Button';
+import Divider from '@mui/material/Divider';
+import Typography from '@mui/material/Typography';
+import { Link } from '@mui/material';
+import { useCallback, useContext, useState, useEffect, useLayoutEffect } from "react";
+import {  useNavigate } from "react-router-dom";
+import app from "../base";
+import { AuthContext } from "../Auth";
+import {signOut, getAuth, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, FacebookAuthProvider } from "firebase/auth";
+import { getFirestore, updateDoc, doc, getDoc } from "firebase/firestore";
+
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+const facebookProvider = new FacebookAuthProvider();
+
+
+function Login() {
+  const navigate = useNavigate()
+  const { currentUser } = useContext(AuthContext);
+
+  useLayoutEffect(() => {
+    currentUser && navigate('/')
+  }, [currentUser]);
+
+  const [userStatus, setUserStatus] = useState("");
+
+  const fetchUserStatus = async () => {
+    const firestore = getFirestore(app);
+    const userDocRef = doc(firestore, "users", auth.currentUser.uid);
+    const userDoc = await getDoc(userDocRef);
+
+    if (userDoc.exists() && userDoc.data() && userDoc.data().userstatus) {
+      setUserStatus(userDoc.data().userstatus);
+      return(userDoc.data().userstatus)
+      
+
+    } else {
+      console.log("User status data is missing.");
+    }
+  };
+
+  const handleGoogleLogin = async () => {
+      signInWithPopup(auth, googleProvider).then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        user && navigate("/")
+    })
+    .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode, errorMessage)
+    });
+    }
+
+  const handleFacebookLogin = async () => {
+    try {
+      await signInWithPopup(auth, facebookProvider);
+      const status = await fetchUserStatus(); // Await here
+        if(status === "logged-in"){
+          alert("already logged in");
+          signOut(auth);
+        }
+        else{
+          await updateUserStatus("logged-in");
+          navigate("/");
+        }
+    } catch (error) {
+      alert(error.message);
+    }
+  };
+
+  const updateUserStatus = async (status) => {
+    const firestore = getFirestore(app);
+    const userDocRef = doc(firestore, "users", auth.currentUser.uid);
+    await updateDoc(userDocRef, { userstatus: status });
+  };
+
+  const handleLogin = useCallback(
+    async event => {
+      event.preventDefault();
+      const { email, password } = event.target.elements;
+      signInWithEmailAndPassword(auth, email.value, password.value)
+      .then((userCredential) => {
+          // Signed in
+          const user = userCredential.user;
+          user && navigate("/")
+      })
+      .catch((error) => {
+          const errorCode = error.code;
+          const errorMessage = error.message;
+          console.log(errorCode, errorMessage)
+      });
+    },
+    []
+  );
+  
+
+
+  return (
+    !currentUser ?
+    <div
+      style={{
+        backgroundImage: `url("/loginbackground.svg")`, // Update the path if needed
+        backgroundSize: 'cover',
+        backgroundPosition: 'center center',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
+      }}
+    >
+      <Navbar />
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ display: 'flex', gap: '20px', marginBottom: '16px' }}>
+          <Button
+            variant="contained"
+            onClick={handleFacebookLogin}
+            style={{
+              width: '192px',
+              height: '42px',
+              flexShrink: 0,
+              borderRadius: '62px',
+              border: '1px solid #F1870C',
+              background: '#F1870C',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <img src="/facebookicon.svg" alt="" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
+            <span
+              style={{
+                color: '#FFF',
+                fontFamily: 'Trispace',
+                fontSize: '12px',
+                fontStyle: 'normal',
+                fontWeight: 700,
+                lineHeight: 'normal',
+              }}
+            >
+              Log in with Facebook
+            </span>
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleGoogleLogin}
+            style={{
+              width: '192px',
+              height: '42px',
+              flexShrink: 0,
+              borderRadius: '62px',
+              border: '1px solid #F1870C',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'transparent',
+            }}
+          >
+            <img src="/gmailicon.svg" alt="" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
+            <span
+              style={{
+                color: '#FFF',
+                fontFamily: 'Trispace',
+                fontSize: '12px',
+                fontStyle: 'normal',
+                fontWeight: 700,
+                lineHeight: 'normal',
+              }}
+            >
+              Log in with Gmail
+            </span>
+          </Button>
+          <Button
+            variant="contained"
+            style={{
+              width: '192px',
+              height: '42px',
+              flexShrink: 0,
+              borderRadius: '62px',
+              border: '1px solid #F1870C',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'transparent',
+            }}
+          >
+            <img src="/appleicon.svg" alt="" style={{ width: '24px', height: '24px', marginRight: '8px' }} />
+            <span
+              style={{
+                color: '#FFF',
+                fontFamily: 'Trispace',
+                fontSize: '12px',
+                fontStyle: 'normal',
+                fontWeight: 700,
+                lineHeight: 'normal',
+                background: 'transparent',
+              }}
+            >
+              Log in with Apple
+            </span>
+          </Button>
+        </div>
+        <Divider
+            style={{
+              width: '192px',
+              marginTop: '20px',
+              backgroundColor: '#F1870C',
+            }}
+          />
+          <Typography
+            variant="body1"
+            sx={{
+              color: '#F1870C',
+              fontFamily: 'Mulish',
+              fontSize: '16.518px',
+              fontStyle: 'normal',
+              fontWeight: 400,
+              lineHeight: 'normal',
+              margin: '8px 0',
+            }}
+          >
+            Or
+          </Typography>
+        <Divider style={{ width: '100%', margin: '24px 0' }} />
+        <form onSubmit={handleLogin}>
+        <Input
+          className='inputEmail'
+          name='email'
+          type='email'
+          placeholder="Email"
+          style={{
+            width: '408px',
+            height: '42px',
+            flexShrink: 0,
+            borderRadius: '62px',
+            border: '1px solid #FFF',
+            padding: '0 16px',
+            marginBottom: '16px',
+            backgroundColor: 'transparent',
+            color: '#FFF'
+          }}
+        />
+        
+        <Input
+          className='inputPassword'
+          name='password'
+          type="password"
+          placeholder="Password"
+          style={{
+            width: '408px',
+            height: '42px',
+            flexShrink: 0,
+            borderRadius: '62px',
+            border: '1px solid #FFF',
+            padding: '0 16px',
+            marginBottom: '16px',
+            backgroundColor: 'transparent',
+            color: '#FFF'
+          }}
+        />
+        <Button
+          variant="contained"
+          type='submit'
+          style={{
+            width: '110.586px',
+            height: '42.162px',
+            flexShrink: 0,
+            borderRadius: '62px',
+            background: '#F1870C',
+          }}
+        >
+          Login
+        </Button>
+        </form>
+        <Typography
+          component={Link}
+          href="#"
+          variant="body1"
+          sx={{
+            color: 'rgba(255, 255, 255, 0.30)',
+            fontFamily: 'Mulish',
+            fontSize: '16.518px',
+            fontStyle: 'normal',
+            fontWeight: 400,
+            lineHeight: 'normal',
+            marginTop: '16px',
+            textDecoration: 'none',
+          }}
+        >
+          Forgot Password?
+        </Typography>
+      </div>
+    </div> : <></>
+  );
+}
+export default Login;

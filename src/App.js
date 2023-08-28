@@ -9,6 +9,7 @@ import PrivateRoute from "./PrivateRoute";
 import Infos from "./infos";
 import Login from "./pages/login";
 import ResetPassword from './pages/password_reset';
+import LandingPage from "./pages/LandingPage";
 
 const App = () => {
   return (
@@ -19,6 +20,7 @@ const App = () => {
           <Route exact path="/login" component={Login} />
           <Route exact path="/signup" component={Signup1} />
           <Route exact path="/reset" component={ResetPassword} />
+          <Route exact path="/home" component={LandingPage}/>
         </div>
       </Router>
     </AuthProvider>
