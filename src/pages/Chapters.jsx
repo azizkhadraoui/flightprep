@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Navbar from '../components/navbar/Navbar';
+import {Link} from 'react-router-dom'
 import { Box, Collapse, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
@@ -73,7 +74,7 @@ const Chapters = () => {
                             Lessons
                           </Typography>
                           {row.lessons.map(lesson => (
-                            <Typography>{lesson}</Typography>
+                            <Typography><Link to="/questions">{lesson}</Link></Typography>
                           ))}
                         </Box>
                       </Collapse>
