@@ -1,5 +1,6 @@
 import React from 'react';
 import Navbar from '../components/navbar/Navbar';
+import './landing9age.css'
 
 const LandingPage = () => {
   return (
@@ -21,29 +22,31 @@ const LandingPage = () => {
         marginTop: '100px',
         backgroundColor: 'radial-gradient(188.27% 113.08% at 73.28% 27.45%, #312783 36.98%, #010101 87.06%, #242535 100%)',
         color: '#FFF',
-        fontFamily: 'Mulish',
+
         padding: '2rem',
         maxWidth: '800px',
       }}>
         <h1 style={{
           fontSize: '41px',
-          fontWeight: 800,
+          fontWeight: 650,
           lineHeight: 'normal',
+          
         }}>
-          Your Ultimate Resource for <span style={{ color: '#F1870C' }}>Flight Preparation</span>
+          Your Ultimate Resource for<br/> <span style={{ color: '#F1870C' }}>Flight Preparation</span>
         </h1>
         <h1 style={{
           fontSize: '41px',
           fontWeight: 800,
           lineHeight: 'normal',
           marginTop: '30px',
+          fontFamily: 'Mulish',
         }}>
           AIREXAM
         </h1>
         <p style={{
           fontSize: '18px',
           fontFamily: 'Mulish',
-          fontWeight: 300,
+          fontWeight: 400,
           fontStyle: 'normal',
           lineHeight: 'normal',
           color: '#FFF',

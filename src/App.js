@@ -10,6 +10,8 @@ import Infos from "./infos";
 import Login from "./pages/login";
 import ResetPassword from './pages/password_reset';
 import LandingPage from "./pages/LandingPage";
+import Chapters from "./pages/Chapters";
+import Question from "./pages/Question";
 
 const App = () => {
   return (
@@ -21,6 +23,8 @@ const App = () => {
           <Route exact path="/signup" component={Signup1} />
           <Route exact path="/reset" component={ResetPassword} />
           <Route exact path="/home" component={LandingPage}/>
+          <Route exact path='/chapters' component={Chapters}/>
+          <Route exact path='/questions' component={Question}/>
         </div>
       </Router>
     </AuthProvider>
