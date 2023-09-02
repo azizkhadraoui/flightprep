@@ -12,6 +12,7 @@ import ResetPassword from './pages/password_reset';
 import LandingPage from "./pages/LandingPage";
 import Chapters from "./pages/Chapters";
 import Question from "./pages/Question";
+import Contact from "./pages/Contact";
 
 const App = () => {
   return (
@@ -25,6 +26,7 @@ const App = () => {
           <Route exact path="/home" component={LandingPage}/>
           <Route exact path='/chapters' component={Chapters}/>
           <Route exact path='/questions' component={Question}/>
+          <Route exact path='/contact' component={Contact}/>
         </div>
       </Router>
     </AuthProvider>

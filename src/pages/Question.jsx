@@ -2,6 +2,7 @@ import React,{useState, useEffect} from 'react';
 import Navbar from '../components/navbar/Navbar';
 import { Box, Typography, Divider, Grid, Button,Card,CardContent } from '@mui/material';
 import questionsData from './questions.json';
+import './questions.css'
 
 const Question = () => {
 
@@ -38,10 +39,26 @@ const Question = () => {
       setSelectedAnswer(null); // Reset selected answer when moving to the next question
     }
   };
+  
   const question = questionData.question;
 const answers = questionData.answers;
 const correctAnswer = questionData.correctAnswer;
+const [answeredQuestions, setAnsweredQuestions] = useState(Array(5).fill(null));
 
+const handleQuestionClick = (questionIndex) => {
+  // Check if the question has been answered correctly
+  const isCorrect = questionIndex === currentQuestion; // Replace this with your logic
+
+  // Update the status of the clicked question
+  const updatedQuestions = [...answeredQuestions];
+  updatedQuestions[questionIndex] = isCorrect ? 'green' : 'answered-question red'; // Use 'answered-question red' for incorrect answers
+
+  // Set the updated status in the state
+  setAnsweredQuestions(updatedQuestions);
+
+  // Navigate to the clicked question (if needed)
+  setCurrentQuestion(questionIndex); // Update the current question state
+};
 
 
 
@@ -78,7 +95,7 @@ const correctAnswer = questionData.correctAnswer;
             width: 500,
             height: 60,
         }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" padding="20px">
+        <Box display="flex" justifyContent="space-between" alignItems="center" padding="20px" width="80%">
           <Grid container alignItems="left">
             <Grid item>
               <Typography
@@ -253,20 +270,39 @@ const correctAnswer = questionData.correctAnswer;
         </div>
         
       </div>
-      <div>
-          <Grid container direction="column" alignItems="flex-end" marginRight="20px">
-            {[...Array(totalQuestions)].map((_, index) => (
+      <div className='question-grid-container'>
+        <Grid container direction='column' marginTop="100px">
+          <Grid container direction="row" alignItems="flex-start" marginLeft="75%">
+            {Array.from({length: Math.min(50, 10*5)}).map((_, index) => (
               <Grid key={index} item>
                 <Box
-                  width="10px"
-                  height="10px"
-                  marginY="2px"
-                  bgcolor={index === currentQuestion ? 'blue' : 'gray'}
-                />
+                  // Styles for question order grid
+                  width="61px"
+                  height="28px"
+                  flexShrink={0}
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="center"
+                  fontSize="16px"
+                  fontWeight="500"
+                  border={index === currentQuestion ? '1px solid white' : '1px solid transparent'}
+                  borderRadius="4px"
+                  className={`question-rectangle ${
+                    index === currentQuestion ? 'current-question' : answeredQuestions[index] ? 'answered-question' : 'unanswered-question'
+                  }`}
+                  onClick={() => handleQuestionClick(index)}
+                  style={{ 
+                    cursor: 'pointer',
+                    marginRight: index < 4 ? '5px' : '0',
+                  }}
+                >
+                  {index + 1}
+                </Box>
               </Grid>
             ))}
           </Grid>
-        </div>
+        </Grid>
+      </div>
     </div>
   );
 };
