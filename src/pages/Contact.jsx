@@ -15,22 +15,21 @@ import {
 } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import './contact.css'
 
 const Contact = () => {
-  const [open, setOpen] = useState(-1); // Initialize the state variable for row expansion
-  const [selectedFeedback, setSelectedFeedback] = useState(''); // Initialize the state variable for selected feedback
-  const index = 0; // Set the index you want to associate with this row
+  const [open, setOpen] = useState(-1);
+  const [selectedFeedback, setSelectedFeedback] = useState('');
+  const index = 0;
 
-  // Function to handle feedback option selection
   const handleFeedbackOptionClick = (option) => {
     setSelectedFeedback(option);
-    setOpen(-1); // Close the list when an option is selected
+    setOpen(-1);
   };
 
   return (
     <div
       style={{
-        backgroundImage: `url("/loginbackground.svg")`,
         backgroundSize: 'cover',
         backgroundPosition: 'center center',
         display: 'flex',
@@ -44,7 +43,6 @@ const Contact = () => {
       <div style={{ alignItems: 'center', justifyContent: 'center', flex: 1, display: 'flex', flexDirection: 'column' }}>
         <h1>Contact Us</h1>
         <div style={{ display: 'flex', justifyContent: 'space-between', width: '80%' }}>
-          {/* Left Div with Two Inputs */}
           <div style={{ flex: 1, marginRight: '20px' }}>
             <Input
               placeholder='Enter Name and Surname'
@@ -52,9 +50,10 @@ const Contact = () => {
                 width: '538px',
                 height: '57px',
                 flexShrink: 0,
-                strokeWidth: '3px',
-                stroke: '#F1870C',
+                border: '3px solid #F1870C',
+                borderRadius: '10px',
                 margin: '10px 0',
+                color: 'white',
               }}
             />
             <Input
@@ -63,26 +62,42 @@ const Contact = () => {
                 width: '538px',
                 height: '57px',
                 flexShrink: 0,
-                strokeWidth: '3px',
-                stroke: '#F1870C',
+                border: '3px solid #F1870C',
+                borderRadius: '10px',
                 margin: '10px 0',
+                color: 'white',
               }}
             />
           </div>
-          {/* Right Div with Three Inputs and Submit Button */}
           <div style={{ flex: 1 }}>
-            <Input placeholder='Enter Email' style={{ width: '100%', margin: '10px 0' }} />
+            <Input
+              placeholder='Enter Email'
+              style={{
+                width: '100%',
+                margin: '10px 0',
+                border: '3px solid #F1870C',
+                borderRadius: '10px',
+                color: 'white',
+              }}
+            />
             <TableContainer>
               <Table>
-                <TableRow>
+                <TableRow 
+                  style={{
+                    border: '3px solid #F1870C',
+                    borderRadius: '10px',
+                    color: 'white',
+                  }}
+                >
                   <TableCell>
-                    {selectedFeedback ? selectedFeedback : 'Post Exam Feedbacks'} {/* Display selected feedback or default text */}
+                    {selectedFeedback ? selectedFeedback : 'Post Exam Feedbacks'}
                   </TableCell>
                   <TableCell>
                     <IconButton
                       aria-label="expand row"
                       size="small"
                       onClick={() => setOpen(open === index ? -1 : index)}
+                      style={{ color: 'white' }}
                     >
                       {open === index ? (
                         <KeyboardArrowUpIcon />
@@ -96,7 +111,6 @@ const Contact = () => {
                   <TableRow>
                     <TableCell colSpan={2}>
                       <Collapse in={open === index}>
-                        {/* List of choices for post-exam feedback */}
                         <List>
                           {['Epic', 'Good', 'Medium', 'Bad', 'Very Bad'].map((option) => (
                             <ListItem
@@ -104,7 +118,7 @@ const Contact = () => {
                               key={option}
                               onClick={() => handleFeedbackOptionClick(option)}
                             >
-                              <ListItemText primary={option} />
+                              <ListItemText primary={option} style={{ color: 'white' }} />
                             </ListItem>
                           ))}
                         </List>
@@ -114,8 +128,31 @@ const Contact = () => {
                 )}
               </Table>
             </TableContainer>
-            <Input placeholder='Some other input' style={{ width: '100%', margin: '10px 0' }} />
-            <Button style={{ backgroundColor: 'green', color: 'white', width: '100%' }}>Submit</Button>
+            <Input
+              placeholder='Message'
+              style={{
+                width: '538px',
+                height: '363px',
+                flexShrink: 0,
+                border: '3px solid #F1870C',
+                borderRadius: '10px',
+                margin: '10px 0',
+                color: 'white',
+              }}
+            />
+            <Button
+              style={{
+                backgroundColor: '#F1870C', // Set the color to #F1870C
+                color: 'white',
+                width: '120px',         // Adjusted width
+                height: '31px',         // Adjusted height
+                flexShrink: 0,
+                borderRadius: '12px',
+                marginTop: '10px',
+              }}
+            >
+              Submit
+            </Button>
           </div>
         </div>
       </div>
