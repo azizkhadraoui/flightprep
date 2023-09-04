@@ -1,4 +1,5 @@
 import React,{useState, useEffect} from 'react';
+import axios from 'axios';
 import Navbar from '../components/navbar/Navbar';
 import { Box, Typography, Divider, Grid, Button,Card,CardContent } from '@mui/material';
 import questionsData from './questions.json';
@@ -79,6 +80,22 @@ const handleQuestionClick = (questionIndex) => {
     fltComp: 'This is the Flt Comp content.',
   };
 
+  const [questions, setQuestions] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get('http://localhost:8800/data');
+        const data = response.data;
+        setQuestions(data);
+      } catch (error) {
+        console.error('Error fetching data from the API:', error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     
     <div
@@ -111,7 +128,7 @@ const handleQuestionClick = (questionIndex) => {
                   fontWeight: 800,
                 }}
               >
-                QN°{currentQuestion}/{totalQuestions}
+                QN°{currentQuestion + 1}/{totalQuestions}
               </Typography>
             </Grid>
             <Grid item>
