@@ -1,7 +1,7 @@
 import React,{useState, useEffect} from 'react';
 import axios from 'axios';
 import Navbar from '../components/navbar/Navbar';
-import { Box, Typography, Divider, Grid, Button,Card,CardContent } from '@mui/material';
+import { Box, Typography, Grid, Button,Card,CardContent } from '@mui/material';
 import questionsData from './questions.json';
 import './questions.css'
 
@@ -142,7 +142,7 @@ const handleQuestionClick = (questionIndex) => {
           </Grid>
           <Grid container alignItems="left">
             <Grid item>
-              <Typography variant="body1" sx={{ fontSize: '18px', color: '#000', marginRight: '8px' }}>
+              <Typography variant="body1" sx={{ fontSize: '18px', color: '#FFF', marginRight: '8px' }}>
                 {formatTime(3600)}
               </Typography>
             </Grid>
@@ -266,7 +266,7 @@ const handleQuestionClick = (questionIndex) => {
         </Box>
 
         <Box style={{marginLeft:'30px'}}>
-        <Typography variant="h6">{question}</Typography>
+        <Typography variant="h6" sx={{color:'#FFF'}}>{question}</Typography>
       </Box>
       <Box style={{marginLeft:'30px', width: '800px', height: '105px'}}>
         {answers.map((answer, index) => (
