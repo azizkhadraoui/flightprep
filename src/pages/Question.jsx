@@ -1,12 +1,10 @@
-import React,{useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from '../components/navbar/Navbar';
-import { Box, Typography, Grid, Button,Card,CardContent } from '@mui/material';
-import questionsData from './questions.json';
-import './questions.css'
+import { Box, Typography, Grid, Button, Card, CardContent } from '@mui/material';
+import './questions.css';
 
 const Question = () => {
-
   // Function to format time as HH:MM:SS
   const formatTime = (seconds) => {
     const hours = Math.floor(seconds / 3600);
@@ -15,72 +13,31 @@ const Question = () => {
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
-
-
-  const handleAnswerClick = (index) => {
-    if (selectedAnswer === null) {
-      setSelectedAnswer(index);
-    }
-  };
-  const isCorrectAnswer = (index) => {
-    return selectedAnswer === index && selectedAnswer === correctAnswer;
-  };
-
-  const isWrongAnswer = (index) => {
-    return selectedAnswer === index && selectedAnswer !== correctAnswer;
-  };
-
-  const totalQuestions = questionsData.length;
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const questionData = questionsData[currentQuestion];
-  const handleNextQuestion = () => {
-    if (currentQuestion < totalQuestions - 1) {
-      setCurrentQuestion(currentQuestion + 1);
-      setSelectedAnswer(null); // Reset selected answer when moving to the next question
-    }
-  };
-  
-  const question = questionData.question;
-const answers = questionData.answers;
-const correctAnswer = questionData.correctAnswer;
-const [answeredQuestions, setAnsweredQuestions] = useState(Array(5).fill(null));
-
-const handleQuestionClick = (questionIndex) => {
-  // Check if the question has been answered correctly
-  const isCorrect = questionIndex === currentQuestion; // Replace this with your logic
-
-  // Update the status of the clicked question
-  const updatedQuestions = [...answeredQuestions];
-  updatedQuestions[questionIndex] = isCorrect ? 'green' : 'answered-question red'; // Use 'answered-question red' for incorrect answers
-
-  // Set the updated status in the state
-  setAnsweredQuestions(updatedQuestions);
-
-  // Navigate to the clicked question (if needed)
-  setCurrentQuestion(questionIndex); // Update the current question state
-};
-
-
-
-
-
-  const [activeButton, setActiveButton] = useState('question');
-  const handleButtonClick = (button) => {
-    setActiveButton(button);
-  };
-
-
-  const buttonContent = {
-    question: ()=>{},
-    explanation: 'This is the explanation content.',
-    statistics: 'This is the statistics content.',
-    comments: 'This is the comments content.',
-    notes: 'This is the notes content.',
-    fltComp: 'This is the Flt Comp content.',
-  };
-
   const [questions, setQuestions] = useState([]);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [answeredQuestions, setAnsweredQuestions] = useState(new Array(questions.length).fill(null));
+
+  const handleAnswerClick = (answerKey) => {
+    if (selectedAnswer === null) {
+      setSelectedAnswer(answerKey);
+    }
+  };
+
+  const isCorrectAnswer = (answerKey) => {
+    return selectedAnswer === answerKey && selectedAnswer === questions[currentQuestion]?.correct;
+  };
+
+  const isWrongAnswer = (answerKey) => {
+    return selectedAnswer === answerKey && selectedAnswer !== questions[currentQuestion]?.correct;
+  };
+
+  const handleNextQuestion = () => {
+    if (currentQuestion < questions.length - 1) {
+      setCurrentQuestion(currentQuestion + 1);
+      setSelectedAnswer(null);
+    }
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -95,6 +52,32 @@ const handleQuestionClick = (questionIndex) => {
 
     fetchData();
   }, []);
+
+  const handleButtonClick = (buttonType) => {
+    // Handle button click logic here
+    // Example:
+    if (buttonType === 'question') {
+      // Do something for 'question' button click
+    } else if (buttonType === 'explanation') {
+      // Do something for 'explanation' button click
+    }
+    // Add more cases for other button types if needed
+  };
+
+  const handleQuestionClick = (questionIndex) => {
+    // Check if the question has been answered correctly
+    const isCorrect = questionIndex === currentQuestion; // Replace this with your logic
+
+    // Update the status of the clicked question
+    const updatedQuestions = [...answeredQuestions];
+    updatedQuestions[questionIndex] = isCorrect ? 'green' : 'answered-question red'; // Use 'answered-question red' for incorrect answers
+
+    // Set the updated status in the state
+    setAnsweredQuestions(updatedQuestions);
+
+    // Navigate to the clicked question (if needed)
+    setCurrentQuestion(questionIndex); // Update the current question state
+  };
 
   return (
     
@@ -128,7 +111,7 @@ const handleQuestionClick = (questionIndex) => {
                   fontWeight: 800,
                 }}
               >
-                QN°{currentQuestion + 1}/{totalQuestions}
+                QN°{currentQuestion + 1}/{questions.length}
               </Typography>
             </Grid>
             <Grid item>
@@ -150,7 +133,6 @@ const handleQuestionClick = (questionIndex) => {
           <Grid container alignItems="left">
             <Grid item>
                 <Button onClick={handleNextQuestion}><img src='/arrow.svg' alt="Arrow" /></Button>
-              
             </Grid>
           </Grid>
         </Box>
@@ -265,62 +247,74 @@ const handleQuestionClick = (questionIndex) => {
           </Button>
         </Box>
 
-        <Box style={{marginLeft:'30px'}}>
-        <Typography variant="h6" sx={{color:'#FFF'}}>{question}</Typography>
-      </Box>
-      <Box style={{marginLeft:'30px', width: '800px', height: '105px'}}>
-        {answers.map((answer, index) => (
-          <Card
-            key={index}
-            onClick={() => handleAnswerClick(index)}
-            sx={{
-              marginBottom: '10px',
-              backgroundColor: isCorrectAnswer(index) ? 'green' : isWrongAnswer(index) ? 'red' : 'white',
-            }}
-          >
-            <CardContent>
-              <Typography variant="body1">{answer}</Typography>
-            </CardContent>
-          </Card>
-        ))}
-      </Box>
-        </div>
-        
-      </div>
-      <div className='question-grid-container'>
-        <Grid container direction='column' marginTop="100px">
-          <Grid container direction="row" alignItems="flex-start" marginLeft="75%">
-            {Array.from({length: Math.min(50, 10*5)}).map((_, index) => (
-              <Grid key={index} item>
-                <Box
-                  // Styles for question order grid
-                  width="61px"
-                  height="28px"
-                  flexShrink={0}
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="center"
-                  fontSize="16px"
-                  fontWeight="500"
-                  border={index === currentQuestion ? '1px solid white' : '1px solid transparent'}
-                  borderRadius="4px"
-                  className={`question-rectangle ${
-                    index === currentQuestion ? 'current-question' : answeredQuestions[index] ? 'answered-question' : 'unanswered-question'
-                  }`}
-                  onClick={() => handleQuestionClick(index)}
-                  style={{ 
-                    cursor: 'pointer',
-                    marginRight: index < 4 ? '5px' : '0',
+        {questions.length > 0 && currentQuestion < questions.length ? (
+            <Box style={{ marginLeft: '30px' }}>
+              <Typography variant="h6">{questions[currentQuestion]?.question}</Typography>
+            </Box>
+          ) : (
+            <Box style={{ marginLeft: '30px' }}>
+              <Typography variant="h6">Loading...</Typography>
+            </Box>
+          )}
+          {questions.length > 0 && currentQuestion < questions.length ? (
+            <Box style={{ marginLeft: '30px', width: '800px', minHeight: '105px' }}>
+              {Object.keys(questions[currentQuestion]).filter(key => ['A', 'B', 'C', 'D'].includes(key)).map(key => (
+                <Card
+                  key={key}
+                  onClick={() => handleAnswerClick(key)}
+                  sx={{
+                    marginBottom: '10px',
+                    backgroundColor: isCorrectAnswer(key) ? 'green' : isWrongAnswer(key) ? 'red' : 'white',
                   }}
                 >
-                  {index + 1}
-                </Box>
-              </Grid>
-            ))}
-          </Grid>
-        </Grid>
+                  <CardContent>
+                    <Typography variant="body1">{questions[currentQuestion][key]}</Typography>
+                  </CardContent>
+                </Card>
+              ))}
+            </Box>
+          ) : (
+            <Box style={{ marginLeft: '30px', width: '800px', minHeight: '105px' }}>
+              <Typography variant="body1">No questions available.</Typography>
+            </Box>
+          )}
+        </div>
       </div>
-    </div>
+      
+      <div className='question-grid-container'>
+  <Grid container direction='column' marginTop="100px">
+    <Grid container direction="row" alignItems="flex-start" marginLeft="75%">
+      {questions.map((_, index) => (
+        <Grid key={index} item>
+          <Box
+            width="28px"
+            height="28px"
+            flexShrink={0}
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            fontSize="16px"
+            fontWeight="500"
+            border={index === currentQuestion ? '1px solid white' : '1px solid transparent'}
+            borderRadius="4px"
+            className={`question-rectangle ${
+              index === currentQuestion ? 'current-question' : answeredQuestions[index] ? 'answered-question' : 'unanswered-question'
+            }`}
+            onClick={() => handleQuestionClick(index)}
+            style={{ 
+              cursor: 'pointer',
+              marginRight: index < questions.length - 1 ? '5px' : '0',
+            }}
+          >
+            {index + 1}
+          </Box>
+        </Grid>
+      ))}
+    </Grid>
+  </Grid>
+</div>
+</div>
+
   );
 };
 
