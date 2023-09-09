@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Navbar from '../components/navbar/Navbar';
-import { Box, Typography, Grid, Button, Card, CardContent } from '@mui/material';
+import { Box, Typography, Grid, Button } from '@mui/material';
 import './questions.css';
+import QuestionComponent from '../components/questionelements/QuestionComponent';
+import ExplanationComponent from '../components/questionelements/ExplanationComponent';
+import NotesComponent from '../components/questionelements/NoteComponent';
 
 const Question = () => {
   // Function to format time as HH:MM:SS
@@ -18,18 +21,9 @@ const Question = () => {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answeredQuestions, setAnsweredQuestions] = useState(new Array(questions.length).fill(null));
 
-  const handleAnswerClick = (answerKey) => {
-    if (selectedAnswer === null) {
-      setSelectedAnswer(answerKey);
-    }
-  };
-
-  const isCorrectAnswer = (answerKey) => {
-    return selectedAnswer === answerKey && selectedAnswer === questions[currentQuestion]?.correct;
-  };
-
-  const isWrongAnswer = (answerKey) => {
-    return selectedAnswer === answerKey && selectedAnswer !== questions[currentQuestion]?.correct;
+  const [contentType, setContentType] = useState('question');
+  const handleButtonClick = (buttonType) => {
+    setContentType(buttonType);
   };
 
   const handleNextQuestion = () => {
@@ -53,31 +47,6 @@ const Question = () => {
     fetchData();
   }, []);
 
-  const handleButtonClick = (buttonType) => {
-    // Handle button click logic here
-    // Example:
-    if (buttonType === 'question') {
-      // Do something for 'question' button click
-    } else if (buttonType === 'explanation') {
-      // Do something for 'explanation' button click
-    }
-    // Add more cases for other button types if needed
-  };
-
-  const handleQuestionClick = (questionIndex) => {
-    // Check if the question has been answered correctly
-    const isCorrect = questionIndex === currentQuestion; // Replace this with your logic
-
-    // Update the status of the clicked question
-    const updatedQuestions = [...answeredQuestions];
-    updatedQuestions[questionIndex] = isCorrect ? 'green' : 'answered-question red'; // Use 'answered-question red' for incorrect answers
-
-    // Set the updated status in the state
-    setAnsweredQuestions(updatedQuestions);
-
-    // Navigate to the clicked question (if needed)
-    setCurrentQuestion(questionIndex); // Update the current question state
-  };
 
   return (
     
@@ -246,73 +215,30 @@ const Question = () => {
             Flt Comp
           </Button>
         </Box>
-
-        {questions.length > 0 && currentQuestion < questions.length ? (
-            <Box style={{ marginLeft: '30px' }}>
-              <Typography variant="h6">{questions[currentQuestion]?.question}</Typography>
-            </Box>
-          ) : (
-            <Box style={{ marginLeft: '30px' }}>
-              <Typography variant="h6">Loading...</Typography>
-            </Box>
-          )}
-          {questions.length > 0 && currentQuestion < questions.length ? (
-            <Box style={{ marginLeft: '30px', width: '800px', minHeight: '105px' }}>
-              {Object.keys(questions[currentQuestion]).filter(key => ['A', 'B', 'C', 'D'].includes(key)).map(key => (
-                <Card
-                  key={key}
-                  onClick={() => handleAnswerClick(key)}
-                  sx={{
-                    marginBottom: '10px',
-                    backgroundColor: isCorrectAnswer(key) ? 'green' : isWrongAnswer(key) ? 'red' : 'white',
-                  }}
-                >
-                  <CardContent>
-                    <Typography variant="body1">{questions[currentQuestion][key]}</Typography>
-                  </CardContent>
-                </Card>
-              ))}
-            </Box>
-          ) : (
-            <Box style={{ marginLeft: '30px', width: '800px', minHeight: '105px' }}>
-              <Typography variant="body1">No questions available.</Typography>
-            </Box>
-          )}
+            <div>
+            {contentType === 'question' && 
+              <QuestionComponent
+              questions={questions}
+              currentQuestion={currentQuestion}
+              setCurrentQuestion={setCurrentQuestion}
+            />            
+            }
+            {contentType === 'explanation' && 
+            <ExplanationComponent 
+            questions={questions} 
+            currentQuestion={currentQuestion}
+            />
+            }
+            {contentType === 'notes' &&
+              <NotesComponent 
+              questions={questions} 
+              currentQuestion={currentQuestion} 
+            />
+            }
+            </div>
         </div>
       </div>
       
-      <div className='question-grid-container'>
-  <Grid container direction='column' marginTop="100px">
-    <Grid container direction="row" alignItems="flex-start" marginLeft="75%">
-      {questions.map((_, index) => (
-        <Grid key={index} item>
-          <Box
-            width="28px"
-            height="28px"
-            flexShrink={0}
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            fontSize="16px"
-            fontWeight="500"
-            border={index === currentQuestion ? '1px solid white' : '1px solid transparent'}
-            borderRadius="4px"
-            className={`question-rectangle ${
-              index === currentQuestion ? 'current-question' : answeredQuestions[index] ? 'answered-question' : 'unanswered-question'
-            }`}
-            onClick={() => handleQuestionClick(index)}
-            style={{ 
-              cursor: 'pointer',
-              marginRight: index < questions.length - 1 ? '5px' : '0',
-            }}
-          >
-            {index + 1}
-          </Box>
-        </Grid>
-      ))}
-    </Grid>
-  </Grid>
-</div>
 </div>
 
   );
