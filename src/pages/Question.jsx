@@ -6,6 +6,7 @@ import './questions.css';
 import QuestionComponent from '../components/questionelements/QuestionComponent';
 import ExplanationComponent from '../components/questionelements/ExplanationComponent';
 import NotesComponent from '../components/questionelements/NoteComponent';
+import Comments from '../components/questionelements/Comments';
 
 const Question = () => {
   // Function to format time as HH:MM:SS
@@ -235,6 +236,13 @@ const Question = () => {
               currentQuestion={currentQuestion} 
             />
             }
+            {contentType === 'question' && (
+              <QuestionComponent
+              questions={questions}
+              currentQuestion={currentQuestion}
+              setCurrentQuestion={setCurrentQuestion}
+            />
+            )}
             </div>
         </div>
       </div>
