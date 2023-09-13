@@ -7,6 +7,7 @@ import QuestionComponent from '../components/questionelements/QuestionComponent'
 import ExplanationComponent from '../components/questionelements/ExplanationComponent';
 import NotesComponent from '../components/questionelements/NoteComponent';
 import Comments from '../components/questionelements/Comments';
+import QuestionsMatrix from '../components/questionelements/QuestionsMatrix';
 
 const Question = () => {
   // Function to format time as HH:MM:SS
@@ -244,6 +245,9 @@ const Question = () => {
             />
             )}
             </div>
+        </div>
+        <div styles={{ marginRight : '20px', marginLeft: '20px'}}>
+          <QuestionsMatrix/>
         </div>
       </div>
       
