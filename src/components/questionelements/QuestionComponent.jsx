@@ -3,6 +3,7 @@ import { Typography, Card, CardContent, Button } from '@mui/material';
 import app from '../../base.js';
 import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import questionAnnexes from '../questionelements/annexes/annexes.js';
 
 const db = getFirestore(app);
 const auth = getAuth(app);
@@ -55,11 +56,21 @@ const QuestionComponent = ({ questions, currentQuestion, setCurrentQuestion }) =
     setShowCorrectAnswer(false);
   }, [currentQuestion]);
 
+  const annexFilename = questionAnnexes[questions[currentQuestion]?.id];
+
+
   return (
     <div>
       {questions.length > 0 ? (
         <div>
           <Typography variant="h6">{questions[currentQuestion]?.question}</Typography>
+          {annexFilename && (
+        <img
+          src={require(`../../annexes/${annexFilename}`).default}
+          alt="Annex"
+          style={{ maxWidth: '100%' }}
+        />
+      )}
           {['A', 'B', 'C', 'D'].map((key) => (
             <Card
               key={key}
