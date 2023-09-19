@@ -14,6 +14,7 @@ import Chapters from "./pages/Chapters";
 import Question from "./pages/Question";
 import Contact from "./pages/Contact";
 import Subscription from "./pages/Subscription";
+import Exam from "./pages/Exam";
 
 const App = () => {
   return (
@@ -29,6 +30,7 @@ const App = () => {
           <Route exact path='/questions' component={Question}/>
           <Route exact path='/contact' component={Contact}/>
           <Route exact path='/subscription' component={Subscription}/>
+          <Route exact path='/exam' component={Exam}/>
         </div>
       </Router>
     </AuthProvider>

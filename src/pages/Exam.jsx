@@ -3,7 +3,6 @@ import axios from 'axios';
 import Navbar from '../components/navbar/Navbar';
 import { Box, Typography, Grid, Button } from '@mui/material';
 import './questions.css';
-import QuestionComponent from '../components/questionelements/QuestionComponent';
 import ExplanationComponent from '../components/questionelements/ExplanationComponent';
 import NotesComponent from '../components/questionelements/NoteComponent';
 import Comments from '../components/questionelements/Comments';
