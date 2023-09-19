@@ -8,46 +8,18 @@ import ExplanationComponent from '../components/questionelements/ExplanationComp
 import NotesComponent from '../components/questionelements/NoteComponent';
 import Comments from '../components/questionelements/Comments';
 import QuestionsMatrix from '../components/questionelements/QuestionsMatrix';
-import firebase from '../base';
+import app from '../base.js';
 
 const Question = () => {
 
 
-  // Get the user ID from your authentication system or wherever it's available
-  const userId = 'yourUserId'; // Replace with the actual user ID
-
-  // Create a reference to the Firebase database
-  const db = firebase.database();
-  const userProgressRef = db.ref(`userProgress/${userId}`); // Replace with the correct Firebase path
-
-  // Function to save user's progress data to Firebase
-  const saveUserProgress = () => {
-    userProgressRef.set({
-      currentQuestion,
-      selectedAnswer,
-    });
-  };
-
-  // Watch for changes in currentQuestion and selectedAnswer and save progress
-  useEffect(() => {
-    if (userId) {
-      saveUserProgress(); // Save the user's progress initially
-
-      // Save the user's progress whenever currentQuestion or selectedAnswer changes
-      const progressInterval = setInterval(() => {
-        saveUserProgress();
-      }, 10000); // Save every 10 seconds, adjust as needed
-
-      // Cleanup the interval when the component unmounts
-      return () => {
-        clearInterval(progressInterval);
-      };
-    }
-  }, [userId, currentQuestion, selectedAnswer]);
+  const [questions, setQuestions] = useState([]);
+  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [answeredQuestions, setAnsweredQuestions] = useState(new Array(questions.length).fill(null));
+  const [contentType, setContentType] = useState('question');
 
 
-
-  // Function to format time as HH:MM:SS
   const formatTime = (seconds) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
@@ -55,12 +27,6 @@ const Question = () => {
     return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const [questions, setQuestions] = useState([]);
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answeredQuestions, setAnsweredQuestions] = useState(new Array(questions.length).fill(null));
-
-  const [contentType, setContentType] = useState('question');
   const handleButtonClick = (buttonType) => {
     setContentType(buttonType);
   };
@@ -86,8 +52,7 @@ const Question = () => {
     fetchData();
   }, []);
 
-
-  return (
+    return (
     
     <div
       style={{

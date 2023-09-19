@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { TextField, Button, Typography, List, ListItem, ListItemText, Divider } from '@mui/material';
-import { database } from '../../base'; // Import the Firebase database instance
+import app from '../../base'; // Import the Firebase app
 
 const Comments = ({ questionId }) => {
   const [commentText, setCommentText] = useState('');
   const [comments, setComments] = useState([]);
 
   useEffect(() => {
-    // Fetch comments from Firebase when the component mounts
-    const commentsRef = database.ref(`comments/${questionId}`);
+    const commentsRef = app.database().ref(`comments/${questionId}`);
     commentsRef.on('value', (snapshot) => {
       if (snapshot.exists()) {
         const commentsData = snapshot.val();
@@ -19,7 +18,6 @@ const Comments = ({ questionId }) => {
       }
     });
 
-    // Clean up the Firebase listener when the component unmounts
     return () => {
       commentsRef.off();
     };
@@ -36,8 +34,7 @@ const Comments = ({ questionId }) => {
         timestamp: new Date().toLocaleString(),
       };
 
-      // Add the new comment to Firebase
-      const commentsRef = database.ref(`comments/${questionId}`);
+      const commentsRef = app.database().ref(`comments/${questionId}`);
       commentsRef.push(newComment);
 
       setCommentText('');
