@@ -58,7 +58,7 @@ const ExamQuestion = ({ questions, currentQuestion, setCurrentQuestion }) => {
               onClick={() => handleAnswerClick(key)}
               sx={{
                 marginBottom: '10px',
-                backgroundColor: selectedAnswer === key ? 'green' : 'white',
+                backgroundColor:'white',
               }}
             >
               <CardContent>

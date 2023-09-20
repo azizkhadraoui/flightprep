@@ -37,7 +37,13 @@ const QuestionsMatrix = () => {
   };
 
   return (
-    <Grid container spacing={5} justifyContent="center" alignItems="center">
+    <Grid
+      container
+      spacing={5}
+      justifyContent="center"
+      alignItems="center"
+      style={{ maxHeight: '100%', overflow: 'auto' }}
+    >
       {questions.map((question, index) => (
         <Grid item xs={12} md={2} key={index} style={{ marginTop: '3px', marginBottom: '3px' }}>
           <Button

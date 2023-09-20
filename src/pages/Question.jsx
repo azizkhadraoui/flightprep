@@ -218,41 +218,40 @@ const Question = () => {
             <img src="/compass.svg" alt="" />
             Flt Comp
           </Button>
-        </Box>
-            <div>
-            {contentType === 'question' && 
-              <QuestionComponent
-              questions={questions}
-              currentQuestion={currentQuestion}
-              setCurrentQuestion={setCurrentQuestion}
-            />            
-            }
-            {contentType === 'explanation' && 
-            <ExplanationComponent 
-            questions={questions} 
-            currentQuestion={currentQuestion}
-            />
-            }
-            {contentType === 'notes' &&
-              <NotesComponent 
-              questions={questions} 
-              currentQuestion={currentQuestion} 
-            />
-            }
-            {contentType === 'question' && (
-              <QuestionComponent
-              questions={questions}
-              currentQuestion={currentQuestion}
-              setCurrentQuestion={setCurrentQuestion}
-            />
-            )}
-            </div>
-        </div>
-        <div styles={{ marginRight : '20px', marginLeft: '20px'}}>
-          <QuestionsMatrix/>
+        </Box >
+        <div display="flex" justifyContent="space-between" alignItems="center" marginTop="20px" marginLeft="20px">
+  {contentType === 'question' && (
+    <QuestionComponent
+      questions={questions}
+      currentQuestion={currentQuestion}
+      setCurrentQuestion={setCurrentQuestion}
+    />
+  )}
+  {contentType === 'explanation' && (
+    <ExplanationComponent
+      questions={questions}
+      currentQuestion={currentQuestion}
+    />
+  )}
+  {contentType === 'notes' && (
+    <NotesComponent
+      questions={questions}
+      currentQuestion={currentQuestion}
+    />
+  )}
+  {contentType === 'question' && (
+    <QuestionComponent
+      questions={questions}
+      currentQuestion={currentQuestion}
+      setCurrentQuestion={setCurrentQuestion}
+    />
+  )}
+</div>
         </div>
       </div>
-      
+      <div styles={{ marginRight : '5px', marginLeft: '5px'}}>
+          <QuestionsMatrix/>
+      </div>
 </div>
 
   );

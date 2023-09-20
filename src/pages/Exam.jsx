@@ -72,7 +72,15 @@ const Exam = () => {
         // Cleanup the timer when the component unmounts
         return () => clearInterval(timer);
       }, [remainingTime, answeredQuestions, questions.length]);
-
+      const handleFinishTest = () => {
+        setRemainingTime(0); // Stop the timer
+        setShowResults(true); // Show results
+      
+        // Calculate the percentage of correctly answered questions
+        const correctCount = answeredQuestions.filter((answer) => answer === true).length;
+        const percentage = (correctCount / questions.length) * 100;
+        setCorrectlyAnsweredCount(percentage);
+      };
 
   return (
     
@@ -85,26 +93,6 @@ const Exam = () => {
       }}
     >
       <Navbar />
-      {showResults && (
-        <div
-          style={{
-            position: 'fixed',
-            top: '50%',
-            left: '50%',
-            transform: 'translate(-50%, -50%)',
-            backgroundColor: '#F1870C',
-            padding: '20px',
-            borderRadius: '10px',
-            boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)',
-            color: '#FFF',
-          }}
-        >
-          <Typography variant="h4">Time's up!</Typography>
-          <Typography variant="body1">
-            You answered {correctlyAnsweredCount.toFixed(2)}% of the questions correctly.
-          </Typography>
-        </div>
-      )}
       <div 
         style={{
             width: 500,
@@ -263,7 +251,7 @@ const Exam = () => {
             Flt Comp
           </Button>
         </Box>
-            <div>
+        <div display="flex" justifyContent="space-between" alignItems="center" marginTop="20px" marginLeft="20px">
             {contentType === 'question' && 
               <ExamQuestion
               questions={questions}
@@ -293,13 +281,58 @@ const Exam = () => {
             
             </div>
         </div>
-        <div styles={{ marginRight : '20px', marginLeft: '20px'}}>
-          <QuestionsMatrix/>
-        </div>
       </div>
-      
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+  <div
+    style={{
+      marginRight: '5px',
+      marginLeft: '5px',
+      width: '300px', // Adjust the width as needed
+      height: '400px', // Adjust the height as needed
+      overflow: 'auto',
+    }}
+  >
+    <Button
+      variant="contained"
+      onClick={handleFinishTest}
+      sx={{
+        color: '#FFF',
+        backgroundColor: '#F1870C',
+        fontFamily: 'Mulish',
+        fontSize: '16px',
+        fontWeight: 800,
+        '&:hover': {
+          backgroundColor: '#F1870C',
+        },
+      }}
+    >
+      Finish Test
+    </Button>
+    <QuestionsMatrix />
+  </div>
+  {showResults && (
+    <div
+      style={{
+        position: 'fixed',
+        top: '50%',
+        right: '50px', // Adjust the right position as needed
+        transform: 'translateY(-50%)',
+        backgroundColor: '#F1870C',
+        padding: '20px',
+        borderRadius: '10px',
+        boxShadow: '0 0 10px rgba(0, 0, 0, 0.5)',
+        color: '#FFF',
+      }}
+    >
+      <Typography variant="h4">Test Finished!</Typography>
+      <Typography variant="body1">
+        You answered {correctlyAnsweredCount.toFixed(2)}% of the questions correctly.
+      </Typography>
+    </div>
+  )}
 </div>
 
+    </div>
   );
 };
 
