@@ -8,6 +8,12 @@ import NotesComponent from '../components/questionelements/NoteComponent';
 import Comments from '../components/questionelements/Comments';
 import QuestionsMatrix from '../components/questionelements/QuestionsMatrix';
 import ExamQuestion from '../components/questionelements/ExamQuestion';
+import app from '../base';
+import { getFirestore, collection, getDocs, doc, setDoc} from 'firebase/firestore';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
+
+const db = getFirestore(app);
+const auth = getAuth(app);
 
 const Exam = () => {
     const formatTime = (seconds) => {
@@ -72,15 +78,111 @@ const Exam = () => {
         // Cleanup the timer when the component unmounts
         return () => clearInterval(timer);
       }, [remainingTime, answeredQuestions, questions.length]);
-      const handleFinishTest = () => {
+
+      const db = getFirestore(app);
+      const auth = getAuth(app);
+
+// Add this code to define currentUserId
+      const [currentUserId, setCurrentUserId] = useState(null);
+
+      useEffect(() => {
+         const unsubscribe = onAuthStateChanged(auth, (user) => {
+           if (user) {
+            setCurrentUserId(user.uid);
+          } else {
+            setCurrentUserId(null);
+          }
+        });
+        return () => unsubscribe();
+      }, []);
+
+
+
+      const handleFinishTest = async () => {
         setRemainingTime(0); // Stop the timer
-        setShowResults(true); // Show results
       
-        // Calculate the percentage of correctly answered questions
-        const correctCount = answeredQuestions.filter((answer) => answer === true).length;
-        const percentage = (correctCount / questions.length) * 100;
-        setCorrectlyAnsweredCount(percentage);
+        // Calculate the percentage of correctly answered questions from Firebase
+        if (!currentUserId) {
+          console.error('User not authenticated');
+          return;
+        }
+      
+        try {
+          const userChoicesCollection = collection(db, `users/${currentUserId}/user_choices`);
+          const userChoicesSnapshot = await getDocs(userChoicesCollection);
+      
+          // Calculate the percentage of correct answers
+          let correctCount = 0;
+      
+          userChoicesSnapshot.forEach((doc) => {
+            if (doc.data().isCorrect) {
+              correctCount++;
+            }
+          });
+      
+          const percentage = (correctCount / questions.length) * 100;
+          setCorrectlyAnsweredCount(percentage);
+          setShowResults(true); // Show results
+        } catch (error) {
+          console.error('Error calculating correct answers: ', error);
+        }
       };
+
+      const handlePinClick = async (questionId) => {
+        // Register the question in the "pinned" category
+        try {
+          const pinnedQuestionsRef = doc(db, 'pinned', questionId);
+          await setDoc(pinnedQuestionsRef, { questionId });
+          console.log('Question pinned successfully.');
+        } catch (error) {
+          console.error('Error pinning the question:', error);
+        }
+      };
+      const handleGreenFlagClick = async (questionId) => {
+        // Register the question in the "green_flagged" category
+        try {
+          const greenFlaggedQuestionsRef = doc(db, 'green_flagged', questionId);
+          await setDoc(greenFlaggedQuestionsRef, { questionId });
+          console.log('Question flagged with a green flag successfully.');
+        } catch (error) {
+          console.error('Error flagging the question with a green flag:', error);
+        }
+      };
+      const handleRedFlagClick = async (questionId) => {
+        // Register the question in the "red_flagged" category
+        try {
+          const redFlaggedQuestionsRef = doc(db, 'red_flagged', questionId);
+          await setDoc(redFlaggedQuestionsRef, { questionId });
+          console.log('Question flagged with a red flag successfully.');
+        } catch (error) {
+          console.error('Error flagging the question with a red flag:', error);
+        }
+      };
+      const handleYellowFlagClick = async (questionId) => {
+        // Register the question in the "yellow_flagged" category
+        try {
+          const yellowFlaggedQuestionsRef = doc(db, 'yellow_flagged', questionId);
+          await setDoc(yellowFlaggedQuestionsRef, { questionId });
+          console.log('Question flagged with a yellow flag successfully.');
+        } catch (error) {
+          console.error('Error flagging the question with a yellow flag:', error);
+        }
+      };
+      const handleNoClick = async (questionId) => {
+        // Register the question in the "dont_show" category
+        try {
+          const dontShowQuestionsRef = doc(db, 'dont_show', questionId);
+          await setDoc(dontShowQuestionsRef, { questionId });
+          console.log('Question marked as "don\'t show" successfully.');
+        } catch (error) {
+          console.error('Error marking the question as "don\'t show":', error);
+        }
+      };
+      
+      
+
+
+
 
   return (
     
@@ -98,29 +200,49 @@ const Exam = () => {
             width: 500,
             height: 60,
         }}>
-        <Box display="flex" justifyContent="space-between" alignItems="center" padding="20px" width="80%">
-          <Grid container alignItems="left">
-            <Grid item>
-              <Typography
-                variant="h6"
-                sx={{
-                  width: '200px',
-                  height: '20px',
-                  flexShrink: 0,
-                  color: '#F1870C',
-                  textAlign: 'center',
-                  fontFamily: 'Mulish',
-                  fontSize: '32px',
-                  fontWeight: 800,
-                }}
-              >
-                QN°{currentQuestion + 1}/{questions.length}
-              </Typography>
-            </Grid>
-            <Grid item>
-              <img src='/pin.svg' alt="Pin" style={{ marginRight: '8px' }} />
-            </Grid>
-          </Grid>
+        <Box display="flex" justifyContent="space-between" padding="20px" width="80%">
+        <Grid container alignItems="center">
+    <Typography
+      variant="h6"
+      sx={{
+        width: '200px',
+        height: '20px',
+        flexShrink: 0,
+        color: '#F1870C',
+        textAlign: 'center',
+        fontFamily: 'Mulish',
+        fontSize: '32px',
+        fontWeight: 800,
+        paddingRight: '20px', // Add padding to the right
+      }}
+    >
+      QN°{currentQuestion + 1}/{questions.length}
+    </Typography>
+  
+  <Grid item sx={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop:'40px' }}>
+  <Button style={{ width: '30px', height: '30px' }} onClick={handlePinClick}>
+  <img src='/pin.svg' alt="Pin" style={{ width: '100%', height: '100%' }} />
+</Button>
+
+<Button style={{ width: '30px', height: '30px' }} onClick={handleGreenFlagClick}>
+  <img src='/greenflag.svg' alt="Green Flag" style={{ width: '100%', height: '100%' }} />
+</Button>
+
+<Button style={{ width: '30px', height: '30px' }} onClick={handleYellowFlagClick}>
+  <img src='/yellowflag.svg' alt="Red Flag" style={{ width: '100%', height: '100%' }} />
+</Button>
+
+<Button style={{ width: '30px', height: '30px' }} onClick={handleRedFlagClick}>
+  <img src='/redflag.svg' alt="Yellow Flag" style={{ width: '100%', height: '100%' }} />
+</Button>
+
+<Button style={{ width: '30px', height: '30px' }} onClick={handleNoClick}>
+  <img src='/no.svg' alt="No" style={{ width: '100%', height: '100%' }} />
+</Button>
+
+  </Grid>
+</Grid>
+
           <Grid container alignItems="left" marginLeft={'500px'}>
             <Grid item>
               <img src='/clock.svg' alt="Clock" style={{ marginRight: '8px' }} />

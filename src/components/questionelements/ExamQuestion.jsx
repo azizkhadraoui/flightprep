@@ -29,7 +29,10 @@ const ExamQuestion = ({ questions, currentQuestion, setCurrentQuestion }) => {
       return;
     }
 
-    setSelectedAnswer(answerKey);
+    // Check if the selected answer is correct
+    const isCorrectAnswer = answerKey === questions[currentQuestion].correctAnswer;
+
+    // Store the user's answer in Firebase
     const questionId = questions[currentQuestion].id;
 
     try {
@@ -37,10 +40,13 @@ const ExamQuestion = ({ questions, currentQuestion, setCurrentQuestion }) => {
       await setDoc(userChoicesRef, {
         questionId: questionId,
         userChoice: answerKey,
+        isCorrect: isCorrectAnswer, // Store whether the answer is correct or not
       });
     } catch (error) {
       console.error('Error writing document: ', error);
     }
+
+    setSelectedAnswer(answerKey);
   };
 
   useEffect(() => {
@@ -53,18 +59,22 @@ const ExamQuestion = ({ questions, currentQuestion, setCurrentQuestion }) => {
         <div>
           <Typography variant="h6">{questions[currentQuestion]?.question}</Typography>
           {['A', 'B', 'C', 'D'].map((key) => (
-            <Card
+            <div
               key={key}
               onClick={() => handleAnswerClick(key)}
-              sx={{
-                marginBottom: '10px',
-                backgroundColor:'white',
+              style={{
+                backgroundColor: selectedAnswer === key ? 'orange' : 'white',
+                cursor: 'pointer',
               }}
             >
-              <CardContent>
-                <Typography variant="body1">{key}: {questions[currentQuestion][key]}</Typography>
-              </CardContent>
-            </Card>
+              <Card sx={{ marginBottom: '10px', backgroundColor: 'white' }}>
+                <CardContent>
+                  <Typography variant="body1">
+                    {key}: {questions[currentQuestion][key]}
+                  </Typography>
+                </CardContent>
+              </Card>
+            </div>
           ))}
         </div>
       ) : (
