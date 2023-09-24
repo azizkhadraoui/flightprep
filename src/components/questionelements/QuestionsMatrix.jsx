@@ -6,6 +6,7 @@ import axios from 'axios';
 const QuestionsMatrix = () => {
   const [questions, setQuestions] = useState([]);
   const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [pinnedQuestions, setPinnedQuestions] = useState([]); // Track pinned questions
 
   useEffect(() => {
     const fetchData = async () => {
@@ -21,40 +22,72 @@ const QuestionsMatrix = () => {
     fetchData();
   }, []);
 
-  const numRows = 6; // Number of rows
+  // Calculate the number of columns and rows based on the available questions
+  const numRows = 5; // Maximum of 5 rows
   const numCols = Math.ceil(questions.length / numRows); // Calculate number of columns
-  const totalQuestions = numRows * numCols;
 
   const goToQuestion = (questionNumber) => {
-    if (questionNumber >= 1 && questionNumber <= totalQuestions) {
+    if (questionNumber >= 1 && questionNumber <= questions.length) {
       setCurrentQuestion(questionNumber - 1); // Adjust for 0-based indexing
     }
   };
 
-  return (
-    <Grid container spacing={1}>
-      {Array.from({ length: totalQuestions }).map((_, index) => {
-        const row = Math.floor(index / numCols);
-        const col = index % numCols;
-        const questionIndex = row * numCols + col;
-        const questionNumber = questionIndex + 1;
+  const togglePin = (questionNumber) => {
+    if (pinnedQuestions.includes(questionNumber)) {
+      // If the question is already pinned, remove it
+      setPinnedQuestions((prevPinned) => prevPinned.filter((num) => num !== questionNumber));
+    } else {
+      // If the question is not pinned, add it to the pinned list
+      setPinnedQuestions((prevPinned) => [...prevPinned, questionNumber]);
+    }
+  };
 
-        return (
-          <Grid item xs={2} key={index} style={{ marginTop: '3px', marginBottom: '3px' }}>
-            <Button
-              onClick={() => goToQuestion(questionNumber)}
-              style={
-                questionIndex === currentQuestion
-                  ? { backgroundColor: 'orange' }
-                  : { backgroundColor: 'white' }
-              }
-            >
-              {questionNumber}
-            </Button>
-          </Grid>
-        );
-      })}
-    </Grid>
+  return (
+    <div>
+      <div>
+        {/* Render pinned questions */}
+        {pinnedQuestions.map((pinnedNumber) => (
+          <div key={pinnedNumber} style={{ border: '1px solid black', padding: '5px' }}>
+            {`Pinned Question ${pinnedNumber}`}
+          </div>
+        ))}
+      </div>
+      <Grid container spacing={1}>
+        {Array.from({ length: numRows }).map((_, row) => (
+          Array.from({ length: numCols }).map((_, col) => {
+            const questionIndex = row + col * numRows;
+            const questionNumber = questionIndex + 1;
+
+            if (questionIndex < questions.length) {
+              const isPinned = pinnedQuestions.includes(questionNumber);
+
+              return (
+                <Grid item xs={2} key={questionIndex}>
+                  <Button
+                    onClick={() => goToQuestion(questionNumber)}
+                    style={
+                      questionIndex === currentQuestion
+                        ? { backgroundColor: '#FFA500', color: '#FFFFFF' } // Orange
+                        : { backgroundColor: '#FFFFFF', color: '#000000' } // White
+                    }
+                  >
+                    {isPinned && (
+                      <span role="img" aria-label="Pinned" style={{ marginRight: '5px' }}>
+                        📌
+                      </span>
+                    )}
+                    {questionNumber}
+                  </Button>
+                  <Button onClick={() => togglePin(questionNumber)}>Pin</Button>
+                </Grid>
+              );
+            }
+
+            return null; // Return null for empty grid cells beyond the available questions
+          })
+        ))}
+      </Grid>
+    </div>
   );
 };
 

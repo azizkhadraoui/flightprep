@@ -1,0 +1,63 @@
+/* CircularDivs.css */
+
+.compass-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh; /* Adjust the height as needed */
+    background-color: #f0f0f0; /* You can change the background color */
+  }
+  
+  .layer1-container {
+    width: 931px;
+    height: 931px;
+    border-radius: 50%;
+    position: absolute;
+    transform-origin: center;
+  }
+  
+  .layer2-container {
+    width: 1077px;
+    height: 1077px;
+    border-radius: 50%;
+    position: absolute;
+    transform-origin: center;
+  }
+  
+  .layer3-container {
+    width: 1214px;
+    height: 1214px;
+    border-radius: 50%;
+    position: absolute;
+    transform-origin: center;
+  }
+  
+  .layer1 {
+    width: 931px;
+    height: 931px;
+    border-radius: 50%;
+    background-image: url('./1.png');
+    background-size: cover;
+    transform: rotate(0deg); /* Update the default rotation as needed */
+    transform-origin: center center;
+  }
+  
+  .layer2 {
+    width: 1077px;
+    height: 1077px;
+    border-radius: 50%;
+    background-image: url('./2.png');
+    background-size: cover;
+    transform: rotate(0deg); /* Update the default rotation as needed */
+    transform-origin: center center;
+  }
+  
+  .layer3 {
+    width: 1214px;
+    height: 1214px;
+    border-radius: 50%;
+    background-image: url('./3.png');
+    background-size: cover;
+    transform: rotate(0deg); /* Update the default rotation as needed */
+    transform-origin: center center;
+  }

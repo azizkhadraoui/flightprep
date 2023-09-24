@@ -15,6 +15,7 @@ import Question from "./pages/Question";
 import Contact from "./pages/Contact";
 import Subscription from "./pages/Subscription";
 import Exam from "./pages/Exam";
+import Dashboard from "./pages/Dashboard";
 
 const App = () => {
   return (
@@ -31,6 +32,7 @@ const App = () => {
           <Route exact path='/contact' component={Contact}/>
           <Route exact path='/subscription' component={Subscription}/>
           <Route exact path='/exam' component={Exam}/>
+          <Route exact path='/dashboard' component={Dashboard}/>
         </div>
       </Router>
     </AuthProvider>
