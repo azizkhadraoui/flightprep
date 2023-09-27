@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
 import { Stage, Layer, Line, Circle } from 'react-konva';
+import CircularDivs from './CR3';
+import StackedDivs from './E6B';
 
 const Canvas = () => {
   const [tool, setTool] = useState(null);
   const [lines, setLines] = useState([]);
   const [dots, setDots] = useState([]);
   const [currentLine, setCurrentLine] = useState(null);
+
+  const divsStyles = {
+    maxWidth: '80vw', // Set a maximum width
+    maxHeight: '80vh', // Set a maximum height
+  };
+  // State variables to manage visibility
   const [showCircularDivs, setShowCircularDivs] = useState(false);
   const [showStackedDivs, setShowStackedDivs] = useState(false);
 
@@ -100,6 +108,16 @@ const Canvas = () => {
         <button onClick={toggleCircularDivs}>Show Circular Divs</button>
         <button onClick={toggleStackedDivs}>Show Stacked Divs</button>
       </div>
+
+      {/* Render the CircularDivs component when the button is clicked */}
+      {showCircularDivs && (
+        <div className="circular-div" style={divsStyles}><CircularDivs /></div>
+      )}
+
+      {/* Render the StackedDivs component when the button is clicked */}
+      {showStackedDivs && (
+        <div className="stacked-div" style={divsStyles}><StackedDivs /></div>
+      )}
     </div>
   );
 };

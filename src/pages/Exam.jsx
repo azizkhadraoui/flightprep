@@ -13,6 +13,7 @@ import { getFirestore, collection, getDocs, doc, setDoc, addDoc, serverTimestamp
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { useLocation } from 'react-router-dom';
 import FlightComp from '../components/questionelements/compass/FlightComp';
+import Canvas from '../components/questionelements/compass/Canvas';
 
 const db = getFirestore(app);
 const auth = getAuth(app);
@@ -56,7 +57,7 @@ const Exam = () => {
           try {
             // Make an API request to fetch questions for the selected subtopic
             // You can pass selectedSubtopicId to the API to filter questions
-            const response = await axios.get(`http://localhost:8800/questions?subtopic=${selectedSubtopicId}`);
+            const response = await axios.get(`http://localhost:8800/data`);
             const data = response.data;
             setQuestions(data);
           } catch (error) {
@@ -237,7 +238,15 @@ const Exam = () => {
       
       
 
+      const [showFlightComp, setShowFlightComp] = useState(false);
 
+      const openFlightComp = () => {
+        setShowFlightComp(true);
+      };
+    
+      const closeFlightComp = () => {
+        setShowFlightComp(false);
+      };
 
 
   return (
@@ -413,7 +422,7 @@ const Exam = () => {
           </Button>
           <Button
             variant="text"
-            onClick={() => handleButtonClick('fltComp')}
+            onClick={openFlightComp}
             sx={{
                 color: '#FFF',
                 fontFamily: 'Mulish',
@@ -456,9 +465,6 @@ const Exam = () => {
               setCurrentQuestion={setCurrentQuestion}
             />
             )}
-            {contentType === 'fltComp' && 
-            <FlightComp/>
-            }
             </div>
         </div>
       </div>
@@ -511,7 +517,23 @@ const Exam = () => {
     </div>
   )}
 </div>
-
+<div>
+{showFlightComp && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent black background
+            zIndex: 9999, // Ensure it's above other content
+          }}
+        >
+        <Canvas/>
+        </div>
+      )}
+</div>
     </div>
   );
 };
