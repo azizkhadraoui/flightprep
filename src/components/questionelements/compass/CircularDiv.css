@@ -54,7 +54,7 @@
   
   .layer3 {
     width: 1214px;
-    height: 1214px;
+    height: 100px;
     border-radius: 50%;
     background-image: url('./3.png');
     background-size: cover;

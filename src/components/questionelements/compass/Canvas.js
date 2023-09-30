@@ -66,8 +66,8 @@ const Canvas = () => {
       <div className="canvas-container">
         {/* Render the canvas */}
         <Stage
-          width={window.innerWidth}
-          height={window.innerHeight}
+          width={300}
+          height={300}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
           onMouseUp={handleMouseUp}
