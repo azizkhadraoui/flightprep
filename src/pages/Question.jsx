@@ -239,19 +239,18 @@ const Question = () => {
       currentQuestion={currentQuestion}
     />
   )}
-  {contentType === 'question' && (
-    <QuestionComponent
-      questions={questions}
-      currentQuestion={currentQuestion}
-      setCurrentQuestion={setCurrentQuestion}
-    />
-  )}
+  {contentType === 'comments' && (
+              <Comments
+              questions={questions}
+              currentQuestion={currentQuestion}
+              setCurrentQuestion={setCurrentQuestion}
+            />
+            )}
+  
 </div>
         </div>
       </div>
-      <div styles={{ marginRight : '5px', marginLeft: '5px'}}>
-          <QuestionsMatrix/>
-      </div>
+      
 </div>
 
   );

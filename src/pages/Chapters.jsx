@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import Navbar from '../components/navbar/Navbar';
-import {Link} from 'react-router-dom'
 import { Box, Collapse, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableRow, Typography } from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import Slider from '@mui/material/Slider';
+import { useHistory } from 'react-router-dom';
 
 const rows = [
   { chapter: 1, lessons: ["Lesson 1", "Lesson 2", "Lesson 3", "Lesson 4", "Lesson 5"] },
@@ -22,6 +22,14 @@ const Chapters = () => {
   const handleSliderChange = (event, newValue) => {
     setLessonsToShow(newValue);
   };
+
+  const history = useHistory();
+
+  const handleSubtopicClick = (subtopicId) => {
+    // Navigate to the Exam component with the selected subtopic ID as a parameter
+    history.push(`/exam?subtopic=${subtopicId}`);
+  };
+
   return (
     <div
       style={{
@@ -74,7 +82,7 @@ const Chapters = () => {
                             Lessons
                           </Typography>
                           {row.lessons.map(lesson => (
-                            <Typography><Link to="/questions">{lesson}</Link></Typography>
+                            <Typography onClick={handleSubtopicClick}>{lesson}</Typography>
                           ))}
                         </Box>
                       </Collapse>

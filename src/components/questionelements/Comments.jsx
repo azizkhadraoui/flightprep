@@ -1,27 +1,30 @@
 import { useState, useEffect } from 'react';
 import { TextField, Button, Typography, List, ListItem, ListItemText, Divider } from '@mui/material';
-import app from '../../base'; // Import the Firebase app
+import app from '../../base';
+import { getFirestore, doc, setDoc, getDoc } from 'firebase/firestore';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
-const Comments = ({ questionId }) => {
+
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+const Comments = ({ questions, currentQuestion, setCurrentQuestion }) => {
+  const [currentUserId, setCurrentUserId] = useState(null);
   const [commentText, setCommentText] = useState('');
   const [comments, setComments] = useState([]);
-
   useEffect(() => {
-    const commentsRef = app.database().ref(`comments/${questionId}`);
-    commentsRef.on('value', (snapshot) => {
-      if (snapshot.exists()) {
-        const commentsData = snapshot.val();
-        const commentsArray = Object.values(commentsData);
-        setComments(commentsArray);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setCurrentUserId(user.uid);
       } else {
-        setComments([]);
+        setCurrentUserId(null);
       }
     });
 
-    return () => {
-      commentsRef.off();
-    };
-  }, [questionId]);
+    return () => unsubscribe();
+  }, []);
+
+
 
   const handleCommentTextChange = (event) => {
     setCommentText(event.target.value);
@@ -34,8 +37,14 @@ const Comments = ({ questionId }) => {
         timestamp: new Date().toLocaleString(),
       };
 
-      const commentsRef = app.database().ref(`comments/${questionId}`);
-      commentsRef.push(newComment);
+      const questionId=questions[currentQuestion].id;
+      console.log(questionId)
+      const commentsRef = doc(db, `users/${currentUserId}/comments`, questionId);
+      const commentsDoc =  getDoc(commentsRef);
+        // Document doesn't exist, so create it
+          setDoc(commentsRef, {
+          comment: commentText, // Store whether the answer is correct or not
+        });
 
       setCommentText('');
     }

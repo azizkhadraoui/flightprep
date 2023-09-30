@@ -9,13 +9,18 @@ import Comments from '../components/questionelements/Comments';
 import QuestionsMatrix from '../components/questionelements/QuestionsMatrix';
 import ExamQuestion from '../components/questionelements/ExamQuestion';
 import app from '../base';
-import { getFirestore, collection, getDocs, doc, setDoc} from 'firebase/firestore';
+import { getFirestore, collection, getDocs, doc, setDoc, addDoc, serverTimestamp, getDoc} from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { useLocation } from 'react-router-dom';
+import FlightComp from '../components/questionelements/compass/FlightComp';
+import Canvas from '../components/questionelements/compass/Canvas';
 
 const db = getFirestore(app);
 const auth = getAuth(app);
-
 const Exam = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const selectedSubtopicId = queryParams.get('subtopic');
     const formatTime = (seconds) => {
         const hours = Math.floor(seconds / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);
@@ -37,6 +42,8 @@ const Exam = () => {
     
       const [showResults, setShowResults] = useState(false); // Whether to show results
       const [correctlyAnsweredCount, setCorrectlyAnsweredCount] = useState(0);
+      //const questionId = questions[currentQuestion].id;
+
     
       const handleNextQuestion = () => {
         if (currentQuestion < questions.length - 1) {
@@ -46,18 +53,22 @@ const Exam = () => {
       };
     
       useEffect(() => {
+        // Fetch questions based on the selected subtopic ID
         const fetchData = async () => {
           try {
-            const response = await axios.get('http://localhost:8800/data');
+            // Make an API request to fetch questions for the selected subtopic
+            // You can pass selectedSubtopicId to the API to filter questions
+            const response = await axios.get(`http://localhost:8800/data`);
             const data = response.data;
             setQuestions(data);
           } catch (error) {
             console.error('Error fetching data from the API:', error);
           }
         };
+
     
         fetchData();
-      }, []);
+      }, [selectedSubtopicId]);
     
       // Use setInterval to update the remaining time every second
       useEffect(() => {
@@ -99,89 +110,156 @@ const Exam = () => {
 
 
       const handleFinishTest = async () => {
-        setRemainingTime(0); // Stop the timer
-      
-        // Calculate the percentage of correctly answered questions from Firebase
-        if (!currentUserId) {
-          console.error('User not authenticated');
-          return;
-        }
-      
         try {
+          if (!currentUserId) {
+            console.error('User not authenticated');
+            return;
+          }
+      
           const userChoicesCollection = collection(db, `users/${currentUserId}/user_choices`);
           const userChoicesSnapshot = await getDocs(userChoicesCollection);
       
-          // Calculate the percentage of correct answers
-          let correctCount = 0;
+          const correctCount = userChoicesSnapshot.docs.reduce((count, doc) => {
+            const data = doc.data();
+            return data.isCorrect ? count + 1 : count;
+          }, 0);
       
-          userChoicesSnapshot.forEach((doc) => {
-            if (doc.data().isCorrect) {
-              correctCount++;
-            }
-          });
+          const totalQuestions = userChoicesSnapshot.size;
+          const percentage = (correctCount / totalQuestions) * 100;
       
-          const percentage = (correctCount / questions.length) * 100;
-          setCorrectlyAnsweredCount(percentage);
+          setCorrectlyAnsweredCount(percentage); // Set the percentage of correct answers
           setShowResults(true); // Show results
+      
+          // Prepare data for the result document
+          const examResult = {
+            subtopicName: 'YourSubtopicName', // Replace with the actual subtopic name
+            date: serverTimestamp(),
+            result: percentage,
+          };
+      
+          // Check if a document for this subtopic already exists, and if not, create it
+          const resultsCollection = collection(db, 'results');
+          const subtopicDoc = await getDoc(resultsCollection.doc(examResult.subtopicName));
+      
+          if (!subtopicDoc.exists()) {
+            await addDoc(resultsCollection.doc(examResult.subtopicName), examResult);
+          } else {
+            console.log('Document already exists for this subtopic.');
+          }
         } catch (error) {
-          console.error('Error calculating correct answers: ', error);
+          console.error('Error calculating correct answers or saving results: ', error);
         }
       };
+      
 
       const handlePinClick = async (questionId) => {
-        // Register the question in the "pinned" category
         try {
-          const pinnedQuestionsRef = doc(db, 'pinned', questionId);
-          await setDoc(pinnedQuestionsRef, { questionId });
-          console.log('Question pinned successfully.');
+          const questionId=questions[currentQuestion].id;
+          const pinFlaggedQuestionsRef = doc(db, `users/${currentUserId}/pinned`, questionId);
+          const pinFlaggedQuestionsDoc = await getDoc(pinFlaggedQuestionsRef);
+      
+          if (!pinFlaggedQuestionsDoc.exists()) {
+            await setDoc(pinFlaggedQuestionsRef, {
+              questionId: questionId,
+            });
+            console.log('Question pinned successfully.');
+          } else {
+            console.log('Question is already pinned.');
+          }
         } catch (error) {
           console.error('Error pinning the question:', error);
         }
       };
+      
       const handleGreenFlagClick = async (questionId) => {
-        // Register the question in the "green_flagged" category
         try {
-          const greenFlaggedQuestionsRef = doc(db, 'green_flagged', questionId);
-          await setDoc(greenFlaggedQuestionsRef, { questionId });
-          console.log('Question flagged with a green flag successfully.');
+          const questionId=questions[currentQuestion].id;
+          const greenFlaggedQuestionsRef = doc(db, `users/${currentUserId}/greenFlagged`, questionId);
+          const greenFlaggedQuestionsDoc = await getDoc(greenFlaggedQuestionsRef);
+      
+          if (!greenFlaggedQuestionsDoc.exists()) {
+            await setDoc(greenFlaggedQuestionsRef, {
+              questionId: questionId,
+            });
+            console.log('Question flagged with a green flag successfully.');
+          } else {
+            console.log('Question is already flagged with a green flag.');
+          }
         } catch (error) {
           console.error('Error flagging the question with a green flag:', error);
         }
       };
+      
+      
       const handleRedFlagClick = async (questionId) => {
-        // Register the question in the "red_flagged" category
         try {
-          const redFlaggedQuestionsRef = doc(db, 'red_flagged', questionId);
-          await setDoc(redFlaggedQuestionsRef, { questionId });
-          console.log('Question flagged with a red flag successfully.');
+          const questionId=questions[currentQuestion].id;
+          const redFlaggedQuestionsRef = doc(db, `users/${currentUserId}/redFlagged`, questionId);
+          const redFlaggedQuestionsDoc = await getDoc(redFlaggedQuestionsRef);
+      
+          if (!redFlaggedQuestionsDoc.exists()) {
+            await setDoc(redFlaggedQuestionsRef, {
+              questionId: questionId,
+            });
+            console.log('Question flagged with a red flag successfully.');
+          } else {
+            console.log('Question is already flagged with a red flag.');
+          }
         } catch (error) {
           console.error('Error flagging the question with a red flag:', error);
         }
       };
+      
       const handleYellowFlagClick = async (questionId) => {
-        // Register the question in the "yellow_flagged" category
         try {
-          const yellowFlaggedQuestionsRef = doc(db, 'yellow_flagged', questionId);
-          await setDoc(yellowFlaggedQuestionsRef, { questionId });
-          console.log('Question flagged with a yellow flag successfully.');
+          const questionId=questions[currentQuestion].id;
+          const yellowFlaggedQuestionsRef = doc(db, `users/${currentUserId}/yellowFlagged`, questionId);
+          const yellowFlaggedQuestionsDoc = await getDoc(yellowFlaggedQuestionsRef);
+      
+          if (!yellowFlaggedQuestionsDoc.exists()) {
+            await setDoc(yellowFlaggedQuestionsRef, {
+              questionId: questionId,
+            });
+            console.log('Question flagged with a yellow flag successfully.');
+          } else {
+            console.log('Question is already flagged with a yellow flag.');
+          }
         } catch (error) {
           console.error('Error flagging the question with a yellow flag:', error);
         }
       };
+      
       const handleNoClick = async (questionId) => {
-        // Register the question in the "dont_show" category
         try {
-          const dontShowQuestionsRef = doc(db, 'dont_show', questionId);
-          await setDoc(dontShowQuestionsRef, { questionId });
-          console.log('Question marked as "don\'t show" successfully.');
+          const questionId=questions[currentQuestion].id;
+          const dontFlaggedQuestionsRef = doc(db, `users/${currentUserId}/dont`, questionId);
+          const dontFlaggedQuestionsDoc = await getDoc(dontFlaggedQuestionsRef);
+      
+          if (!dontFlaggedQuestionsDoc.exists()) {
+            await setDoc(dontFlaggedQuestionsRef, {
+              questionId: questionId,
+            });
+            console.log('Question marked as "don\'t show" successfully.');
+          } else {
+            console.log('Question is already marked as "don\'t show".');
+          }
         } catch (error) {
           console.error('Error marking the question as "don\'t show":', error);
         }
       };
       
       
+      
 
+      const [showFlightComp, setShowFlightComp] = useState(false);
 
+      const openFlightComp = () => {
+        setShowFlightComp(true);
+      };
+    
+      const closeFlightComp = () => {
+        setShowFlightComp(false);
+      };
 
 
   return (
@@ -357,7 +435,7 @@ const Exam = () => {
           </Button>
           <Button
             variant="text"
-            onClick={() => handleButtonClick('fltComp')}
+            onClick={openFlightComp}
             sx={{
                 color: '#FFF',
                 fontFamily: 'Mulish',
@@ -400,7 +478,6 @@ const Exam = () => {
               setCurrentQuestion={setCurrentQuestion}
             />
             )}
-            
             </div>
         </div>
       </div>
@@ -430,7 +507,10 @@ const Exam = () => {
     >
       Finish Test
     </Button>
-    <QuestionsMatrix />
+    <QuestionsMatrix 
+    currentQuestion={currentQuestion} 
+    setCurrentQuestion={setCurrentQuestion} />
+
   </div>
   {showResults && (
     <div
@@ -453,7 +533,23 @@ const Exam = () => {
     </div>
   )}
 </div>
-
+<div>
+{showFlightComp && (
+        <div
+          style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent black background
+            zIndex: 9999, // Ensure it's above other content
+          }}
+        >
+        <Canvas/>
+        </div>
+      )}
+</div>
     </div>
   );
 };

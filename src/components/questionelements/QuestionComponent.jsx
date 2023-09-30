@@ -4,6 +4,8 @@ import app from '../../base.js';
 import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import questionAnnexes from '../../components/questionelements/annexes/annexes.js';
+import QuestionsMatrix from './QuestionsMatrix';
+
 
 const db = getFirestore(app);
 const auth = getAuth(app);
@@ -60,6 +62,9 @@ const QuestionComponent = ({ questions, currentQuestion, setCurrentQuestion }) =
 
   return (
     <div>
+      <QuestionsMatrix 
+        currentQuestion={currentQuestion} 
+        setCurrentQuestion={setCurrentQuestion} />
       {questions.length > 0 ? (
         <div>
           <Typography variant="h6">{questions[currentQuestion]?.question}</Typography>
@@ -94,6 +99,7 @@ const QuestionComponent = ({ questions, currentQuestion, setCurrentQuestion }) =
       ) : (
         <Typography variant="h6">Loading...</Typography>
       )}
+   
     </div>
   );
 };
