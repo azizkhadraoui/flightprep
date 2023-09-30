@@ -1,8 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Draggable from 'react-draggable';
 import './CircularDiv.css';
 
 const CircularDivs = () => {
+  const divRef = useRef(null);
+  const [divSize, setDivSize] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    if (divRef.current) {
+      setDivSize({
+        width: divRef.current.offsetWidth,
+        height: divRef.current.offsetHeight,
+      });
+    }
+  }, []);
   const [rotation1, setRotation1] = useState(0);
   const [rotation2, setRotation2] = useState(0);
   const [rotation3, setRotation3] = useState(0);
@@ -28,7 +39,7 @@ const CircularDivs = () => {
   };
 
   return (
-    <div className="circular-div">
+    <div className="circular-div" ref={divRef} style={{ width: '100%', height: '100%' }}>
       <div className="compass-container">
         <div
           className="layer3-container"

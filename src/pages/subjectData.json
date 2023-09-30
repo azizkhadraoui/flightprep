@@ -1,0 +1,176 @@
+[
+    {
+        "Code": 10,
+        "Name": "Airlaw",
+        "Subtopics": [
+            { "ID": 1, "Name": "International Law: Conventions, Agreements and Organisations" },
+            { "ID": 2, "Name": "Airworthiness of Aircraft, Aircraft Nationality and Registration Marks" },
+            { "ID": 3, "Name": "Personnel Licensing" },
+            { "ID": 4, "Name": "Rules of the Air According to ICAO Annex 2 and SERA" },
+            { "ID": 5, "Name": "Aircraft Operations" },
+            { "ID": 6, "Name": "Air Traffic Services (ATS) and Air Traffic Management (ATM)" },
+            { "ID": 7, "Name": "Aeronautical Information Service (AIS)" },
+            { "ID": 8, "Name": "Aerodromes" },
+            { "ID": 9, "Name": "Facilitation (ICAO Annex 9)" },
+            { "ID": 10, "Name": "Search and Rescue (SAR)" },
+            { "ID": 11, "Name": "Security – Safeguarding International Civil Aviation against Acts of Unlawful Interference (ICAO Annex 17)" },
+            { "ID": 12, "Name": "Aircraft Accident and Incident Investigation" }
+        ]
+    },
+    {
+        "Code": 21,
+        "Name": "Airframes Systems",
+        "Subtopics": [
+            { "ID": 1, "Name": "System Design, Loads, Stresses, Maintenance" },
+            { "ID": 2, "Name": "Airframe" },
+            { "ID": 3, "Name": "Hydraulics" },
+            { "ID": 4, "Name": "Landing Gear, Wheels, Tyres, Brakes" },
+            { "ID": 5, "Name": "Flight Controls" },
+            { "ID": 6, "Name": "Pneumatics – Pressurisation and Air Conditioning Systems" },
+            { "ID": 7, "Name": "Anti-icing and De-icing Systems" },
+            { "ID": 8, "Name": "Fuel System" },
+            { "ID": 9, "Name": "Electrics" },
+            { "ID": 10, "Name": "Piston Engines" },
+            { "ID": 11, "Name": "Turbine Engines" },
+            { "ID": 12, "Name": "Protection and Detection Systems" },
+            { "ID": 13, "Name": "Oxygen Systems" }
+        ]
+    },
+    {
+        "Code": 22,
+        "Name": "Instrumentation",
+        "Subtopics": [
+            { "ID": 1, "Name": "Sensors and Instruments" },
+            { "ID": 2, "Name": "Measurement of Air Data Parameters" },
+            { "ID": 3, "Name": "Magnetism – Direct Reading Compass and Flux Valve" },
+            { "ID": 4, "Name": "Gyroscopic Instruments" },
+            { "ID": 5, "Name": "Inertial Navigation" },
+            { "ID": 6, "Name": "Aeroplane: Automatic Flight Control Systems" },
+            { "ID": 7, "Name": "Trims – Yaw Damper – Flight Envelope Protection" },
+            { "ID": 8, "Name": "Autothrust – Automatic Thrust Control System" },
+            { "ID": 9, "Name": "Communication Systems" },
+            { "ID": 10, "Name": "Flight Management System (FMS)/Flight Management and Guidance System (FMGS)" },
+            { "ID": 11, "Name": "Alerting Systems, Proximity Systems" },
+            { "ID": 12, "Name": "Integrated Instruments – Electronic Displays" },
+            { "ID": 13, "Name": "Maintenance, Monitoring and Recording Systems" },
+            { "ID": 14, "Name": "Digital Circuits and Computers" }
+        ]
+    },
+    {
+        "Code": 31,
+        "Name": "Mass Balance",
+        "Subtopics": [
+            { "ID": 1, "Name": "General" },
+            { "ID": 2, "Name": "C2-23/Applicable Operational Requirements Performance Class B - Theory" },
+            { "ID": 3, "Name": "Magnetism – Direct Reading Compass and Flux Valve" },
+            { "ID": 4, "Name": "Gyroscopic Instruments" },
+            { "ID": 5, "Name": "Inertial Navigation" }
+        ]
+    },
+    {
+        "Code": 32,
+        "Name": "Performance",
+        "Subtopics": [
+            { "ID": 1, "Name": "General" },
+            { "ID": 2, "Name": "C2-23/Applicable Operational Requirements Performance Class B - Theory" },
+            { "ID": 3, "Name": "CS-23/Applicable Operational Requirements Performance Class B – Use of Aeroplane Performance Data for Single- and Multi-engine Aeroplanes" },
+            { "ID": 4, "Name": "CS-25/Applicable Operational Requirements Performance Class A – Theory" },
+            { "ID": 5, "Name": "CS-25/Applicable Operational Requirements Performance Class A – Use of Aeroplane Performance Data" }
+        ]
+    },
+    {
+        "Code": 33,
+        "Name": "Flight Planning Monitoring",
+        "Subtopics": [
+            { "ID": 1, "Name": "Flight Planning for VFR Flights" },
+            { "ID": 2, "Name": "Flight Planning for IFR Flights" },
+            { "ID": 3, "Name": "Fuel Planning – CAT.OP.MPA.106 and CAT.OP.MPA.150 plus AMC1, 2 and 3" },
+            { "ID": 4, "Name": "Pre-Flight Preparation" },
+            { "ID": 5, "Name": "ICAO Flight Plan (ATS Flight Plan (FPL))" },
+            { "ID": 6, "Name": "Flight Monitoring and In-flight Re-planning" }
+        ]
+    },
+    {
+        "Code": 40,
+        "Name": "Human Performance Limitations",
+        "Subtopics": [
+            { "ID": 1, "Name": "Human Factors: Basic Concepts" },
+            { "ID": 2, "Name": "Basics of Aviation Physiology and Health Maintenance" },
+            { "ID": 3, "Name": "Basic Aviation Psychology" }
+        ]
+    },
+    {
+        "Code": 50,
+        "Name": "Meteorology",
+        "Subtopics": [
+            { "ID": 1, "Name": "The Atmosphere" },
+            { "ID": 2, "Name": "Wind" },
+            { "ID": 3, "Name": "Thermodynamics" },
+            { "ID": 4, "Name": "Clouds and Fog" },
+            { "ID": 5, "Name": "Precipitation" },
+            { "ID": 6, "Name": "Air Masses and Fronts" },
+            { "ID": 7, "Name": "Pressure Systems" },
+            { "ID": 8, "Name": "Climatology" },
+            { "ID": 9, "Name": "Flight Hazards" },
+            { "ID": 10, "Name": "Meteorological Information" }
+        ]
+    },
+    {
+        "Code": 61,
+        "Name": "General Navigation",
+        "Subtopics": [
+            { "ID": 1, "Name": "Basics of Navigation" },
+            { "ID": 2, "Name": "Visual Flight Rule (VFR) Navigation" },
+            { "ID": 3, "Name": "Great Circles and Rhumb Lines" },
+            { "ID": 4, "Name": "Charts" },
+            { "ID": 5, "Name": "Time" }
+        ]
+    },
+    {
+        "Code": 62,
+        "Name": "Radio Navigation",
+        "Subtopics": [
+            { "ID": 1, "Name": "Basic Radio Propagation Theory" },
+            { "ID": 2, "Name": "Radio Ads" },
+            { "ID": 3, "Name": "Radar" },
+            { "ID": 4, "Name": "Global Navigation Satellite Systems (GNSSs)" },
+            { "ID": 5, "Name": "Performance Based Navigation (PBN)" }
+        ]
+    },
+    {
+        "Code": 71,
+        "Name": "Operational Procedures",
+        "Subtopics": [
+            { "ID": 1, "Name": "General Requirements" },
+            { "ID": 2, "Name": "Special Operational Procedures and Hazards (General Aspects)" },
+            { "ID": 3, "Name": "Specialised Operations" }
+        ]
+    },
+    {
+        "Code": 81,
+        "Name": "Principles of Flight",
+        "Subtopics": [
+            { "ID": 1, "Name": "General Requirements" },
+            { "ID": 2, "Name": "Special Operational Procedures and Hazards (General Aspects)" },
+            { "ID": 3, "Name": "Specialised Operations" },
+            { "ID": 4, "Name": "Stability" },
+            { "ID": 5, "Name": "Control" },
+            { "ID": 6, "Name": "Limitations" },
+            { "ID": 7, "Name": "Propellers" },
+            { "ID": 8, "Name": "Flight Mechanics" }
+        ]
+    },
+    {
+        "Code": 90,
+        "Name": "Communications",
+        "Subtopics": [
+            { "ID": 1, "Name": "Concepts" },
+            { "ID": 2, "Name": "General Operating Procedures" },
+            { "ID": 3, "Name": "Relevant Weather Information" },
+            { "ID": 4, "Name": "Voice Communication Failure" },
+            { "ID": 5, "Name": "Distress and Urgency Procedures" },
+            { "ID": 6, "Name": "VHF Propagation and Allocation of Frequencies" },
+            { "ID": 7, "Name": "Other Communications" }
+        ]
+    }
+]

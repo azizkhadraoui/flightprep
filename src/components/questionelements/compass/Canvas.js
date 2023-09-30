@@ -1,18 +1,25 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Stage, Layer, Line, Circle } from 'react-konva';
 import CircularDivs from './CR3';
 import StackedDivs from './E6B';
 
 const Canvas = () => {
+  const containerRef = useRef(null);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
+
+  useEffect(() => {
+    if (containerRef.current) {
+      setDimensions({
+        width: containerRef.current.offsetWidth,
+        height: containerRef.current.offsetHeight,
+      });
+    }
+  }, []);
   const [tool, setTool] = useState(null);
   const [lines, setLines] = useState([]);
   const [dots, setDots] = useState([]);
   const [currentLine, setCurrentLine] = useState(null);
 
-  const divsStyles = {
-    maxWidth: '80vw', // Set a maximum width
-    maxHeight: '80vh', // Set a maximum height
-  };
   // State variables to manage visibility
   const [showCircularDivs, setShowCircularDivs] = useState(false);
   const [showStackedDivs, setShowStackedDivs] = useState(false);
@@ -66,12 +73,11 @@ const Canvas = () => {
       <div className="canvas-container">
         {/* Render the canvas */}
         <Stage
-          width={300}
-          height={300}
+          width={window.innerWidth}
+          height={window.innerHeight}
           onMouseDown={handleMouseDown}
           onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-        >
+          onMouseUp={handleMouseUp}>
           <Layer>
             {lines.map((line, i) => (
               <Line
@@ -111,12 +117,12 @@ const Canvas = () => {
 
       {/* Render the CircularDivs component when the button is clicked */}
       {showCircularDivs && (
-        <div className="circular-div" style={divsStyles}><CircularDivs /></div>
+        <div className="circular-div" ><CircularDivs /></div>
       )}
 
       {/* Render the StackedDivs component when the button is clicked */}
       {showStackedDivs && (
-        <div className="stacked-div" style={divsStyles}><StackedDivs /></div>
+        <div className="stacked-div"><StackedDivs /></div>
       )}
     </div>
   );

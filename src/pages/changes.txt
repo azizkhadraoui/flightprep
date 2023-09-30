@@ -1,2 +1,0 @@
-font : Mulich(ExtraBold) => weight: 650
-
