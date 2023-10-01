@@ -1,5 +1,5 @@
 import React from 'react';
-import Navbar from '../components/navbar/Navbar';
+import Navbar2 from '../components/navbar/Navbar2';
 import {} from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Chart from 'react-apexcharts';
@@ -33,7 +33,7 @@ const Dashboard = () => {
         height: '100vh',
       }}
     >
-      <Navbar />
+      <Navbar2 />
       <div style={{ display: 'flex', flexDirection: 'row' }}>
       <div style={{ width: '309px', height: '284px', flexShrink: 0, border: '1px solid rgba(255, 255, 255, 0.00)', background: '#001F70',cursor: 'pointer', }}>
       <Typography 
