@@ -3,8 +3,10 @@ import Navbar2 from '../components/navbar/Navbar2';
 import {} from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Chart from 'react-apexcharts';
+import { useHistory } from 'react-router-dom';
 
 const Dashboard = () => {
+    const history = useHistory();
     const options = {
         chart: {
           id: 'basic-line-chart'
@@ -262,37 +264,39 @@ const Dashboard = () => {
 </div>
 <div style={{ display: 'flex', flexDirection: 'row', marginTop: '25px' }}>
   {/* First set of divs */}
-  <div style={{ display: 'flex', flexWrap: 'wrap', width: '654px',cursor: 'pointer', }}>
-  {[
-    'Packages',
-    'My Profile',
-    'Reset Flags',
-    'Give Feedback',
-    'Questions Feedback',
-    'Annexes',
-    'News',
-    'Contact',
-  ].map((text, index) => (
-    <div
-      key={index}
-      style={{
-        width: 'calc(33.33% - 20px)', // 3 columns with 20px margin between them
-        height: '121px',
-        flexShrink: 0,
-        background: '#001F70',
-        margin: '0 20px 20px 0', // 20px margin between columns, 20px margin below rows
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        fontFamily: 'Mulish',
-        fontSize: '16px',
-        color: '#FFF',
-      }}
-    >
-      {text}
-    </div>
-  ))}
-  </div>
+  <div style={{ display: 'flex', flexWrap: 'wrap', width: '654px' }}>
+        {[
+          { text: 'Packages', route: '/packages' },
+          { text: 'My Profile', route: '/profile' },
+          { text: 'Reset Flags', route: '/reset-flags' },
+          { text: 'Give Feedback', route: '/give-feedback' },
+          { text: 'Questions Feedback', route: '/questions-feedback' },
+          { text: 'Annexes', route: '/annexes' },
+          { text: 'News', route: '/news' },
+          { text: 'Contact', route: '/contact' },
+        ].map((item, index) => (
+          <div
+            key={index}
+            style={{
+              width: 'calc(33.33% - 20px)', // 3 columns with 20px margin between them
+              height: '121px',
+              flexShrink: 0,
+              background: '#001F70',
+              margin: '0 20px 20px 0', // 20px margin between columns, 20px margin below rows
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              fontFamily: 'Mulish',
+              fontSize: '16px',
+              color: '#FFF',
+              cursor: 'pointer',
+            }}
+            onClick={() => history.push(item.route)} // Use navigate to go to the specified route
+          >
+            {item.text}
+          </div>
+        ))}
+      </div>
 
   {/* Margin between sets of divs */}
   <div style={{ width: '10px' }}></div>

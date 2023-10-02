@@ -17,6 +17,7 @@ import Subscription from "./pages/Subscription";
 import Exam from "./pages/Exam";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
+import ResetFlags from './pages/ResetFlags';
 
 const App = () => {
   return (
@@ -33,9 +34,9 @@ const App = () => {
           <PrivateRoute exact path='/contact' component={Contact}/>
           <PrivateRoute exact path='/subscription' component={Subscription}/>
           <PrivateRoute exact path='/exam' component={Exam}/>
-          <PrivateRoute exact path='/dashboard' component={Dashboard}/>
+          <Route exact path='/dashboard' component={Dashboard}/>
           <PrivateRoute exact path='/profile' component={Profile}/>
-
+          <Route exact path="/resetflags" component={ResetFlags}/>
         </div>
       </Router>
     </AuthProvider>

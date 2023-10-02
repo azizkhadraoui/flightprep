@@ -55,3 +55,26 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+export const useAuth = () => {
+  const [currentUser, setCurrentUser] = useState(null);
+  const auth = getAuth();
+
+  useEffect(() => {
+    // Subscribe to authentication state changes
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        // User is signed in.
+        setCurrentUser(user);
+      } else {
+        // User is signed out.
+        setCurrentUser(null);
+      }
+    });
+
+    // Clean up the subscription on unmount
+    return () => unsubscribe();
+  }, [auth]);
+
+  return { currentUser };
+};
