@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Navbar from '../components/navbar/Navbar';
+import Navbar2 from '../components/navbar/Navbar2';
 import { Box, Typography, Grid, Button } from '@mui/material';
 import './questions.css';
 import ExplanationComponent from '../components/questionelements/ExplanationComponent';
@@ -272,7 +272,7 @@ const Exam = () => {
         height: '100vh',
       }}
     >
-      <Navbar />
+      <Navbar2 />
       <div 
         style={{
             width: 500,

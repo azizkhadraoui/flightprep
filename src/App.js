@@ -16,6 +16,8 @@ import Contact from "./pages/Contact";
 import Subscription from "./pages/Subscription";
 import Exam from "./pages/Exam";
 import Dashboard from "./pages/Dashboard";
+import Profile from "./pages/Profile";
+import ResetFlags from './pages/ResetFlags';
 
 const App = () => {
   return (
@@ -27,12 +29,14 @@ const App = () => {
           <Route exact path="/signup" component={Signup1} />
           <Route exact path="/reset" component={ResetPassword} />
           <Route exact path="/home" component={LandingPage}/>
-          <Route exact path='/chapters' component={Chapters}/>
-          <Route exact path='/questions' component={Question}/>
-          <Route exact path='/contact' component={Contact}/>
-          <Route exact path='/subscription' component={Subscription}/>
-          <Route exact path='/exam' component={Exam}/>
+          <PrivateRoute exact path='/chapters' component={Chapters}/>
+          <PrivateRoute exact path='/questions' component={Question}/>
+          <PrivateRoute exact path='/contact' component={Contact}/>
+          <PrivateRoute exact path='/subscription' component={Subscription}/>
+          <PrivateRoute exact path='/exam' component={Exam}/>
           <Route exact path='/dashboard' component={Dashboard}/>
+          <PrivateRoute exact path='/profile' component={Profile}/>
+          <Route exact path="/resetflags" component={ResetFlags}/>
         </div>
       </Router>
     </AuthProvider>

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import Navbar from '../components/navbar/Navbar';
+import Navbar2 from '../components/navbar/Navbar2';
 import {
   Box,
   Collapse,
@@ -61,7 +61,7 @@ const Chapters = () => {
         height: '100vh',
       }}
     >
-      <Navbar />
+      <Navbar2 />
       <div
         style={{
           width: 785,
