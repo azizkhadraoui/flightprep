@@ -21,27 +21,16 @@ app.use(cors());
 app.get("/",(req,res) => {
     res.json("this is the backend side")
 })
-app.get("/data",(req,res) => {
-    const q = " SELECT * FROM questions LIMIT 10; "
-    db.query(q,(err,data)=>{
-        if(err) return res.json(err)
-        return res.json(data)
-    })
+app.get("/data/:xx/:yy",(req,res) => {
+  const xx = req.params.xx;
+  const yy = req.params.yy;
+  const q = `SELECT * FROM questions WHERE id LIKE '${xx}-${yy}%'`;
+  db.query(q,(err,data)=>{
+      if(err) return res.json(err)
+      return res.json(data)
+  })
+});
 
-})
-app.post("/books", (req, res) => {
-    const q = "INSERT INTO books(`title`, `desc`, `cover`) VALUES (?)";
-  
-    const values = [
-      req.body.title,
-      req.body.desc,
-      req.body.cover,
-    ];
-  
-    db.query(q, [values], (err, data) => {
-      if (err) return res.send(err);
-      return res.json(data);
-    });
-  });
+
 app.listen(8800, () =>{console.log("connected to backend")
 });

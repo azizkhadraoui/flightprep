@@ -7,10 +7,15 @@ import QuestionComponent from '../components/questionelements/QuestionComponent'
 import ExplanationComponent from '../components/questionelements/ExplanationComponent';
 import NotesComponent from '../components/questionelements/NoteComponent';
 import Comments from '../components/questionelements/Comments';
+import { useLocation } from 'react-router-dom';
 import QuestionsMatrix from '../components/questionelements/QuestionsMatrix';
 import app from '../base.js';
 
 const Question = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const selectedSubtopicId = queryParams.get('subtopic');
+  const selectedTopicId = queryParams.get('subject');
 
 
   const [questions, setQuestions] = useState([]);
@@ -41,7 +46,7 @@ const Question = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:8800/data');
+        const response = await axios.get(`http://localhost:8800/data/${selectedTopicId}/${selectedSubtopicId}`);
         const data = response.data;
         setQuestions(data);
       } catch (error) {

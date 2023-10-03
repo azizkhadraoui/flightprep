@@ -21,6 +21,10 @@ const Exam = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const selectedSubtopicId = queryParams.get('subtopic');
+  const selectedTopicId = queryParams.get('subject');
+
+
+
     const formatTime = (seconds) => {
         const hours = Math.floor(seconds / 3600);
         const minutes = Math.floor((seconds % 3600) / 60);
@@ -58,7 +62,7 @@ const Exam = () => {
           try {
             // Make an API request to fetch questions for the selected subtopic
             // You can pass selectedSubtopicId to the API to filter questions
-            const response = await axios.get(`http://localhost:8800/data`);
+            const response = await axios.get(`http://localhost:8800/data/${selectedTopicId}/${selectedSubtopicId}`);
             const data = response.data;
             setQuestions(data);
           } catch (error) {
@@ -509,7 +513,10 @@ const Exam = () => {
     </Button>
     <QuestionsMatrix 
     currentQuestion={currentQuestion} 
-    setCurrentQuestion={setCurrentQuestion} />
+    setCurrentQuestion={setCurrentQuestion}
+    subject={selectedTopicId}
+    subtopic={selectedSubtopicId}
+     />
 
   </div>
   {showResults && (

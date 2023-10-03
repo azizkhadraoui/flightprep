@@ -3,14 +3,14 @@ import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import axios from 'axios';
 
-const QuestionsMatrix = ({ currentQuestion, setCurrentQuestion }) => {
+const QuestionsMatrix = ({ currentQuestion, setCurrentQuestion ,subject,subtopic}) => {
   const [questions, setQuestions] = useState([]);
   const [pinnedQuestions, setPinnedQuestions] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://localhost:8800/data');
+        const response = await axios.get(`http://localhost:8800/data/${subject}/${subtopic}`);
         const data = response.data;
         setQuestions(data);
       } catch (error) {
