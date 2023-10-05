@@ -254,6 +254,23 @@ const Question = () => {
   
 </div>
         </div>
+        <div
+    style={{
+      marginRight: '5px',
+      marginLeft: '5px',
+      width: '300px', // Adjust the width as needed
+      height: '400px', // Adjust the height as needed
+      overflow: 'auto',
+    }}
+  >
+    <QuestionsMatrix 
+    currentQuestion={currentQuestion} 
+    setCurrentQuestion={setCurrentQuestion}
+    subject={selectedTopicId}
+    subtopic={selectedSubtopicId}
+     />
+
+  </div>
       </div>
       
 </div>
