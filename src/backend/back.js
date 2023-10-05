@@ -16,21 +16,30 @@ const db = mysql.createConnection({
   database:'air_exam'
 })*/
 
+
 app.use(express.json())
 app.use(cors());
 app.get("/",(req,res) => {
-    res.json("this is the backend side")
+  res.json("this is the backend side")
 })
+
 app.get("/data/:xx/:yy",(req,res) => {
-  const xx = req.params.xx;
-  const yy = req.params.yy;
-  const q = `SELECT * FROM questions WHERE id LIKE '${xx}-${yy}%'`;
-  db.query(q,(err,data)=>{
-      if(err) return res.json(err)
-      return res.json(data)
-  })
+const xx = req.params.xx;
+const yy = req.params.yy;
+const q = `SELECT * FROM questions WHERE id LIKE '${xx}-${yy}%'`;
+db.query(q,(err,data)=>{
+    if(err) {
+      console.error(err);
+      return res.status(500).json({ error: 'An error occurred while querying the database' });
+    }
+    return res.json(data)
+})
 });
 
-
-app.listen(8800, () =>{console.log("connected to backend")
+app.use((err, req, res, next) => {
+console.error(err.stack);
+res.status(500).send('Something broke!');
 });
+
+app.listen(8800, () =>{console.log("connected to backend")})
+.on('error', console.error.bind(console, 'connection error:'));
