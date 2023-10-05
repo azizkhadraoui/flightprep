@@ -18,6 +18,9 @@ import Exam from "./pages/Exam";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
 import ResetFlags from './pages/ResetFlags';
+import Notes from "./pages/Notes";
+import Comments from './pages/Comments';
+import AllTests from "./pages/AllTests";
 
 const App = () => {
   return (
@@ -36,7 +39,10 @@ const App = () => {
           <Route exact path='/exam' component={Exam}/>
           <Route exact path='/dashboard' component={Dashboard}/>
           <PrivateRoute exact path='/profile' component={Profile}/>
-          <Route exact path="/resetflags" component={ResetFlags}/>
+          <Route exact path="/reset-flags" component={ResetFlags}/>
+          <Route exact path="/notes" component={Notes}/>
+          <Route exact path="/comments" component={Comments}/>
+          <Route exact path="/alltests" component={AllTests}/>
         </div>
       </Router>
     </AuthProvider>

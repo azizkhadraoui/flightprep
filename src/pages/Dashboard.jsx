@@ -266,13 +266,11 @@ const Dashboard = () => {
   {/* First set of divs */}
   <div style={{ display: 'flex', flexWrap: 'wrap', width: '654px' }}>
         {[
-          { text: 'Packages', route: '/packages' },
           { text: 'My Profile', route: '/profile' },
           { text: 'Reset Flags', route: '/reset-flags' },
-          { text: 'Give Feedback', route: '/give-feedback' },
-          { text: 'Questions Feedback', route: '/questions-feedback' },
+          { text: 'Give Feedback', route: '/contact' },
           { text: 'Annexes', route: '/annexes' },
-          { text: 'News', route: '/news' },
+          { text: 'News', route: '/home' },
           { text: 'Contact', route: '/contact' },
         ].map((item, index) => (
           <div
@@ -304,9 +302,9 @@ const Dashboard = () => {
   {/* Second set of divs */}
   <div style={{ display: 'flex', flexDirection: 'column',cursor: 'pointer', }}>
   {[
-    { topText: 'Settings', bottomText: 'update ur settings on this page' },
-    { topText: 'My Comments', bottomText: 'your saved comments' },
-    { topText: 'My Notes', bottomText: 'ur saved notes' },
+    { topText: 'Settings', bottomText: 'update ur settings on this page', route: '/profile' },
+    { topText: 'My Comments', bottomText: 'your saved comments', route: '/comments' },
+    { topText: 'My Notes', bottomText: 'ur saved notes', route: '/notes' },
   ].map((textObj, index) => (
     <div
       key={index}
@@ -322,6 +320,7 @@ const Dashboard = () => {
         alignItems: 'center',
         textAlign: 'center',
       }}
+      onClick={() => history.push(textObj.route)}
     >
       <div
         style={{
@@ -440,6 +439,7 @@ const Dashboard = () => {
       cursor: 'pointer',
       marginTop: '20px',
     }}
+    onClick={() => history.push('/alltests')}
   >
     All Saved Tests
   </button>

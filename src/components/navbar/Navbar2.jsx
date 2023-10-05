@@ -6,8 +6,13 @@ import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Button from '@mui/material/Button';
+import app from '../../base';
+import { getAuth, signOut } from "firebase/auth";
+import { getFirestore, updateDoc, doc } from "firebase/firestore";
+import { useHistory } from "react-router-dom";
 
 const pages = ['Profile', 'Dashboard', 'Chapters'];
+const auth = getAuth(app);
 
 function Navbar2() {
   const buttonStyles = {
@@ -19,6 +24,27 @@ function Navbar2() {
     border: '1px solid #F1870C',
     color: '#312783',
     marginRight: '8px',
+  };
+  const history = useHistory(); // Get the history object
+
+  const handleSignOut = async () => {
+    try {
+      await updateUserStatus("logged-out");
+      await signOut(auth);
+
+      // After sign-out, redirect to the login page
+      // history.push("/login"); // Replace "/login" with the actual path of your login page
+
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
+
+  const updateUserStatus = async (status) => {
+    const firestore = getFirestore(app);
+    const userDocRef = doc(firestore, "users", auth.currentUser.uid);
+    console.log(firestore, userDocRef)
+    await updateDoc(userDocRef, { userstatus: status });
   };
 
   return (
@@ -90,6 +116,7 @@ function Navbar2() {
               component={Link} // Use the Link component
               to="/signup" // Set the path for the sign up page
               sx={{ ...buttonStyles, border: '1px solid #F1870C' }}
+              onClick={handleSignOut}
             >
               Sign out
             </Button>
