@@ -36,13 +36,13 @@ const App = () => {
           <PrivateRoute exact path='/questions' component={Question}/>
           <PrivateRoute exact path='/contact' component={Contact}/>
           <PrivateRoute exact path='/subscription' component={Subscription}/>
-          <Route exact path='/exam' component={Exam}/>
-          <Route exact path='/dashboard' component={Dashboard}/>
+          <PrivateRoute exact path='/exam' component={Exam}/>
+          <PrivateRoute exact path='/dashboard' component={Dashboard}/>
           <PrivateRoute exact path='/profile' component={Profile}/>
-          <Route exact path="/reset-flags" component={ResetFlags}/>
-          <Route exact path="/notes" component={Notes}/>
-          <Route exact path="/comments" component={Comments}/>
-          <Route exact path="/alltests" component={AllTests}/>
+          <PrivateRoute exact path="/reset-flags" component={ResetFlags}/>
+          <PrivateRoute exact path="/notes" component={Notes}/>
+          <PrivateRoute exact path="/comments" component={Comments}/>
+          <PrivateRoute exact path="/alltests" component={AllTests}/>
         </div>
       </Router>
     </AuthProvider>

@@ -1,5 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import Draggable from 'react-draggable';
+import React, { useState, useRef, useEffect } from "react";
+import Draggable from "react-draggable";
+import "./StackedDivs.css";
 
 const StackedDivs = () => {
   const [rotation1, setRotation1] = useState(0);
@@ -27,16 +28,20 @@ const StackedDivs = () => {
     }
 
     function handleMouseUp() {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
     }
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
   };
 
   return (
-    <div className="stacked-div" ref={divRef} style={{ width: '100%', height: '100%' }}>
+    <div
+      className="stacked-div"
+      ref={divRef}
+      style={{ width: "100%", height: "100%" }}
+    >
       <div className="diagonal-div">
         <Draggable axis="y">
           <div className="top-div">

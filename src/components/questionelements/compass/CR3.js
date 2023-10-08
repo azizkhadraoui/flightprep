@@ -1,6 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import Draggable from 'react-draggable';
-import './CircularDiv.css';
+import React, { useState, useRef, useEffect } from "react";
+import "./CircularDiv.css";
 
 const CircularDivs = () => {
   const divRef = useRef(null);
@@ -30,16 +29,20 @@ const CircularDivs = () => {
     }
 
     function handleMouseUp() {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUp);
     }
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUp);
   };
 
   return (
-    <div className="circular-div" ref={divRef} style={{ width: '100%', height: '100%' }}>
+    <div
+      className="circular-div"
+      ref={divRef}
+      style={{ width: "20px", height: "20px" }}
+    >
       <div className="compass-container">
         <div
           className="layer3-container"
