@@ -27,22 +27,22 @@ const App = () => {
     <AuthProvider>
       <Router>
         <div>
-          <PrivateRoute exact path="/" component={Home} />
+          <Route exact path="/" component={Dashboard} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/signup" component={Signup1} />
           <Route exact path="/reset" component={ResetPassword} />
           <Route exact path="/home" component={LandingPage}/>
           <Route exact path='/chapters' component={Chapters}/>
-          <PrivateRoute exact path='/questions' component={Question}/>
+          <Route exact path='/questions' component={Question}/>
           <PrivateRoute exact path='/contact' component={Contact}/>
           <PrivateRoute exact path='/subscription' component={Subscription}/>
           <PrivateRoute exact path='/exam' component={Exam}/>
           <PrivateRoute exact path='/dashboard' component={Dashboard}/>
           <PrivateRoute exact path='/profile' component={Profile}/>
-          <PrivateRoute exact path="/reset-flags" component={ResetFlags}/>
-          <PrivateRoute exact path="/notes" component={Notes}/>
-          <PrivateRoute exact path="/comments" component={Comments}/>
-          <PrivateRoute exact path="/alltests" component={AllTests}/>
+          <Route exact path="/reset-flags" component={ResetFlags}/>
+          <Route exact path="/notes" component={Notes}/>
+          <Route exact path="/comments" component={Comments}/>
+          <Route exact path="/alltests" component={AllTests}/>
         </div>
       </Router>
     </AuthProvider>

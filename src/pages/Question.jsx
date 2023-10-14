@@ -5,7 +5,7 @@ import { Box, Typography, Grid, Button } from '@mui/material';
 import './questions.css';
 import QuestionComponent from '../components/questionelements/QuestionComponent';
 import ExplanationComponent from '../components/questionelements/ExplanationComponent';
-import NotesComponent from '../components/questionelements/NotesComponent';
+import NotesComponent from '../components/questionelements/NoteComponent';
 import Comments from '../components/questionelements/Comments';
 import QuestionsMatrix from '../components/questionelements/QuestionsMatrix';
 import app from '../base.js';
