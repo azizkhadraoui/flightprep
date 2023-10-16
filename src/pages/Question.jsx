@@ -70,7 +70,7 @@ const Question = () => {
   );
   const [contentType, setContentType] = useState("question");
 
-  const [remainingTime, setRemainingTime] = useState(0); // Start from 0 seconds
+  const [remainingTime, setRemainingTime] = useState(3600); // Start from 0 seconds
   const [showResults, setShowResults] = useState(false);
   const [correctlyAnsweredCount, setCorrectlyAnsweredCount] = useState(0);
 
@@ -439,8 +439,8 @@ const Question = () => {
           display="flex"
           justifyContent="space-between"
           alignItems="center"
-          marginTop="20px"
-          marginLeft="20px"
+          marginTop="10px"
+          marginLeft="10px"
         >
           <Button
             variant="text"
@@ -539,7 +539,7 @@ const Question = () => {
             <QuestionComponent
               currentQuestion={questions[currentQuestion]}
               questions={questions}
-              
+
               /*contentType={contentType}
               selectedAnswer={selectedAnswer}
               setSelectedAnswer={setSelectedAnswer}
@@ -566,78 +566,78 @@ const Question = () => {
             />
           )}
         </div>
-        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+        <div style={{ display: "flex", justifyContent: "flex-end" }}></div>
+        {showResults && (
           <div
             style={{
-              marginRight: "5px",
-              marginLeft: "5px",
-              width: "300px", // Adjust the width as needed
-              height: "400px", // Adjust the height as needed
-              overflow: "auto",
+              position: "fixed",
+              top: "50%",
+              right: "50px", // Adjust the right position as needed
+              transform: "translateY(-50%)",
+              backgroundColor: "#F1870C",
+              padding: "20px",
+              borderRadius: "10px",
+              boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)",
+              color: "#FFF",
             }}
           >
-            <Button
-              variant="contained"
-              onClick={handleFinishTest}
-              sx={{
-                color: "#FFF",
-                backgroundColor: "#F1870C",
-                fontFamily: "Mulish",
-                fontSize: "16px",
-                fontWeight: 800,
-                "&:hover": {
-                  backgroundColor: "#F1870C",
-                },
-              }}
-            >
-              Finish Test
-            </Button>
-            <TestMatrix
-              currentQuestion={currentQuestion}
-              setCurrentQuestion={setCurrentQuestion}
-              subject={selectedTopicId}
-              subtopic={selectedSubtopicId}
-            />
+            <Typography variant="h4">Test Finished!</Typography>
+            <Typography variant="body1">
+              You answered {correctlyAnsweredCount.toFixed(2)}% of the questions
+              correctly.
+            </Typography>
           </div>
-          {showResults && (
-            <div
-              style={{
-                position: "fixed",
-                top: "50%",
-                right: "50px", // Adjust the right position as needed
-                transform: "translateY(-50%)",
-                backgroundColor: "#F1870C",
-                padding: "20px",
-                borderRadius: "10px",
-                boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)",
-                color: "#FFF",
-              }}
-            >
-              <Typography variant="h4">Test Finished!</Typography>
-              <Typography variant="body1">
-                You answered {correctlyAnsweredCount.toFixed(2)}% of the
-                questions correctly.
-              </Typography>
-            </div>
-          )}
-        </div>
-        <div>
-          {showFlightComp && (
-            <div
-              style={{
-                position: "fixed",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-                backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent black background
-                zIndex: 9999, // Ensure it's above other content
-              }}
-            >
-              <Canvas />
-            </div>
-          )}
-        </div>
+        )}
+      </div>
+      <div>
+        {showFlightComp && (
+          <div
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent black background
+              zIndex: 9999, // Ensure it's above other content
+            }}
+          >
+            <Canvas />
+          </div>
+        )}
+      </div>
+      <div
+        style={{
+          marginRight: "5px",
+          marginLeft: "1000px",
+          marginTop: "50px",
+          width: "300px", // Adjust the width as needed
+          height: "400px", // Adjust the height as needed
+          overflow: "auto",
+        }}
+      >
+        <Button
+          variant="contained"
+          onClick={handleFinishTest}
+          sx={{
+            color: "#FFF",
+            backgroundColor: "#F1870C",
+            fontFamily: "Mulish",
+            fontSize: "16px",
+            fontWeight: 800,
+            "&:hover": {
+              backgroundColor: "#F1870C",
+            },
+          }}
+        >
+          Finish Test
+        </Button>
+        <TestMatrix
+          currentQuestion={currentQuestion}
+          setCurrentQuestion={setCurrentQuestion}
+          subject={selectedTopicId}
+          subtopic={selectedSubtopicId}
+        />
       </div>
     </div>
   );
