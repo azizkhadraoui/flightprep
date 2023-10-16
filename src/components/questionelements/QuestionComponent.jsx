@@ -10,7 +10,7 @@ import QuestionsMatrix from './QuestionsMatrix';
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-const QuestionComponent = ({ questions, currentQuestion, setCurrentQuestion }) => {
+const QuestionComponent = ({ questions, currentQuestion }) => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
@@ -34,7 +34,7 @@ const QuestionComponent = ({ questions, currentQuestion, setCurrentQuestion }) =
     }
 
     setSelectedAnswer(answerKey);
-    const questionId = questions[currentQuestion].id;
+    const questionId = currentQuestion.id;
     const isCorrect = isCorrectAnswer(answerKey);
 
     try {
@@ -50,7 +50,7 @@ const QuestionComponent = ({ questions, currentQuestion, setCurrentQuestion }) =
   };
 
   const isCorrectAnswer = (answerKey) => {
-    return questions[currentQuestion]?.correct === answerKey;
+    return currentQuestion?.correct === answerKey;
   };
 
   useEffect(() => {
@@ -58,16 +58,14 @@ const QuestionComponent = ({ questions, currentQuestion, setCurrentQuestion }) =
     setShowCorrectAnswer(false);
   }, [currentQuestion]);
 
-  const annexFilename = questionAnnexes[questions[currentQuestion]?.id];
+  //const annexFilename = questionAnnexes[questions[currentQuestion]?.id];
 
   return (
     <div>
-      <QuestionsMatrix 
-        currentQuestion={currentQuestion} 
-        setCurrentQuestion={setCurrentQuestion} />
+      
       {questions.length > 0 ? (
         <div>
-          <Typography variant="h6">{questions[currentQuestion]?.question}</Typography>
+          <Typography variant="h6">{currentQuestion?.question}</Typography>
           
           {['A', 'B', 'C', 'D'].map((key) => (
             <Card
@@ -86,7 +84,7 @@ const QuestionComponent = ({ questions, currentQuestion, setCurrentQuestion }) =
               }}
             >
               <CardContent>
-                <Typography variant="body1">{key}: {questions[currentQuestion][key]}</Typography>
+                <Typography variant="body1">{key}: {currentQuestion[key]}</Typography>
                 {showCorrectAnswer && isCorrectAnswer(key) && (
                   <Typography variant="body1" style={{ color: 'green' }}>
                     Correct Answer

@@ -537,11 +537,13 @@ const Question = () => {
         >
           {contentType === "question" && (
             <QuestionComponent
-              question={questions[currentQuestion]}
-              contentType={contentType}
+              currentQuestion={questions[currentQuestion]}
+              questions={questions}
+              
+              /*contentType={contentType}
               selectedAnswer={selectedAnswer}
               setSelectedAnswer={setSelectedAnswer}
-              answeredQuestions={answeredQuestions}
+              answeredQuestions={answeredQuestions}*/
             />
           )}
           {contentType === "explanation" && (
