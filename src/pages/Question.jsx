@@ -1,17 +1,29 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import Navbar2 from '../components/navbar/Navbar2';
-import { Box, Typography, Grid, Button } from '@mui/material';
-import './questions.css';
-import QuestionComponent from '../components/questionelements/QuestionComponent';
-import ExplanationComponent from '../components/questionelements/ExplanationComponent';
-import NotesComponent from '../components/questionelements/NoteComponent';
-import Comments from '../components/questionelements/Comments';
-import QuestionsMatrix from '../components/questionelements/QuestionsMatrix';
-import app from '../base.js';
-import { getFirestore, collection, getDocs, doc, setDoc, addDoc, serverTimestamp, getDoc } from 'firebase/firestore';
-import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import Navbar2 from "../components/navbar/Navbar2";
+import { Box, Typography, Grid, Button } from "@mui/material";
+import "./questions.css";
+import QuestionComponent from "../components/questionelements/QuestionComponent";
+import ExplanationComponent from "../components/questionelements/ExplanationComponent";
+import NotesComponent from "../components/questionelements/NoteComponent";
+import Comments from "../components/questionelements/Comments";
+import TestMatrix from "../components/questionelements/TestMatrix";
+import app from "../base.js";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  setDoc,
+  addDoc,
+  serverTimestamp,
+  getDoc,
+} from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { useLocation } from "react-router-dom";
+import FlightComp from "../components/questionelements/compass/FlightComp";
+import Canvas from "../components/questionelements/compass/Canvas";
+import subjectData from "./subjectData.json";
 
 const db = getFirestore(app);
 const auth = getAuth(app);
@@ -19,27 +31,71 @@ const auth = getAuth(app);
 const Question = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const selectedSubtopicId = queryParams.get('subtopic');
-  const selectedTopicId = queryParams.get('subject');
+  const selectedSubtopicId = queryParams.get("subtopic");
+  const selectedTopicId = queryParams.get("subject");
+
+  useEffect(() => {
+    // Fetch questions based on the selected subtopic ID
+    const fetchData = async () => {
+      try {
+        // Make an API request to fetch questions for the selected subtopic
+        // You can pass selectedSubtopicId to the API to filter questions
+        const response = await axios.get(
+          `http://localhost:8800/data/${selectedTopicId}/${selectedSubtopicId}`
+        );
+        const data = response.data;
+        setQuestions(data);
+      } catch (error) {
+        console.error("Error fetching data from the API:", error);
+      }
+    };
+
+    fetchData();
+  }, [selectedSubtopicId]);
 
   const formatTime = (seconds) => {
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
     const secs = seconds % 60;
-    return `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    return `${hours.toString().padStart(2, "0")}:${minutes
+      .toString()
+      .padStart(2, "0")}:${secs.toString().padStart(2, "0")}`;
   };
 
   const [questions, setQuestions] = useState([]);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
-  const [answeredQuestions, setAnsweredQuestions] = useState(new Array(questions.length).fill(null));
-  const [contentType, setContentType] = useState('question');
+  const [answeredQuestions, setAnsweredQuestions] = useState(
+    new Array(questions.length).fill(null)
+  );
+  const [contentType, setContentType] = useState("question");
 
   const [remainingTime, setRemainingTime] = useState(0); // Start from 0 seconds
   const [showResults, setShowResults] = useState(false);
   const [correctlyAnsweredCount, setCorrectlyAnsweredCount] = useState(0);
 
   const [currentUserId, setCurrentUserId] = useState(null);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (remainingTime > 0) {
+        setRemainingTime(remainingTime - 1);
+      } else {
+        clearInterval(timer); // Stop the timer when it reaches zero
+        setShowResults(true); // Show results when the timer reaches zero
+
+        // Calculate the percentage of correctly answered questions
+        const correctCount = answeredQuestions.filter(
+          (answer) => answer === true
+        ).length;
+        const percentage = (correctCount / questions.length) * 100;
+        setCorrectlyAnsweredCount(percentage);
+      }
+    }, 1000); // Update every second
+
+    // Cleanup the timer when the component unmounts
+    return () => clearInterval(timer);
+  }, [remainingTime, answeredQuestions, questions.length]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -65,362 +121,522 @@ const Question = () => {
 
   const handlePinClick = async (questionId) => {
     try {
-      const pinFlaggedQuestionsRef = doc(db, `users/${currentUserId}/pinned`, questionId);
+      const pinFlaggedQuestionsRef = doc(
+        db,
+        `users/${currentUserId}/pinned`,
+        questionId
+      );
       const pinFlaggedQuestionsDoc = await getDoc(pinFlaggedQuestionsRef);
 
       if (!pinFlaggedQuestionsDoc.exists()) {
         await setDoc(pinFlaggedQuestionsRef, {
           questionId: questionId,
         });
-        console.log('Question pinned successfully.');
+        console.log("Question pinned successfully.");
       } else {
-        console.log('Question is already pinned.');
+        console.log("Question is already pinned.");
       }
     } catch (error) {
-      console.error('Error pinning the question:', error);
+      console.error("Error pinning the question:", error);
     }
   };
 
   const handleGreenFlagClick = async (questionId) => {
     try {
-      const greenFlaggedQuestionsRef = doc(db, `users/${currentUserId}/greenFlagged`, questionId);
+      const greenFlaggedQuestionsRef = doc(
+        db,
+        `users/${currentUserId}/greenFlagged`,
+        questionId
+      );
       const greenFlaggedQuestionsDoc = await getDoc(greenFlaggedQuestionsRef);
 
       if (!greenFlaggedQuestionsDoc.exists()) {
         await setDoc(greenFlaggedQuestionsRef, {
           questionId: questionId,
         });
-        console.log('Question flagged with a green flag successfully.');
+        console.log("Question flagged with a green flag successfully.");
       } else {
-        console.log('Question is already flagged with a green flag.');
+        console.log("Question is already flagged with a green flag.");
       }
     } catch (error) {
-      console.error('Error flagging the question with a green flag:', error);
+      console.error("Error flagging the question with a green flag:", error);
     }
   };
 
   const handleRedFlagClick = async (questionId) => {
     try {
-      const redFlaggedQuestionsRef = doc(db, `users/${currentUserId}/redFlagged`, questionId);
+      const redFlaggedQuestionsRef = doc(
+        db,
+        `users/${currentUserId}/redFlagged`,
+        questionId
+      );
       const redFlaggedQuestionsDoc = await getDoc(redFlaggedQuestionsRef);
 
       if (!redFlaggedQuestionsDoc.exists()) {
         await setDoc(redFlaggedQuestionsRef, {
           questionId: questionId,
         });
-        console.log('Question flagged with a red flag successfully.');
+        console.log("Question flagged with a red flag successfully.");
       } else {
-        console.log('Question is already flagged with a red flag.');
+        console.log("Question is already flagged with a red flag.");
       }
     } catch (error) {
-      console.error('Error flagging the question with a red flag:', error);
+      console.error("Error flagging the question with a red flag:", error);
     }
   };
 
   const handleYellowFlagClick = async (questionId) => {
     try {
-      const yellowFlaggedQuestionsRef = doc(db, `users/${currentUserId}/yellowFlagged`, questionId);
+      const yellowFlaggedQuestionsRef = doc(
+        db,
+        `users/${currentUserId}/yellowFlagged`,
+        questionId
+      );
       const yellowFlaggedQuestionsDoc = await getDoc(yellowFlaggedQuestionsRef);
 
       if (!yellowFlaggedQuestionsDoc.exists()) {
         await setDoc(yellowFlaggedQuestionsRef, {
           questionId: questionId,
         });
-        console.log('Question flagged with a yellow flag successfully.');
+        console.log("Question flagged with a yellow flag successfully.");
       } else {
-        console.log('Question is already flagged with a yellow flag.');
+        console.log("Question is already flagged with a yellow flag.");
       }
     } catch (error) {
-      console.error('Error flagging the question with a yellow flag:', error);
+      console.error("Error flagging the question with a yellow flag:", error);
     }
   };
 
   const handleNoClick = async (questionId) => {
-    try {      
-    const dontFlaggedQuestionsRef = doc(db, `users/${currentUserId}/dont`, questionId);
-    const dontFlaggedQuestionsDoc = await getDoc(dontFlaggedQuestionsRef);
+    try {
+      const dontFlaggedQuestionsRef = doc(
+        db,
+        `users/${currentUserId}/dont`,
+        questionId
+      );
+      const dontFlaggedQuestionsDoc = await getDoc(dontFlaggedQuestionsRef);
 
-    if (!dontFlaggedQuestionsDoc.exists()) {
-      await setDoc(dontFlaggedQuestionsRef, {
-        questionId: questionId,
-      });
-      console.log('Question marked as "don\'t show" successfully.');
-    } else {
-      console.log('Question is already marked as "don\'t show".');
+      if (!dontFlaggedQuestionsDoc.exists()) {
+        await setDoc(dontFlaggedQuestionsRef, {
+          questionId: questionId,
+        });
+        console.log('Question marked as "don\'t show" successfully.');
+      } else {
+        console.log('Question is already marked as "don\'t show".');
+      }
+    } catch (error) {
+      console.error('Error marking the question as "don\'t show":', error);
     }
-  } catch (error) {
-    console.error('Error marking the question as "don\'t show":', error);
-  }
-};
+  };
 
-const handleFinishTest = async () => {
-  try {
-    if (!currentUserId) {
-      console.error('User not authenticated');
-      return;
+  const getSubjectNameById = (subjectsData, subjectId) => {
+    for (const subject of subjectsData) {
+      const subtopic = subject.Subtopics.find((sub) => sub.ID === subjectId);
+      if (subtopic) {
+        return subtopic.Name;
+      }
     }
+    return "Subject Not Found"; // Return a default value if no matching subject is found
+  };
 
-    const userChoicesCollection = collection(db, `users/${currentUserId}/user_choices`);
-    const userChoicesSnapshot = await getDocs(userChoicesCollection);
+  const handleFinishTest = async () => {
+    try {
+      if (!currentUserId) {
+        console.error("User not authenticated");
+        return;
+      }
 
-    const correctCount = userChoicesSnapshot.docs.reduce((count, doc) => {
-      const data = doc.data();
-      return data.isCorrect ? count + 1 : count;
-    }, 0);
+      const userChoicesCollection = collection(
+        db,
+        `users/${currentUserId}/user_choices`
+      );
+      const userChoicesSnapshot = await getDocs(userChoicesCollection);
 
-    const totalQuestions = userChoicesSnapshot.size;
-    const percentage = (correctCount / totalQuestions) * 100;
+      const correctCount = userChoicesSnapshot.docs.reduce((count, doc) => {
+        const data = doc.data();
+        return data.isCorrect ? count + 1 : count;
+      }, 0);
 
-    setCorrectlyAnsweredCount(percentage); // Set the percentage of correct answers
-    setShowResults(true); // Show results
+      const totalQuestions = userChoicesSnapshot.size;
+      const percentage = (correctCount / totalQuestions) * 100;
 
-    // Calculate the time taken to finish the test
-    const timeTaken = 3600 - remainingTime; // Assuming a total of 3600 seconds
+      setCorrectlyAnsweredCount(percentage); // Set the percentage of correct answers
+      setShowResults(true); // Show results
 
-    // Prepare data for the result document
-    const testResult = {
-      subtopicName: 'YourSubtopicName', // Replace with the actual subtopic name
-      date: serverTimestamp(),
-      result: percentage,
-      timeTaken: timeTaken,
-    };
+      // Calculate the time taken to finish the test
+      const timeTaken = 3600 - remainingTime; // Assuming a total of 3600 seconds
 
-    // Check if a document for this test already exists, and if not, create it
-    const testsCollection = collection(db, 'tests');
-    const testDoc = await getDoc(testsCollection.doc(testResult.subtopicName));
+      // Prepare data for the result document
+      const testResult = {
+        subtopicName: getSubjectNameById(subjectData, selectedSubtopicId),
+        date: serverTimestamp(),
+        result: percentage,
+      };
 
-    if (!testDoc.exists()) {
-      await addDoc(testsCollection.doc(testResult.subtopicName), testResult);
-    } else {
-      console.log('Document already exists for this test.');
+      // Check if a document for this test already exists, and if not, create it
+      const testsCollection = collection(db, "tests");
+      const testDoc = await getDoc(
+        testsCollection.doc(testResult.subtopicName)
+      );
+
+      if (!testDoc.exists()) {
+        await addDoc(testsCollection.doc(testResult.subtopicName), testResult);
+      } else {
+        console.log("Document already exists for this test.");
+      }
+    } catch (error) {
+      console.error(
+        "Error calculating correct answers or saving test results: ",
+        error
+      );
     }
-  } catch (error) {
-    console.error('Error calculating correct answers or saving test results: ', error);
-  }
-};
+  };
 
-return (
-  <div
-    style={{
-      backgroundImage: `url("/loginbackground.svg")`,
-      backgroundSize: 'cover',
-      backgroundPosition: 'center center',
-      height: '100vh',
-    }}
-  >
-    <Navbar2 />
+  const [showFlightComp, setShowFlightComp] = useState(false);
+
+  const openFlightComp = () => {
+    setShowFlightComp(true);
+  };
+
+  const closeFlightComp = () => {
+    setShowFlightComp(false);
+  };
+
+  return (
     <div
       style={{
-        width: 500,
-        height: 60,
+        backgroundImage: `url("/loginbackground.svg")`,
+        backgroundSize: "cover",
+        backgroundPosition: "center center",
+        height: "100vh",
       }}
     >
-      <Box display="flex" justifyContent="space-between" padding="20px" width="80%">
-        <Grid container alignItems="center">
-          <Typography
-            variant="h6"
+      <Navbar2 />
+      <div
+        style={{
+          width: 500,
+          height: 60,
+        }}
+      >
+        <Box
+          display="flex"
+          justifyContent="space-between"
+          padding="20px"
+          width="80%"
+        >
+          <Grid container alignItems="center">
+            <Typography
+              variant="h6"
+              sx={{
+                width: "200px",
+                height: "20px",
+                flexShrink: 0,
+                color: "#F1870C",
+                textAlign: "center",
+                fontFamily: "Mulish",
+                fontSize: "32px",
+                fontWeight: 800,
+                paddingRight: "20px",
+              }}
+            >
+              QN°{currentQuestion + 1}/{questions.length}
+            </Typography>
+            <Grid
+              item
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+                marginTop: "40px",
+              }}
+            >
+              <Button
+                style={{ width: "30px", height: "30px" }}
+                onClick={handlePinClick}
+              >
+                <img
+                  src="/pin.svg"
+                  alt="Pin"
+                  style={{ width: "100%", height: "100%" }}
+                />
+              </Button>
+
+              <Button
+                style={{ width: "30px", height: "30px" }}
+                onClick={handleGreenFlagClick}
+              >
+                <img
+                  src="/greenflag.svg"
+                  alt="Green Flag"
+                  style={{ width: "100%", height: "100%" }}
+                />
+              </Button>
+
+              <Button
+                style={{ width: "30px", height: "30px" }}
+                onClick={handleYellowFlagClick}
+              >
+                <img
+                  src="/yellowflag.svg"
+                  alt="Red Flag"
+                  style={{ width: "100%", height: "100%" }}
+                />
+              </Button>
+
+              <Button
+                style={{ width: "30px", height: "30px" }}
+                onClick={handleRedFlagClick}
+              >
+                <img
+                  src="/redflag.svg"
+                  alt="Yellow Flag"
+                  style={{ width: "100%", height: "100%" }}
+                />
+              </Button>
+
+              <Button
+                style={{ width: "30px", height: "30px" }}
+                onClick={handleNoClick}
+              >
+                <img
+                  src="/no.svg"
+                  alt="No"
+                  style={{ width: "100%", height: "100%" }}
+                />
+              </Button>
+            </Grid>
+          </Grid>
+          <Grid container alignItems="left" marginLeft={"500px"}>
+            <Grid item>
+              <img
+                src="/clock.svg"
+                alt="Clock"
+                style={{ marginRight: "8px" }}
+              />
+            </Grid>
+          </Grid>
+          <Grid container alignItems="left">
+            <Grid item>
+              <div>
+                <Typography
+                  variant="body1"
+                  sx={{ fontSize: "18px", color: "#FFF", marginRight: "8px" }}
+                >
+                  Time Left: {formatTime(remainingTime)}
+                </Typography>
+              </div>
+            </Grid>
+          </Grid>
+          <Grid container alignItems="left">
+            <Grid item>
+              <Button onClick={handleNextQuestion}>
+                <img src="/arrow.svg" alt="Arrow" />
+              </Button>
+            </Grid>
+          </Grid>
+        </Box>
+        <div
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          marginTop="20px"
+          marginLeft="20px"
+        >
+          <Button
+            variant="text"
+            onClick={() => handleButtonClick("question")}
             sx={{
-              width: '200px',
-              height: '20px',
-              flexShrink: 0,
-              color: '#F1870C',
-              textAlign: 'center',
-              fontFamily: 'Mulish',
-              fontSize: '32px',
+              color: "#FFF",
+              fontFamily: "Mulish",
+              fontSize: "16px",
               fontWeight: 800,
-              paddingRight: '20px',
+              marginLeft: "30px",
+              "&:hover": {
+                color: "#F1870C",
+              },
             }}
           >
-            QN°{currentQuestion + 1}/{questions.length}
-          </Typography>
-          <Grid item sx={{ display: 'flex', alignItems: 'center', gap: '10px', marginTop: '40px' }}>
-            <Button style={{ width: '30px', height: '30px' }} onClick={handlePinClick}>
-              <img src='/pin.svg' alt="Pin" style={{ width: '100%', height: '100%' }} />
-            </Button>
-
-            <Button style={{ width: '30px', height: '30px' }} onClick={handleGreenFlagClick}>
-              <img src='/greenflag.svg' alt="Green Flag" style={{ width: '100%', height: '100%' }} />
-            </Button>
-
-            <Button style={{ width: '30px', height: '30px' }} onClick={handleYellowFlagClick}>
-              <img src='/yellowflag.svg' alt="Red Flag" style={{ width: '100%', height: '100%' }} />
-            </Button>
-
-            <Button style={{ width: '30px', height: '30px' }} onClick={handleRedFlagClick}>
-              <img src='/redflag.svg' alt="Yellow Flag" style={{ width: '100%', height: '100%' }} />
-            </Button>
-
-            <Button style={{ width: '30px', height: '30px' }} onClick={handleNoClick}>
-              <img src='/no.svg' alt="No" style={{ width: '100%', height: '100%' }} />
-            </Button>
-          </Grid>
-        </Grid>
-        <Grid container alignItems="left" marginLeft={'500px'}>
-          <Grid item>
-            <img src='/clock.svg' alt="Clock" style={{ marginRight: '8px' }} />
-          </Grid>
-        </Grid>
-        <Grid container alignItems="left">
-          <Grid item>
-            <div>
-              <Typography variant="body1" sx={{ fontSize: '18px', color: '#FFF', marginRight: '8px' }}>
-                Time Left: {formatTime(remainingTime)}
-              </Typography>
-            </div>
-          </Grid>
-        </Grid>
-        <Grid container alignItems="left">
-          <Grid item>
-            <Button onClick={handleNextQuestion}><img src='/arrow.svg' alt="Arrow" /></Button>
-          </Grid>
-        </Grid>
-      </Box>
-      <div
-        display="flex" justifyContent="space-between" alignItems="center" marginTop="20px" marginLeft="20px">
-        <Button
-          variant="text"
-          onClick={() => handleButtonClick('question')}
-          sx={{
-            color: '#FFF',
-            fontFamily: 'Mulish',
-            fontSize: '16px',
-            fontWeight: 800,
-            marginLeft: '30px',
-            '&:hover': {
-              color: '#F1870C',
-            },
-          }}
-        >
-          <img src="/play.svg" alt="" />
-          Question
-        </Button>
-        <Button
-          variant="text"
-          onClick={() => handleButtonClick('explanation')}
-          sx={{
-            color: '#FFF',
-            fontFamily: 'Mulish',
-            fontSize: '16px',
-            fontWeight: 800,
-            marginLeft: '90px',
-            '&:hover': {
-              color: '#F1870C',
-            },
-          }}
-        >
-          <img src="/explanation.svg" alt="" />
-          Explanation
-        </Button>
-        <Button
-          variant="text"
-          onClick={() => handleButtonClick('statistics')}
-          sx={{
-            color: '#FFF',
-            fontFamily: 'Mulish',
-            fontSize: '16px',
-            fontWeight: 800,
-            marginLeft: '90px',
-            '&:hover': {
-              color: '#F1870C',
-            },
-          }}
-        >
-          <img src="/statistics.svg" alt="" />
-          Statistics
-        </Button>
-        <Button
+            <img src="/play.svg" alt="" />
+            Question
+          </Button>
+          <Button
             variant="text"
-            onClick={() => handleButtonClick('notes')}
+            onClick={() => handleButtonClick("explanation")}
             sx={{
-              color: '#FFF',
-              fontFamily: 'Mulish',
-              fontSize: '16px',
+              color: "#FFF",
+              fontFamily: "Mulish",
+              fontSize: "16px",
               fontWeight: 800,
-              marginLeft: '90px',
-              '&:hover': {
-                color: '#F1870C',
+              marginLeft: "90px",
+              "&:hover": {
+                color: "#F1870C",
+              },
+            }}
+          >
+            <img src="/explanation.svg" alt="" />
+            Explanation
+          </Button>
+          <Button
+            variant="text"
+            onClick={() => handleButtonClick("statistics")}
+            sx={{
+              color: "#FFF",
+              fontFamily: "Mulish",
+              fontSize: "16px",
+              fontWeight: 800,
+              marginLeft: "90px",
+              "&:hover": {
+                color: "#F1870C",
+              },
+            }}
+          >
+            <img src="/statistics.svg" alt="" />
+            Statistics
+          </Button>
+          <Button
+            variant="text"
+            onClick={() => handleButtonClick("notes")}
+            sx={{
+              color: "#FFF",
+              fontFamily: "Mulish",
+              fontSize: "16px",
+              fontWeight: 800,
+              marginLeft: "90px",
+              "&:hover": {
+                color: "#F1870C",
               },
             }}
           >
             <img src="/notes.svg" alt="" />
             Notes
           </Button>
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginLeft: '20px',
-            marginTop: '10px',
-          }}
-        >
-          <QuestionComponent
-            question={questions[currentQuestion]}
-            contentType={contentType}
-            selectedAnswer={selectedAnswer}
-            setSelectedAnswer={setSelectedAnswer}
-            answeredQuestions={answeredQuestions}
-          />
-          <ExplanationComponent question={questions[currentQuestion]} contentType={contentType} />
-          <QuestionsMatrix question={questions[currentQuestion]} contentType={contentType} />
-          <NotesComponent question={questions[currentQuestion]} contentType={contentType} />
-          <Comments question={questions[currentQuestion]} contentType={contentType} />
-        </div>
-        <div
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            marginTop: '20px',
-          }}
-        >
           <Button
-            variant="contained"
-            onClick={handleFinishTest}
+            variant="text"
+            onClick={openFlightComp}
             sx={{
-              backgroundColor: '#F1870C',
-              color: '#FFF',
-              fontFamily: 'Mulish',
-              fontSize: '18px',
+              color: "#FFF",
+              fontFamily: "Mulish",
+              fontSize: "16px", // Reduced font size
               fontWeight: 800,
-              width: '300px',
-              height: '50px',
-              '&:hover': {
-                backgroundColor: '#FF9D3D',
+              marginLeft: "90px", // Space between buttons
+              "&:hover": {
+                color: "#F1870C",
               },
             }}
           >
-            Finish Test
+            <img src="/compass.svg" alt="" />
+            Flt Comp
           </Button>
         </div>
-      </div>
-      {showResults && (
-        <div>
-          <Typography
-            variant="h4"
-            sx={{
-              textAlign: 'center',
-              color: '#F1870C',
-              fontFamily: 'Mulish',
-              fontWeight: 800,
-              marginTop: '20px',
-            }}
-          >
-            Test Results
-          </Typography>
-          <Typography
-            variant="h5"
-            sx={{
-              textAlign: 'center',
-              color: '#FFF',
-              fontFamily: 'Mulish',
-              marginTop: '10px',
-            }}
-          >
-            You correctly answered {correctlyAnsweredCount}% of the questions.
-          </Typography>
+        <div
+          display="flex"
+          justifyContent="space-between"
+          alignItems="center"
+          marginTop="20px"
+          marginLeft="20px"
+        >
+          {contentType === "question" && (
+            <QuestionComponent
+              question={questions[currentQuestion]}
+              contentType={contentType}
+              selectedAnswer={selectedAnswer}
+              setSelectedAnswer={setSelectedAnswer}
+              answeredQuestions={answeredQuestions}
+            />
+          )}
+          {contentType === "explanation" && (
+            <ExplanationComponent
+              questions={questions}
+              currentQuestion={currentQuestion}
+            />
+          )}
+          {contentType === "notes" && (
+            <NotesComponent
+              questions={questions}
+              currentQuestion={currentQuestion}
+            />
+          )}
+          {contentType === "comments" && (
+            <Comments
+              questions={questions}
+              currentQuestion={currentQuestion}
+              setCurrentQuestion={setCurrentQuestion}
+            />
+          )}
         </div>
-      )}
+        <div style={{ display: "flex", justifyContent: "flex-end" }}>
+          <div
+            style={{
+              marginRight: "5px",
+              marginLeft: "5px",
+              width: "300px", // Adjust the width as needed
+              height: "400px", // Adjust the height as needed
+              overflow: "auto",
+            }}
+          >
+            <Button
+              variant="contained"
+              onClick={handleFinishTest}
+              sx={{
+                color: "#FFF",
+                backgroundColor: "#F1870C",
+                fontFamily: "Mulish",
+                fontSize: "16px",
+                fontWeight: 800,
+                "&:hover": {
+                  backgroundColor: "#F1870C",
+                },
+              }}
+            >
+              Finish Test
+            </Button>
+            <TestMatrix
+              currentQuestion={currentQuestion}
+              setCurrentQuestion={setCurrentQuestion}
+              subject={selectedTopicId}
+              subtopic={selectedSubtopicId}
+            />
+          </div>
+          {showResults && (
+            <div
+              style={{
+                position: "fixed",
+                top: "50%",
+                right: "50px", // Adjust the right position as needed
+                transform: "translateY(-50%)",
+                backgroundColor: "#F1870C",
+                padding: "20px",
+                borderRadius: "10px",
+                boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)",
+                color: "#FFF",
+              }}
+            >
+              <Typography variant="h4">Test Finished!</Typography>
+              <Typography variant="body1">
+                You answered {correctlyAnsweredCount.toFixed(2)}% of the
+                questions correctly.
+              </Typography>
+            </div>
+          )}
+        </div>
+        <div>
+          {showFlightComp && (
+            <div
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent black background
+                zIndex: 9999, // Ensure it's above other content
+              }}
+            >
+              <Canvas />
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
