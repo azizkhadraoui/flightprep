@@ -9,6 +9,8 @@ import NotesComponent from "../components/questionelements/NoteComponent";
 import Comments from "../components/questionelements/Comments";
 import TestMatrix from "../components/questionelements/TestMatrix";
 import app from "../base.js";
+import QuestionsMatrix from "../components/questionelements/QuestionsMatrix";
+
 import {
   getFirestore,
   collection,
@@ -41,7 +43,7 @@ const Question = () => {
         // Make an API request to fetch questions for the selected subtopic
         // You can pass selectedSubtopicId to the API to filter questions
         const response = await axios.get(
-          `${process.env.BACKEND_URL}/${selectedTopicId}/${selectedSubtopicId}`
+          `${process.env.REACT_APP_BACKEND_URL}/${selectedTopicId}/${selectedSubtopicId}`
         );
         const data = response.data;
         setQuestions(data);
@@ -436,11 +438,13 @@ const Question = () => {
           </Grid>
         </Box>
         <div
-          display="flex"
-          justifyContent="space-between"
-          alignItems="center"
-          marginTop="10px"
-          marginLeft="10px"
+           style={{
+            display: "flex",
+            justifyContent: "flex-start",  // Adjusted justifyContent to start from the left
+            alignItems: "center",
+            marginTop: "10px",
+            marginLeft: "10px",
+          }}
         >
           <Button
             variant="text"
@@ -609,7 +613,7 @@ const Question = () => {
       <div
         style={{
           marginRight: "5px",
-          marginLeft: "1000px",
+          marginLeft: "1230px",
           marginTop: "50px",
           width: "300px", // Adjust the width as needed
           height: "400px", // Adjust the height as needed
@@ -632,12 +636,12 @@ const Question = () => {
         >
           Finish Test
         </Button>
-        <TestMatrix
-          currentQuestion={currentQuestion}
-          setCurrentQuestion={setCurrentQuestion}
-          subject={selectedTopicId}
-          subtopic={selectedSubtopicId}
-        />
+        <QuestionsMatrix
+            currentQuestion={currentQuestion}
+            setCurrentQuestion={setCurrentQuestion}
+            subject={selectedTopicId}
+            subtopic={selectedSubtopicId}
+          />
       </div>
     </div>
   );
