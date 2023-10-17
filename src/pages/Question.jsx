@@ -41,7 +41,7 @@ const Question = () => {
         // Make an API request to fetch questions for the selected subtopic
         // You can pass selectedSubtopicId to the API to filter questions
         const response = await axios.get(
-          `http://localhost:8800/data/${selectedTopicId}/${selectedSubtopicId}`
+          `${process.env.BACKEND_URL}/${selectedTopicId}/${selectedSubtopicId}`
         );
         const data = response.data;
         setQuestions(data);

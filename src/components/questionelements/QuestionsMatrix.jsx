@@ -1,20 +1,27 @@
-import React, { useState, useEffect } from 'react';
-import Grid from '@mui/material/Grid';
-import Button from '@mui/material/Button';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import Grid from "@mui/material/Grid";
+import Button from "@mui/material/Button";
+import axios from "axios";
 
-const QuestionsMatrix = ({ currentQuestion, setCurrentQuestion ,subject,subtopic}) => {
+const QuestionsMatrix = ({
+  currentQuestion,
+  setCurrentQuestion,
+  subject,
+  subtopic,
+}) => {
   const [questions, setQuestions] = useState([]);
   const [pinnedQuestions, setPinnedQuestions] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://localhost:8800/data/${subject}/${subtopic}`);
+        const response = await axios.get(
+          `${process.env.BACKEND_URL}/${subject}/${subtopic}`
+        );
         const data = response.data;
         setQuestions(data);
       } catch (error) {
-        console.error('Error fetching data from the API:', error);
+        console.error("Error fetching data from the API:", error);
       }
     };
 
@@ -48,12 +55,16 @@ const QuestionsMatrix = ({ currentQuestion, setCurrentQuestion ,subject,subtopic
             onClick={() => goToQuestion(questionNumber)}
             style={
               index === currentQuestion
-                ? { backgroundColor: '#FFA500', color: '#FFFFFF' }
-                : { backgroundColor: '#FFFFFF', color: '#000000' }
+                ? { backgroundColor: "#FFA500", color: "#FFFFFF" }
+                : { backgroundColor: "#FFFFFF", color: "#000000" }
             }
           >
             {isPinned && (
-              <span role="img" aria-label="Pinned" style={{ marginRight: '5px' }}>
+              <span
+                role="img"
+                aria-label="Pinned"
+                style={{ marginRight: "5px" }}
+              >
                 📌
               </span>
             )}
@@ -67,7 +78,10 @@ const QuestionsMatrix = ({ currentQuestion, setCurrentQuestion ,subject,subtopic
 
   const renderPinnedQuestions = () => {
     return pinnedQuestions.map((pinnedNumber) => (
-      <div key={pinnedNumber} style={{ border: '1px solid black', padding: '5px' }}>
+      <div
+        key={pinnedNumber}
+        style={{ border: "1px solid black", padding: "5px" }}
+      >
         {`Pinned Question ${pinnedNumber}`}
       </div>
     ));

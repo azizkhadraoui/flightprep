@@ -16,7 +16,7 @@ const TestMatrix = ({
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:8800/data/${subject}/${subtopic}`
+          `${process.env.BACKEND_URL}/${subject}/${subtopic}`
         );
         const data = response.data.map((question) => ({
           ...question,
