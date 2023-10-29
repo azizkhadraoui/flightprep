@@ -28,35 +28,32 @@ const ExamQuestion = ({ questions, currentQuestion, setCurrentQuestion }) => {
       console.error('User not authenticated');
       return;
     }
-  
-    // Check if the selected answer is correct
+
     const isCorrectAnswer = answerKey === questions[currentQuestion].correct.toUpperCase();
-  
-    // Store the user's answer in Firebase
     const questionId = questions[currentQuestion].id;
-  
+
     try {
-      const userChoicesRef = doc(db, `users/${currentUserId}/user_choices`, questionId);
+      const userChoicesRef = doc(db, `users/${currentUserId}/user_choices/${questionId}`);
       const userChoicesDoc = await getDoc(userChoicesRef);
-        // Document doesn't exist, so create it
+
+      if (!userChoicesDoc.exists()) {
         await setDoc(userChoicesRef, {
           questionId: questionId,
           userChoice: answerKey,
-          isCorrect: isCorrectAnswer, // Store whether the answer is correct or not
+          isCorrect: isCorrectAnswer,
         });
-      
+      }
     } catch (error) {
       console.error('Error writing document: ', error);
     }
-  
+
     setSelectedAnswer(answerKey);
   };
-  
 
   useEffect(() => {
     setSelectedAnswer(null);
   }, [currentQuestion]);
-  console.log(selectedAnswer)
+
 
   return (
     <div>
@@ -66,13 +63,13 @@ const ExamQuestion = ({ questions, currentQuestion, setCurrentQuestion }) => {
           {['A', 'B', 'C', 'D'].map((key) => (
             <div
               key={key}
+              style={selectedAnswer == key ? { backgroundColor: '#FFA500', color: '#FFFFFF' } : null}
               onClick={() => handleAnswerClick(key)}
-              style={
-                key === selectedAnswer
-                  ? { backgroundColor: '#FFA500', color: '#FFFFFF' }
-                  : { backgroundColor: '#FFFFFF', color: '#000000' }
-              }
+              
             >
+              {console.log(selectedAnswer)}
+              {console.log(key)}
+              {console.log(selectedAnswer == key)}
               <Card sx={{ marginBottom: '10px', backgroundColor: 'white' }}>
                 <CardContent>
                   <Typography variant="body1">

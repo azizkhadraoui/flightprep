@@ -68,14 +68,15 @@ const Exam = () => {
   };
 
   useEffect(() => {
-    // Fetch questions based on the selected subtopic ID
     const fetchData = async () => {
       try {
-        // Make an API request to fetch questions for the selected subtopic
-        // You can pass selectedSubtopicId to the API to filter questions
-        const response = await axios.get(
-          `${process.env.BACKEND_URL}/${selectedTopicId}/${selectedSubtopicId}`
+        console.log(
+          process.env.REACT_APP_BACKEND_URL
         );
+        const response = await axios.get(
+          `${process.env.REACT_APP_BACKEND_URL}/${selectedTopicId}/${selectedSubtopicId}`
+        );
+        
         const data = response.data;
         setQuestions(data);
       } catch (error) {
@@ -129,7 +130,9 @@ const Exam = () => {
     for (const subject of subjectsData) {
       const subtopic = subject.Subtopics.find((sub) => sub.ID === subjectId);
       if (subtopic) {
+        console.log(subtopic.Name)
         return subtopic.Name;
+        
       }
     }
     return "Subject Not Found"; // Return a default value if no matching subject is found
@@ -141,52 +144,46 @@ const Exam = () => {
         console.error("User not authenticated");
         return;
       }
-
-      const userChoicesCollection = collection(
-        db,
-        `users/${currentUserId}/user_choices`
-      );
+  
+      const userChoicesCollection = collection(db, `users/${currentUserId}/tests`);
       const userChoicesSnapshot = await getDocs(userChoicesCollection);
-
+  
       const correctCount = userChoicesSnapshot.docs.reduce((count, doc) => {
         const data = doc.data();
         return data.isCorrect ? count + 1 : count;
       }, 0);
-
+  
       const totalQuestions = userChoicesSnapshot.size;
       const percentage = (correctCount / totalQuestions) * 100;
-
+      console.log("Correct Count:", correctCount);
+      console.log("Total Questions:", totalQuestions);
+  
       setCorrectlyAnsweredCount(percentage); // Set the percentage of correct answers
       setShowResults(true); // Show results
-
-      // Prepare data for the result document
+  
+      const subtopicName = getSubjectNameById(subjectData, selectedSubtopicId);
+      const date = serverTimestamp();
+  
       const examResult = {
-        subtopicName: getSubjectNameById(subjectData, selectedSubtopicId),
-        date: serverTimestamp(),
+        subtopicName,
+        date,
         result: percentage,
       };
-
-      // Check if a document for this subtopic already exists, and if not, create it
+  
       const resultsCollection = collection(db, "results");
-      const subtopicDoc = await getDoc(
-        resultsCollection.doc(examResult.subtopicName)
-      );
-
+      const subtopicDoc = await getDoc(resultsCollection.doc(examResult.subtopicName));
+  
       if (!subtopicDoc.exists()) {
-        await addDoc(
-          resultsCollection.doc(examResult.subtopicName),
-          examResult
-        );
+        await addDoc(resultsCollection.doc(examResult.subtopicName), examResult);
+        console.log("Result document created for subtopic:", examResult.subtopicName);
       } else {
-        console.log("Document already exists for this subtopic.");
+        console.log("Result document already exists for subtopic:", examResult.subtopicName);
       }
     } catch (error) {
-      console.error(
-        "Error calculating correct answers or saving results: ",
-        error
-      );
+      console.error("Error calculating correct answers or saving results: ", error);
     }
   };
+  
 
   const handlePinClick = async (questionId) => {
     try {

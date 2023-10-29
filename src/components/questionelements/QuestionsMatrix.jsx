@@ -16,7 +16,7 @@ const QuestionsMatrix = ({
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `${process.env.BACKEND_URL}/${subject}/${subtopic}`
+          `${process.env.REACT_APP_BACKEND_URL}/${subject}/${subtopic}`
         );
         const data = response.data;
         setQuestions(data);
