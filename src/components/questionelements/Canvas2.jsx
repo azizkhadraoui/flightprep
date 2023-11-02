@@ -1,120 +1,122 @@
-import React, { useState, useRef, useEffect } from "react";
-import { button } from "@mui/material";
-import { Create, FiberManualRecord, Delete } from "@mui/icons-material";
+import React, { useRef, useEffect, useState, useCallback } from "react";
 
-const Canvas = () => {
+function Canvas() {
   const canvasRef = useRef(null);
-  const [isDrawing, setIsDrawing] = useState(false);
+  const [drawing, setDrawing] = useState(false);
   const [startX, setStartX] = useState(0);
   const [startY, setStartY] = useState(0);
-  const [endX, setEndX] = useState(0);
-  const [endY, setEndY] = useState(0);
-  const [drawings, setDrawings] = useState([]);
-  const [tool, setTool] = useState("line");
+  const [mode, setMode] = useState("drawLine");
+  const [lines, setLines] = useState([]);
 
-  const handleMouseDown = (event) => {
-    const canvas = canvasRef.current;
-    if (tool === "line" || tool === "measure") {
-      setIsDrawing(true);
-      setStartX(event.clientX - canvas.offsetLeft);
-      setStartY(event.clientY - canvas.offsetTop);
-    }
-  };
+  const drawLine = useCallback((context, x1, y1, x2, y2) => {
+    context.beginPath();
+    context.moveTo(x1, y1);
+    context.lineTo(x2, y2);
+    context.stroke();
+  }, []);
 
-  const handleMouseMove = (event) => {
-    if (!isDrawing) return;
-    const canvas = canvasRef.current;
-    const context = canvas.getContext("2d");
-    const mouseX = event.clientX - canvas.offsetLeft;
-    const mouseY = event.clientY - canvas.offsetTop;
+  const drawDot = useCallback((context, x, y) => {
+    context.beginPath();
+    context.arc(x, y, 5, 0, 2 * Math.PI);
+    context.fill();
+  }, []);
 
-    setEndX(mouseX);
-    setEndY(mouseY);
-
-    if (tool === "line" || tool === "measure") {
-      context.clearRect(0, 0, canvas.width, canvas.height);
-      drawings.forEach((drawing) => {
-        if (drawing.type === "line") {
-          context.strokeStyle = "red";
-          context.lineWidth = 4;
-          context.beginPath();
-          context.moveTo(drawing.startX, drawing.startY);
-          context.lineTo(drawing.endX, drawing.endY);
-          context.stroke();
+  const onMouseDown = useCallback(
+    (event) => {
+      if (event) {
+        const offsetX = event.nativeEvent.offsetX;
+        const offsetY = event.nativeEvent.offsetY;
+        setDrawing(true);
+        setStartX(offsetX);
+        setStartY(offsetY);
+        if (mode === "drawDot") {
+          const canvas = canvasRef.current;
+          const context = canvas.getContext("2d");
+          drawDot(context, offsetX, offsetY);
         }
-      });
+      }
+    },
+    [mode, drawDot]
+  );
 
-      const newDrawing = { type: tool, startX, startY, endX, endY };
-      context.strokeStyle = "red";
-      context.lineWidth = 4;
-      context.beginPath();
-      context.moveTo(startX, startY);
-      context.lineTo(mouseX, mouseY);
-      context.stroke();
-      setDrawings([...drawings, newDrawing]);
-    }
-  };
+  const onMouseMove = useCallback(
+    (event) => {
+      if (event) {
+        const offsetX = event.nativeEvent.offsetX;
+        const offsetY = event.nativeEvent.offsetY;
+        if (!drawing) return;
+        const canvas = canvasRef.current;
+        const context = canvas.getContext("2d");
+        if (mode === "drawLine") {
+          drawLine(context, startX, startY, offsetX, offsetY);
+          setStartX(offsetX);
+          setStartY(offsetY);
+        } else if (mode === "measure") {
+          const distance = Math.hypot(startX - offsetX, startY - offsetY);
+          context.clearRect(0, 0, canvas.width, canvas.height);
+          lines.forEach((line) => drawLine(context, ...line));
+          drawLine(context, startX, startY, offsetX, offsetY);
+          context.font = "20px Arial";
+          context.fillText(distance.toFixed(2), offsetX, offsetY - 10);
+        } else if (mode === "erase") {
+          context.globalCompositeOperation = "destination-out";
+          context.arc(offsetX, offsetY, 10, 0, Math.PI * 2, false);
+          context.fill();
+          context.globalCompositeOperation = "source-over";
+        }
+      }
+    },
+    [mode, drawing, startX, startY, lines, drawLine]
+  );
 
-  const handleMouseUp = () => {
-    if (isDrawing && (tool === "line" || tool === "measure")) {
-      setIsDrawing(false);
-    }
-  };
+  const onMouseUp = useCallback(
+    (event) => {
+      if (mode === "drawLine") {
+        setLines((prevLines) => [
+          ...prevLines,
+          [
+            startX,
+            startY,
+            event.nativeEvent.offsetX,
+            event.nativeEvent.offsetY,
+          ],
+        ]);
+      }
+      setDrawing(false);
+    },
+    [mode, startX, startY]
+  );
 
-  const handleErase = () => {
+  const clearCanvas = useCallback(() => {
     const canvas = canvasRef.current;
     const context = canvas.getContext("2d");
     context.clearRect(0, 0, canvas.width, canvas.height);
-    setDrawings([]);
-  };
+    setLines([]);
+  }, []);
 
   useEffect(() => {
     const canvas = canvasRef.current;
-    const context = canvas.getContext("2d");
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    drawings.forEach((drawing) => {
-      if (drawing.type === "line") {
-        context.strokeStyle = "red";
-        context.lineWidth = 4;
-        context.beginPath();
-        context.moveTo(drawing.startX, drawing.startY);
-        context.lineTo(drawing.endX, drawing.endY);
-        context.stroke();
-      }
-    });
-  }, [drawings]);
+    canvas.addEventListener("mousedown", onMouseDown);
+    canvas.addEventListener("mousemove", onMouseMove);
+    canvas.addEventListener("mouseup", onMouseUp);
+
+    return () => {
+      canvas.removeEventListener("mousedown", onMouseDown);
+      canvas.removeEventListener("mousemove", onMouseMove);
+      canvas.removeEventListener("mouseup", onMouseUp);
+    };
+  }, [onMouseDown, onMouseMove, onMouseUp]);
 
   return (
     <div>
-      <div style={{ display: "flex", marginBottom: "15px" }}>
-        <button
-          variant="contained"
-          color={tool === "line" ? "primary" : "default"}
-          startIcon={<Create />}
-          onClick={() => setTool("line")}
-        >
-          Draw Line
-        </button>
-        <button
-          variant="contained"
-          color="secondary"
-          startIcon={<Delete />}
-          onClick={handleErase}
-        >
-          Erase All
-        </button>
-      </div>
-      <canvas
-        ref={canvasRef}
-        width={800}
-        height={600}
-        style={{ border: "1px solid black" }}
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-      />
+      <canvas ref={canvasRef} style={{ border: "1px solid black" }}></canvas>
+      <button onClick={() => setMode("drawLine")}>Draw Line</button>
+      <button onClick={() => setMode("drawDot")}>Draw Dot</button>
+      <button onClick={() => setMode("measure")}>Measure</button>
+      <button onClick={clearCanvas}>Clear</button>
+      <button onClick={() => setMode("erase")}>Erase</button>
     </div>
   );
-};
+}
 
 export default Canvas;

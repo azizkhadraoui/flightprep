@@ -10,7 +10,7 @@ import Infos from "./infos";
 import Login from "./pages/login";
 import ResetPassword from "./pages/password_reset";
 import LandingPage from "./pages/LandingPage";
-import Chapters from "./pages/Chapters";
+import Chapters2 from "./pages/Chapters2";
 import Question from "./pages/Question";
 import Contact from "./pages/Contact";
 import Subscription from "./pages/Subscription";
@@ -34,7 +34,7 @@ const App = () => {
           <Route exact path="/signup" component={Signup1} />{" "}
           <Route exact path="/reset" component={ResetPassword} />{" "}
           <Route exact path="/home" component={LandingPage} />{" "}
-          <Route exact path="/chapters" component={Chapters} />{" "}
+          <Route exact path="/chapters" component={Chapters2} />{" "}
           <Route exact path="/questions" component={Question} />{" "}
           <PrivateRoute exact path="/contact" component={Contact} />{" "}
           <PrivateRoute exact path="/subscription" component={Subscription} />{" "}
