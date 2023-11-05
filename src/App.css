@@ -48,3 +48,22 @@
   left: 50%;
   transform: translate(-50%, -50%);
 }
+/* Default styles for desktop */
+.container {
+  width: 60%;
+  margin: 0 auto;
+}
+
+/* Styles for tablets */
+@media screen and (max-width: 768px) {
+  .container {
+    width: 80%;
+  }
+}
+
+/* Styles for mobile phones */
+@media screen and (max-width: 480px) {
+  .container {
+    width: 100%;
+  }
+}
