@@ -446,7 +446,6 @@ const Dashboard = () => {
 </div>
 
 </div>
-<div style={{ width: '1358px', height: '208px', flexShrink: 0, background: '#312783', marginTop:'20px' }}></div>
     </div>
   );
 };
