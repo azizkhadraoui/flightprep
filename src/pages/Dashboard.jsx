@@ -4,6 +4,14 @@ import {} from "@mui/material";
 import Typography from "@mui/material/Typography";
 import Chart from "react-apexcharts";
 import { useHistory } from "react-router-dom";
+import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import InfoIcon from "@mui/icons-material/Info";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import FlagIcon from "@mui/icons-material/Flag";
+import FeedbackIcon from "@mui/icons-material/Feedback";
+import BookIcon from "@mui/icons-material/Book";
+import AnnouncementIcon from "@mui/icons-material/Announcement";
+import ContactMailIcon from "@mui/icons-material/ContactMail";
 
 const Dashboard = () => {
   const history = useHistory();
@@ -36,7 +44,7 @@ const Dashboard = () => {
       }}
     >
       <Navbar2 />
-      <div style={{ display: "flex", flexDirection: "row" }}>
+      <div style={{ display: "flex", flexDirection: "row", marginTop:'30px' }}>
         <div
           style={{
             width: "309px",
@@ -50,7 +58,6 @@ const Dashboard = () => {
           <Typography
             style={{
               color: "#FFF",
-              textAlign: "center",
               fontFamily: "Mulish",
               fontSize: "16px",
               fontStyle: "normal",
@@ -77,7 +84,7 @@ const Dashboard = () => {
           <Typography
             style={{
               color: "#FFF",
-              textAlign: "center",
+              marginTop:'20px',
               fontFamily: "Mulish",
               fontSize: "16px",
               fontStyle: "normal",
@@ -110,6 +117,7 @@ const Dashboard = () => {
               fontWeight: 300,
               lineHeight: "normal",
               textTransform: "uppercase",
+              marginTop:'80px',
             }}
           >
             Last 25 scores achieved on completed tests
@@ -148,7 +156,7 @@ const Dashboard = () => {
           <Typography
             style={{
               color: "#FFF",
-              textAlign: "center",
+              textAlign: "left",
               fontFamily: "Mulish",
               fontSize: "16px",
               fontStyle: "normal",
@@ -168,6 +176,7 @@ const Dashboard = () => {
               fontWeight: 700,
               lineHeight: "normal",
               textTransform: "capitalize",
+              marginTop: "60px",
             }}
           >
             Create a study or exam test
@@ -182,12 +191,13 @@ const Dashboard = () => {
             borderLeft: "3px solid #F1870C",
             marginRight: "30px",
             cursor: "pointer",
+            justifyContent: "left",
           }}
         >
           <Typography
             style={{
               color: "#FFF",
-              textAlign: "center",
+              textAlign: "left",
               fontFamily: "Mulish",
               fontSize: "16px",
               fontStyle: "normal",
@@ -207,6 +217,7 @@ const Dashboard = () => {
               fontWeight: 700,
               lineHeight: "normal",
               textTransform: "capitalize",
+              marginTop: "60px",
             }}
           >
             Create a study or exam test
@@ -226,7 +237,7 @@ const Dashboard = () => {
           <Typography
             style={{
               color: "#FFF",
-              textAlign: "center",
+              textAlign: "left",
               fontFamily: "Mulish",
               fontSize: "16px",
               fontStyle: "normal",
@@ -246,6 +257,7 @@ const Dashboard = () => {
               fontWeight: 700,
               lineHeight: "normal",
               textTransform: "capitalize",
+              marginTop: "60px",
             }}
           >
             Create a study or exam test
@@ -265,7 +277,7 @@ const Dashboard = () => {
           <Typography
             style={{
               color: "#FFF",
-              textAlign: "center",
+              textAlign: "left",
               fontFamily: "Mulish",
               fontSize: "16px",
               fontStyle: "normal",
@@ -285,6 +297,7 @@ const Dashboard = () => {
               fontWeight: 700,
               lineHeight: "normal",
               textTransform: "capitalize",
+              marginTop: "60px",
             }}
           >
             Create a study or exam test
@@ -300,17 +313,20 @@ const Dashboard = () => {
             borderRadius: "12px",
             background: "#F1870C",
             cursor: "pointer",
+            display: "flex", // Add this
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
+          <RemoveRedEyeIcon style={{ color: "#FFF", marginRight: "10px" }} />{" "}
+          {/* Add the icon */}
           <Typography
             style={{
               color: "#FFF",
-              textAlign: "center",
               fontFamily: "Mulish",
               fontSize: "20px",
               fontStyle: "normal",
               fontWeight: 800,
-              lineHeight: "normal",
               textTransform: "uppercase",
             }}
           >
@@ -326,8 +342,13 @@ const Dashboard = () => {
             background: "#F1870C",
             marginLeft: "30px",
             cursor: "pointer",
+            display: "flex", // Add this
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
+          <InfoIcon style={{ color: "#FFF", marginRight: "10px" }} />{" "}
+          {/* Add the icon */}
           <Typography
             style={{
               color: "#FFF",
@@ -344,16 +365,64 @@ const Dashboard = () => {
           </Typography>
         </div>
       </div>
-      <div style={{ display: "flex", flexDirection: "row", marginTop: "25px" }}>
-        {/* First set of divs */}
-        <div style={{ display: "flex", flexWrap: "wrap", width: "654px" }}>
+      <div style={{ display: "flex", flexDirection: "row" }}>
+        <div
+          style={{
+            display: "flex",
+            marginLeft: "20px",
+            flexWrap: "wrap",
+            width: "654px",
+            gap: "30px",
+            marginTop: "20px",
+          }}
+        >
+          {" "}
+          {/* Add gap property to adjust the gap between divs */}
           {[
-            { text: "My Profile", route: "/profile" },
-            { text: "Reset Flags", route: "/reset-flags" },
-            { text: "Give Feedback", route: "/contact" },
-            { text: "Annexes", route: "/annexes" },
-            { text: "News", route: "/home" },
-            { text: "Contact", route: "/contact" },
+            {
+              text: "My Profile",
+              route: "/profile",
+              icon: (
+                <AccountCircleIcon
+                  style={{ color: "#FFF", marginRight: "10px" }}
+                />
+              ),
+            }, // Add icon property
+            {
+              text: "Reset Flags",
+              route: "/reset-flags",
+              icon: <FlagIcon style={{ color: "#FFF", marginRight: "10px" }} />,
+            }, // Add icon property
+            {
+              text: "Give Feedback",
+              route: "/contact",
+              icon: (
+                <FeedbackIcon style={{ color: "#FFF", marginRight: "10px" }} />
+              ),
+            }, // Add icon property
+            {
+              text: "Annexes",
+              route: "/annexes",
+              icon: <BookIcon style={{ color: "#FFF", marginRight: "10px" }} />,
+            }, // Add icon property
+            {
+              text: "News",
+              route: "/home",
+              icon: (
+                <AnnouncementIcon
+                  style={{ color: "#FFF", marginRight: "10px" }}
+                />
+              ),
+            }, // Add icon property
+            {
+              text: "Contact",
+              route: "/contact",
+              icon: (
+                <ContactMailIcon
+                  style={{ color: "#FFF", marginRight: "10px" }}
+                />
+              ),
+            }, // Add icon property
           ].map((item, index) => (
             <div
               key={index}
@@ -370,23 +439,22 @@ const Dashboard = () => {
                 fontSize: "16px",
                 color: "#FFF",
                 cursor: "pointer",
+                borderRadius: "10px", // Add border radius
               }}
               onClick={() => history.push(item.route)} // Use navigate to go to the specified route
             >
+              {item.icon} {/* Display the icon */}
               {item.text}
             </div>
           ))}
         </div>
 
-        {/* Margin between sets of divs */}
-        <div style={{ width: "10px" }}></div>
-
-        {/* Second set of divs */}
         <div
           style={{
             display: "flex",
             flexDirection: "column",
             cursor: "pointer",
+            marginTop:'20px',
           }}
         >
           {[
@@ -450,11 +518,10 @@ const Dashboard = () => {
           ))}
         </div>
 
-        {/* Second div inside the second set of divs */}
         <div
           style={{
             width: "290px",
-            height: "465px",
+            height: "415px",
             flexShrink: 0,
             background: "#9B9EB5",
             marginLeft: "30px",
@@ -462,6 +529,7 @@ const Dashboard = () => {
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
+            marginTop:'20px',
           }}
         >
           <div
@@ -477,7 +545,6 @@ const Dashboard = () => {
             The Last Saved Tests
           </div>
           <div>
-            {/* List of saved tests (replace with actual data from Firebase) */}
             <ul style={{ listStyleType: "none", padding: 0 }}>
               <li>
                 <span
