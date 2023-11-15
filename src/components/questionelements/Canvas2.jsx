@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Stage, Layer, Line, Circle, Rect, Ellipse, Arc } from "react-konva";
+import { Stage, Layer, Line, Circle, Rect, Ellipse, Path } from "react-konva";
 import { Button } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CreateIcon from "@mui/icons-material/Create";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
 import SwapVertIcon from "@mui/icons-material/SwapVert";
 import PanoramaFishEyeIcon from "@mui/icons-material/PanoramaFishEye";
-import StraightenIcon from '@mui/icons-material/Straighten';
-import Rotate90DegreesCcwIcon from '@mui/icons-material/Rotate90DegreesCcw';
+import StraightenIcon from "@mui/icons-material/Straighten";
+import Rotate90DegreesCcwIcon from "@mui/icons-material/Rotate90DegreesCcw";
+import GpsFixedIcon from "@mui/icons-material/GpsFixed";
 
 const DrawingComponent = () => {
   const [mode, setMode] = useState("line");
@@ -18,19 +19,45 @@ const DrawingComponent = () => {
   const [angle, setAngle] = useState(0);
   const [angleLines, setAngleLines] = useState([]);
   const [arcs, setArcs] = useState([]);
+  const [distanceLines, setDistanceLines] = useState([]);
+  const [distances, setDistances] = useState([]);
+  const [crosshairLines, setCrosshairLines] = useState([]);
+
 
   const handleMouseDown = (e) => {
     isDrawing.current = true;
     const pos = e.target.getStage().getPointerPosition();
-    if (mode === "distance" || mode === "angle") {
+    if (mode === "distance") {
+      if (distanceLines.length > 0) {
+        const lastLine = distanceLines[distanceLines.length - 1];
+        setDistanceLines([
+          ...distanceLines,
+          { points: [lastLine.points[2], lastLine.points[3], pos.x, pos.y] },
+        ]);
+      } else {
+        setDistanceLines([{ points: [pos.x, pos.y, pos.x, pos.y] }]);
+      }
+    } else if (mode === "angle") {
       if (angleLines.length > 0) {
         const lastLine = angleLines[angleLines.length - 1];
-        setAngleLines([...angleLines, { points: [lastLine.points[2], lastLine.points[3], pos.x, pos.y] }]);
+        setAngleLines([
+          ...angleLines,
+          { points: [lastLine.points[2], lastLine.points[3], pos.x, pos.y] },
+        ]);
       } else {
         setAngleLines([{ points: [pos.x, pos.y, pos.x, pos.y] }]);
       }
+    } else if (mode === "perpendicular") {
+      // Store the starting point for the perpendicular line
+      setLines([
+        ...lines,
+        { tool: mode, points: [pos.x, pos.y, pos.x, pos.y], start: pos },
+      ]);
     } else {
-      setLines([...lines, { tool: mode, points: [pos.x, pos.y, pos.x, pos.y] }]);
+      setLines([
+        ...lines,
+        { tool: mode, points: [pos.x, pos.y, pos.x, pos.y] },
+      ]);
     }
   };
 
@@ -40,7 +67,56 @@ const DrawingComponent = () => {
     }
     const stage = e.target.getStage();
     const point = stage.getPointerPosition();
-    if (mode === "distance" || mode === "angle") {
+    if (mode === "crosshair") {
+      const point = stage.getPointerPosition();
+
+      const verticalLine = {
+        points: [point.x, -10000, point.x, 10000], // Extend beyond canvas height
+        stroke: "black", // Adjust the color as needed
+      };
+
+      const horizontalLine = {
+        points: [-10000, point.y, 10000, point.y], // Extend beyond canvas width
+        stroke: "black", // Adjust the color as needed
+      };
+
+      setCrosshairLines([verticalLine, horizontalLine]);
+    }
+    else if (mode === "perpendicular") {
+      let lastLine = lines[lines.length - 1];
+      const dx = point.x - lastLine.start.x;
+      const dy = point.y - lastLine.start.y;
+
+      // Adjust the end point to ensure a perpendicular line
+      if (Math.abs(dx) > Math.abs(dy)) {
+        lastLine.points = [
+          lastLine.start.x,
+          lastLine.start.y,
+          point.x,
+          lastLine.start.y,
+        ];
+      } else {
+        lastLine.points = [
+          lastLine.start.x,
+          lastLine.start.y,
+          lastLine.start.x,
+          point.y,
+        ];
+      }
+
+      lines.splice(lines.length - 1, 1, lastLine);
+      setLines(lines.concat());
+    } else if (mode === "distance") {
+      let lastLine = distanceLines[distanceLines.length - 1];
+      lastLine.points = [
+        lastLine.points[0],
+        lastLine.points[1],
+        point.x,
+        point.y,
+      ];
+      distanceLines.splice(distanceLines.length - 1, 1, lastLine);
+      setDistanceLines(distanceLines.concat());
+    } else if (mode === "angle") {
       let lastLine = angleLines[angleLines.length - 1];
       lastLine.points = [
         lastLine.points[0],
@@ -65,21 +141,39 @@ const DrawingComponent = () => {
 
   const handleMouseUp = () => {
     isDrawing.current = false;
-    if (mode === "distance" || mode === "angle") {
-      if (angleLines.length === 2) {
+    if (mode === "angle") {
+      if (angleLines.length >= 2) {
         const dx1 = angleLines[0].points[2] - angleLines[0].points[0];
         const dy1 = angleLines[0].points[3] - angleLines[0].points[1];
         const dx2 = angleLines[1].points[2] - angleLines[1].points[0];
         const dy2 = angleLines[1].points[3] - angleLines[1].points[1];
-        const angle = Math.atan2(dy2, dx2) - Math.atan2(dy1, dx1);
-        setAngle(Math.round(angle * (180 / Math.PI)));
-        setArcs([...arcs, { x: angleLines[0].points[2], y: angleLines[0].points[3], angle: Math.abs(angle) }]);
+        let angle = Math.atan2(dy2, dx2) - Math.atan2(dy1, dx1);
+        angle = 180 - Math.round(angle * (180 / Math.PI));
+        if (angle < 0) angle += 360;
+        if (angle > 180) angle = 360 - angle;
+        setAngle(angle);
+
+        // Calculate the start and end points of the arc
+        const startX = angleLines[0].points[0] + dx1 / 4;
+        const startY = angleLines[0].points[1] + dy1 / 4;
+        const endX = angleLines[1].points[0] + (dx2 * 3) / 4;
+        const endY = angleLines[1].points[1] + (dy2 * 3) / 4;
+
+        // Generate the SVG path string
+        const pathData = `M ${startX} ${startY} A 50 50 0 0 1 ${endX} ${endY}`;
+
+        setArcs([...arcs, { data: pathData }]);
         setLines([...lines, ...angleLines]);
-        setAngleLines([]);
       }
     } else if (mode === "perpendicular") {
       direction.current =
         direction.current === "horizontal" ? "vertical" : "horizontal";
+    } else if (mode === "distance") {
+      const lastLine = distanceLines[distanceLines.length - 1];
+      const dx = lastLine.points[2] - lastLine.points[0];
+      const dy = lastLine.points[3] - lastLine.points[1];
+      const newDistance = Math.sqrt(dx * dx + dy * dy);
+      setDistances([...distances, newDistance]);
     }
   };
 
@@ -93,6 +187,17 @@ const DrawingComponent = () => {
     }
   }, [lines, mode]);
 
+  const totalDistance = Math.round(distances.reduce((a, b) => a + b, 0));
+
+  const eraseAll = () => {
+    setLines([]);
+    setDistanceLines([]);
+    setAngleLines([]);
+    setArcs([]);
+    setCrosshairLines([]); // Add this line to reset the crosshair lines
+  };
+
+
   return (
     <div>
       <Stage
@@ -100,7 +205,7 @@ const DrawingComponent = () => {
         height={600}
         onMouseDown={handleMouseDown}
         onMousemove={handleMouseMove}
-               onMouseup={handleMouseUp}
+        onMouseup={handleMouseUp}
       >
         <Layer>
           <Rect width={800} height={600} fill="white" />
@@ -138,16 +243,13 @@ const DrawingComponent = () => {
             <Line key={i} points={line.points} stroke="blue" />
           ))}
           {arcs.map((arc, i) => (
-            <Arc
-              key={i}
-              innerRadius={50}
-              outerRadius={50}
-              angle={arc.angle}
-              fill="transparent"
-              stroke="blue"
-              x={arc.x}
-              y={arc.y}
-            />
+            <Path key={i} data={arc.data} stroke="blue" fill="transparent" />
+          ))}
+          {distanceLines.map((line, i) => (
+            <Line key={i} points={line.points} stroke="green" />
+          ))}
+          {crosshairLines.map((line, index) => (
+            <Line key={index} points={line.points} stroke={line.stroke} />
           ))}
         </Layer>
       </Stage>
@@ -198,16 +300,26 @@ const DrawingComponent = () => {
       </Button>
       <Button
         variant="contained"
-        onClick={() => setLines([])}
+        onClick={() => setMode("crosshair")}
+        startIcon={<GpsFixedIcon />}
+      >
+        Crosshair
+      </Button>
+
+      <Button
+        variant="contained"
+        onClick={() => eraseAll()}
         startIcon={<DeleteIcon />}
       >
         Erase All
       </Button>
       {mode === "distance" && (
-        <div style={{ backgroundColor: "white" }}>Distance: {distance} mm</div>
+        <div style={{ backgroundColor: "white" }}>
+          Total Distance: {totalDistance} mm
+        </div>
       )}
       {mode === "angle" && (
-        <div style={{ backgroundColor: "white" }}>Angle: {angle} degrees</div>
+        <div style={{ backgroundColor: "white" }}>Angle: {angle} °</div>
       )}
     </div>
   );
