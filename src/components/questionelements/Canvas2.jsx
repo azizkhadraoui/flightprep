@@ -206,7 +206,7 @@ const DrawingComponent = () => {
     setDistanceLines([]);
     setAngleLines([]);
     setArcs([]);
-    setCrosshairLines([]); // Add this line to reset the crosshair lines
+    setCrosshairLines([]); 
   };
 
   return (
@@ -218,7 +218,7 @@ const DrawingComponent = () => {
           alignItems: "center",
           justifyContent: "space-between",
           padding: "20px",
-          width: "80px", // Adjust the width as needed
+          width: "80px",
           background: "#f0f0f0",
         }}
       >
