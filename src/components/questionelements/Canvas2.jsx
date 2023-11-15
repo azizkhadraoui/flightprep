@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Stage, Layer, Line, Circle, Rect, Ellipse, Path } from "react-konva";
-import { Button } from "@mui/material";
+import { Button, IconButton, Tooltip } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CreateIcon from "@mui/icons-material/Create";
 import RadioButtonUncheckedIcon from "@mui/icons-material/RadioButtonUnchecked";
@@ -22,6 +22,7 @@ const DrawingComponent = () => {
   const [distanceLines, setDistanceLines] = useState([]);
   const [distances, setDistances] = useState([]);
   const [crosshairLines, setCrosshairLines] = useState([]);
+  const [measurements, setMeasurements] = useState([]);
 
 
   const handleMouseDown = (e) => {
@@ -189,6 +190,17 @@ const DrawingComponent = () => {
 
   const totalDistance = Math.round(distances.reduce((a, b) => a + b, 0));
 
+  const getToolInfo = () => {
+    switch (mode) {
+      case "distance":
+        return `Total Distance: ${totalDistance} mm`;
+      case "angle":
+        return `Angle: ${angle} °`;
+      default:
+        return "";
+    }
+  };
+
   const eraseAll = () => {
     setLines([]);
     setDistanceLines([]);
@@ -197,130 +209,159 @@ const DrawingComponent = () => {
     setCrosshairLines([]); // Add this line to reset the crosshair lines
   };
 
-
   return (
-    <div>
-      <Stage
-        width={800}
-        height={600}
-        onMouseDown={handleMouseDown}
-        onMousemove={handleMouseMove}
-        onMouseup={handleMouseUp}
-      >
-        <Layer>
-          <Rect width={800} height={600} fill="white" />
-          {lines.map((line, i) => (
-            <React.Fragment key={i}>
-              {(line.tool === "line" ||
-                line.tool === "distance" ||
-                line.tool === "angle") && (
-                <Line points={line.points} stroke="red" />
-              )}
-              {line.tool === "dot" && (
-                <Circle
-                  x={line.points[0]}
-                  y={line.points[1]}
-                  radius={2}
-                  fill="red"
-                />
-              )}
-              {line.tool === "perpendicular" && (
-                <Line points={line.points} stroke="red" />
-              )}
-              {line.tool === "ellipse" && (
-                <Ellipse
-                  x={line.points[0]}
-                  y={line.points[1]}
-                  radiusX={Math.abs(line.points[2] - line.points[0]) / 2}
-                  radiusY={Math.abs(line.points[3] - line.points[1]) / 2}
-                  fill="transparent"
-                  stroke="red"
-                />
-              )}
-            </React.Fragment>
-          ))}
-          {angleLines.map((line, i) => (
-            <Line key={i} points={line.points} stroke="blue" />
-          ))}
-          {arcs.map((arc, i) => (
-            <Path key={i} data={arc.data} stroke="blue" fill="transparent" />
-          ))}
-          {distanceLines.map((line, i) => (
-            <Line key={i} points={line.points} stroke="green" />
-          ))}
-          {crosshairLines.map((line, index) => (
-            <Line key={index} points={line.points} stroke={line.stroke} />
-          ))}
-        </Layer>
-      </Stage>
-      <Button
-        variant="contained"
-        onClick={() => setMode("line")}
-        startIcon={<CreateIcon />}
-      >
-        Draw Line
-      </Button>
-      <Button
-        variant="contained"
-        onClick={() => setMode("dot")}
-        startIcon={<RadioButtonUncheckedIcon />}
-      >
-        Draw Dot
-      </Button>
-      <Button
-        variant="contained"
-        onClick={() => {
-          setMode("perpendicular");
-          direction.current = "horizontal";
+    <div style={{ display: "flex", height: "100vh" }}>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "20px",
+          width: "80px", // Adjust the width as needed
+          background: "#f0f0f0",
         }}
-        startIcon={<SwapVertIcon />}
       >
-        Draw Perpendicular
-      </Button>
-      <Button
-        variant="contained"
-        onClick={() => setMode("ellipse")}
-        startIcon={<PanoramaFishEyeIcon />}
-      >
-        Draw Ellipse
-      </Button>
-      <Button
-        variant="contained"
-        onClick={() => setMode("distance")}
-        startIcon={<StraightenIcon />}
-      >
-        Measure Distance
-      </Button>
-      <Button
-        variant="contained"
-        onClick={() => setMode("angle")}
-        startIcon={<Rotate90DegreesCcwIcon />}
-      >
-        Measure Angle
-      </Button>
-      <Button
-        variant="contained"
-        onClick={() => setMode("crosshair")}
-        startIcon={<GpsFixedIcon />}
-      >
-        Crosshair
-      </Button>
-
-      <Button
-        variant="contained"
-        onClick={() => eraseAll()}
-        startIcon={<DeleteIcon />}
-      >
-        Erase All
-      </Button>
-      {mode === "distance" && (
-        <div style={{ backgroundColor: "white" }}>
-          Total Distance: {totalDistance} mm
-        </div>
-      )}
-      {mode === "angle" && (
-        <div style={{ backgroundColor: "white" }}>Angle: {angle} °</div>
-      )}
+        <Tooltip title="Draw Line">
+          <IconButton onClick={() => setMode("line")}>
+            <CreateIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Draw Dot">
+          <IconButton onClick={() => setMode("dot")}>
+            <RadioButtonUncheckedIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Draw Perpendicular">
+          <IconButton
+            onClick={() => {
+              setMode("perpendicular");
+              direction.current = "horizontal";
+            }}
+          >
+            <SwapVertIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Draw Ellipse">
+          <IconButton onClick={() => setMode("ellipse")}>
+            <PanoramaFishEyeIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Measure Distance">
+          <IconButton onClick={() => setMode("distance")}>
+            <StraightenIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Measure Angle">
+          <IconButton onClick={() => setMode("angle")}>
+            <Rotate90DegreesCcwIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Crosshair">
+          <IconButton onClick={() => setMode("crosshair")}>
+            <GpsFixedIcon />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Erase All">
+          <IconButton onClick={() => eraseAll()}>
+            <DeleteIcon />
+          </IconButton>
+        </Tooltip>
+      </div>
+      <div style={{ position: "relative", flex: 1 }}>
+        {mode === "distance" && (
+          <div
+            style={{
+              position: "absolute",
+              top: "10px",
+              right: "10px",
+              backgroundColor: "white",
+              padding: "10px",
+              borderRadius: "5px",
+              boxShadow: "0 0 5px rgba(0, 0, 0, 0.1)",
+              height: "50px",
+              width: "200px",
+            }}
+          >
+            {getToolInfo()}
+          </div>
+        )}
+        {mode === "angle" && (
+          <div
+            style={{
+              position: "absolute",
+              top: "10px",
+              right: "10px",
+              backgroundColor: "white",
+              padding: "10px",
+              borderRadius: "5px",
+              boxShadow: "0 0 5px rgba(0, 0, 0, 0.1)",
+              height: "50px",
+              width: "200px",
+            }}
+          >
+            {getToolInfo()}
+          </div>
+        )}
+        <Stage
+          width={800}
+          height={600}
+          onMouseDown={handleMouseDown}
+          onMousemove={handleMouseMove}
+          onMouseup={handleMouseUp}
+        >
+          <Layer>
+            <Rect width={800} height={800} fill="white" justifyContent='center' alignItems='center' />
+            {lines.map((line, i) => (
+              <React.Fragment key={i}>
+                {(line.tool === "line" ||
+                  line.tool === "distance" ||
+                  line.tool === "angle") && (
+                  <Line points={line.points} stroke="red" />
+                )}
+                {line.tool === "dot" && (
+                  <Circle
+                    x={line.points[0]}
+                    y={line.points[1]}
+                    radius={2}
+                    fill="red"
+                  />
+                )}
+                {line.tool === "perpendicular" && (
+                  <Line points={line.points} stroke="red" />
+                )}
+                {line.tool === "ellipse" && (
+                  <Ellipse
+                    x={line.points[0]}
+                    y={line.points[1]}
+                    radiusX={Math.abs(line.points[2] - line.points[0]) / 2}
+                    radiusY={Math.abs(line.points[3] - line.points[1]) / 2}
+                    fill="transparent"
+                    stroke="red"
+                  />
+                )}
+              </React.Fragment>
+            ))}
+            {angleLines.map((line, i) => (
+              <Line key={i} points={line.points} stroke="blue" />
+            ))}
+            {arcs.map((arc, i) => (
+              <Path key={i} data={arc.data} stroke="blue" fill="transparent" />
+            ))}
+            {distanceLines.map((line, i) => (
+              <Line key={i} points={line.points} stroke="green" />
+            ))}
+            {crosshairLines.map((line, index) => (
+              <Line key={index} points={line.points} stroke={line.stroke} />
+            ))}
+          </Layer>
+        </Stage>
+      </div>
+      <div style={{ marginTop: "10px" }}>
+        {measurements.map((measurement, index) => (
+          <div key={index}>{measurement}</div>
+        ))}
+      </div>
     </div>
   );
 };
