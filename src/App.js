@@ -23,6 +23,7 @@ import Comments from "./pages/Comments";
 import AllTests from "./pages/AllTests";
 import ComingSoon from "./pages/ComingSoon";
 import Canvas2 from "./components/questionelements/Canvas2";
+import Annexes from "./pages/Annexes";
 
 const App = () => {
   return (
@@ -47,6 +48,7 @@ const App = () => {
           <Route exact path="/alltests" component={AllTests} />{" "}
           <Route exact path="/comingsoon" component={ComingSoon} />
           <Route exact path="/canvas" component={Canvas2} />{" "}
+          <Route exact path='/annexes' component={Annexes}/>
         </div>{" "}
       </Router>{" "}
     </AuthProvider>

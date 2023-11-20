@@ -12,6 +12,10 @@ import FeedbackIcon from "@mui/icons-material/Feedback";
 import BookIcon from "@mui/icons-material/Book";
 import AnnouncementIcon from "@mui/icons-material/Announcement";
 import ContactMailIcon from "@mui/icons-material/ContactMail";
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
+import SaveAltIcon from "@mui/icons-material/SaveAlt";
+import SearchIcon from "@mui/icons-material/Search";
+import AssessmentIcon from "@mui/icons-material/Assessment";
 
 const Dashboard = () => {
   const history = useHistory();
@@ -44,7 +48,7 @@ const Dashboard = () => {
       }}
     >
       <Navbar2 />
-      <div style={{ display: "flex", flexDirection: "row", marginTop:'30px' }}>
+      <div style={{ display: "flex", flexDirection: "row", marginTop: "30px" }}>
         <div
           style={{
             width: "309px",
@@ -84,7 +88,7 @@ const Dashboard = () => {
           <Typography
             style={{
               color: "#FFF",
-              marginTop:'20px',
+              marginTop: "20px",
               fontFamily: "Mulish",
               fontSize: "16px",
               fontStyle: "normal",
@@ -117,7 +121,7 @@ const Dashboard = () => {
               fontWeight: 300,
               lineHeight: "normal",
               textTransform: "uppercase",
-              marginTop:'80px',
+              marginTop: "80px",
             }}
           >
             Last 25 scores achieved on completed tests
@@ -153,6 +157,10 @@ const Dashboard = () => {
             cursor: "pointer",
           }}
         >
+          <AddCircleOutlineIcon
+            style={{ color: "#FFF", marginRight: "10px" }}
+          />{" "}
+          {/* Add the icon */}
           <Typography
             style={{
               color: "#FFF",
@@ -176,7 +184,7 @@ const Dashboard = () => {
               fontWeight: 700,
               lineHeight: "normal",
               textTransform: "capitalize",
-              marginTop: "60px",
+              marginTop: "40px",
             }}
           >
             Create a study or exam test
@@ -191,9 +199,10 @@ const Dashboard = () => {
             borderLeft: "3px solid #F1870C",
             marginRight: "30px",
             cursor: "pointer",
-            justifyContent: "left",
           }}
         >
+          <SaveAltIcon style={{ color: "#FFF", marginRight: "10px" }} />{" "}
+          {/* Add the icon */}
           <Typography
             style={{
               color: "#FFF",
@@ -217,7 +226,7 @@ const Dashboard = () => {
               fontWeight: 700,
               lineHeight: "normal",
               textTransform: "capitalize",
-              marginTop: "60px",
+              marginTop: "40px",
             }}
           >
             Create a study or exam test
@@ -234,6 +243,8 @@ const Dashboard = () => {
             cursor: "pointer",
           }}
         >
+          <SearchIcon style={{ color: "#FFF", marginRight: "10px" }} />{" "}
+          {/* Add the icon */}
           <Typography
             style={{
               color: "#FFF",
@@ -257,7 +268,7 @@ const Dashboard = () => {
               fontWeight: 700,
               lineHeight: "normal",
               textTransform: "capitalize",
-              marginTop: "60px",
+              marginTop: "40px",
             }}
           >
             Create a study or exam test
@@ -274,6 +285,8 @@ const Dashboard = () => {
             cursor: "pointer",
           }}
         >
+          <AssessmentIcon style={{ color: "#FFF", marginRight: "10px" }} />{" "}
+          {/* Add the icon */}
           <Typography
             style={{
               color: "#FFF",
@@ -297,7 +310,7 @@ const Dashboard = () => {
               fontWeight: 700,
               lineHeight: "normal",
               textTransform: "capitalize",
-              marginTop: "60px",
+              marginTop: "40px",
             }}
           >
             Create a study or exam test
@@ -454,7 +467,7 @@ const Dashboard = () => {
             display: "flex",
             flexDirection: "column",
             cursor: "pointer",
-            marginTop:'20px',
+            marginTop: "20px",
           }}
         >
           {[
@@ -529,7 +542,7 @@ const Dashboard = () => {
             flexDirection: "column",
             justifyContent: "center",
             alignItems: "center",
-            marginTop:'20px',
+            marginTop: "20px",
           }}
         >
           <div
