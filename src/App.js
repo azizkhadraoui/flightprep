@@ -41,7 +41,7 @@ const App = () => {
           <PrivateRoute exact path="/subscription" component={Subscription} />{" "}
           <PrivateRoute exact path="/exam" component={Exam} />{" "}
           <PrivateRoute exact path="/dashboard" component={Dashboard} />{" "}
-          <PrivateRoute exact path="/profile" component={Profile} />{" "}
+          <Route exact path="/profile" component={Profile} />{" "}
           <Route exact path="/reset-flags" component={ResetFlags} />{" "}
           <Route exact path="/notes" component={Notes} />{" "}
           <Route exact path="/comments" component={Comments} />{" "}
