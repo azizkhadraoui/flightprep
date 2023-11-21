@@ -20,7 +20,7 @@ const LandingPage = () => {
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        backgroundImage: `url("/landingpage.svg")`, // Update the path if needed
+        backgroundImage: `url("/landingpage.svg")`,
         backgroundSize: "cover",
         backgroundPosition: "top center",
         backgroundAttachment:'fixed',
