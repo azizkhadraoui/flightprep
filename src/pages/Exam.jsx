@@ -43,7 +43,7 @@ const Exam = () => {
   };
 
   const [questions, setQuestions] = useState([]);
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const [selectedAnswers, setSelectedAnswers] = useState(Array(questions.length).fill(null));
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answeredQuestions, setAnsweredQuestions] = useState(
     new Array(questions.length).fill(null)
@@ -63,7 +63,11 @@ const Exam = () => {
   const handleNextQuestion = () => {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
-      setSelectedAnswer(null);
+      setSelectedAnswers(prevAnswers => {
+        const newAnswers = [...prevAnswers];
+        newAnswers[currentQuestion + 1] = null;
+        return newAnswers;
+      });
     }
   };
 
@@ -567,14 +571,16 @@ const Exam = () => {
             justifyContent="space-between"
             alignItems="center"
             marginTop="20px"
-            marginLeft="20px"
+            PaddingLeft="40px"
           >
             {contentType === "question" && (
               <ExamQuestion
-                questions={questions}
-                currentQuestion={currentQuestion}
-                setCurrentQuestion={setCurrentQuestion}
-              />
+              questions={questions}
+              currentQuestion={currentQuestion}
+              setCurrentQuestion={setCurrentQuestion}
+              selectedAnswers={selectedAnswers}
+              setSelectedAnswers={setSelectedAnswers}
+            />
             )}
             {contentType === "explanation" && (
               <ExplanationComponent
