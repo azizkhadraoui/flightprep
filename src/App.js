@@ -23,6 +23,7 @@ import Comments from "./pages/Comments";
 import AllTests from "./pages/AllTests";
 import ComingSoon from "./pages/ComingSoon";
 import Canvas2 from "./components/questionelements/Canvas2";
+import Annexes from "./pages/Annexes";
 
 const App = () => {
   return (
@@ -40,13 +41,14 @@ const App = () => {
           <PrivateRoute exact path="/subscription" component={Subscription} />{" "}
           <Route exact path="/exam" component={Exam} />{" "}
           <PrivateRoute exact path="/dashboard" component={Dashboard} />{" "}
-          <PrivateRoute exact path="/profile" component={Profile} />{" "}
+          <Route exact path="/profile" component={Profile} />{" "}
           <Route exact path="/reset-flags" component={ResetFlags} />{" "}
           <Route exact path="/notes" component={Notes} />{" "}
           <Route exact path="/comments" component={Comments} />{" "}
           <Route exact path="/alltests" component={AllTests} />{" "}
           <Route exact path="/comingsoon" component={ComingSoon} />
           <Route exact path="/canvas" component={Canvas2} />{" "}
+          <Route exact path='/annexes' component={Annexes}/>
         </div>{" "}
       </Router>{" "}
     </AuthProvider>
