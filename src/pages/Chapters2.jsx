@@ -89,6 +89,7 @@ const Chapters2 = () => {
     const endpoint = `/${mode}?subject=${subject}&subtopic=${subtopic}&filters=${JSON.stringify(
       filters
     )}&numQuestions=${numQuestions}`;
+    console.log(endpoint);
     const response = await axios.get(endpoint);
     setQuestions(response.data);
     setTotalCount(response.data.length);

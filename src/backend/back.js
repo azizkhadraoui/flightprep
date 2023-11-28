@@ -33,7 +33,7 @@ function handleDisconnect() {
     });
 }
 
-handleDisconnect();
+// handleDisconnect();
 
 // Set up middleware
 app.use(express.json());
