@@ -84,24 +84,9 @@ const Chapters2 = () => {
     setSubtopic(event.target.value);
   };
 
-  const fetchQuestions = async (mode, subject, subtopic, filters) => {
-    // Construct the API endpoint with filter parameters
-    const endpoint = `/${mode}?subject=${subject}&subtopic=${subtopic}&filters=${JSON.stringify(
-      filters
-    )}&numQuestions=${numQuestions}`;
-    console.log(endpoint);
-    const response = await axios.get(endpoint);
-    setQuestions(response.data);
-    setTotalCount(response.data.length);
-  };
 
   const handleFilterChange = (event) => {
     setFilters({ ...filters, [event.target.name]: event.target.checked });
-    // Fetch questions with new filters
-    fetchQuestions(subject, subtopic, {
-      ...filters,
-      [event.target.name]: event.target.checked,
-    });
   };
 
   const handleSliderChange = (event, newValue) => {

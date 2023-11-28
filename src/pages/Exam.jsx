@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect,useRef } from "react";
 import axios from "axios";
 import Navbar2 from "../components/navbar/Navbar2";
 import { Box, Typography, Grid, Button } from "@mui/material";
@@ -27,11 +27,49 @@ import subjectData from "./subjectData.json";
 
 const db = getFirestore(app);
 const auth = getAuth(app);
+
 const Exam = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
+  
+  // Get values for specific parameters
   const selectedSubtopicId = queryParams.get("subtopic");
   const selectedTopicId = queryParams.get("subject");
+  
+  // Get the entire query string as an object
+  const queryString = queryParams.toString(); // Get the entire query string
+  const allParams = Object.fromEntries(queryParams.entries());
+  
+  // Now, allParams is an object containing all parameters from the query string
+  
+  
+  // Example usage of specific parameters
+  const filters = JSON.parse(allParams.filters || '{}'); // Parse the filters parameter as JSON
+  const numQuestions = parseInt(allParams.numQuestions || '0', 10); // Parse the numQuestions parameter as an integer
+  //console.log(filters);
+  const [currentUserId, setCurrentUserId] = useState();
+  const isMounted = useRef(true); // Add this useRef import: import { useRef } from 'react';
+
+  useEffect(() => {
+    isMounted.current = true;
+
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (isMounted.current) {
+        if (user) {
+          setCurrentUserId(user.uid);
+          console.log('User ID inside onAuthStateChanged:', user.uid);
+        } else {
+          setCurrentUserId(null);
+        }
+      }
+    });
+
+    return () => {
+      isMounted.current = false;
+      unsubscribe(); // Cleanup function to unsubscribe when component unmounts
+    };
+  }, []);
+  
 
   const formatTime = (seconds) => {
     const hours = Math.floor(seconds / 3600);
@@ -59,6 +97,8 @@ const Exam = () => {
   const [showResults, setShowResults] = useState(false); // Whether to show results
   const [correctlyAnsweredCount, setCorrectlyAnsweredCount] = useState(0);
   //const questionId = questions[currentQuestion].id;
+  // Add this code to define currentUserId
+ 
 
   const handleNextQuestion = () => {
     if (currentQuestion < questions.length - 1) {
@@ -70,15 +110,28 @@ const Exam = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        console.log(
-          process.env.REACT_APP_BACKEND_URL
-        );
-        const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/${selectedTopicId}/${selectedSubtopicId}`
-        );
-        
-        const data = response.data;
-        setQuestions(data);
+        let questionIds = [];
+    
+        // Check if the greenFlagged filter is true
+        if (filters.greenFlagged) {
+          // Fetch question IDs from the greenFlagged collection under the current user
+          const greenFlaggedCollectionRef = collection(db, `users/${currentUserId}/greenFlagged`);
+          const greenFlaggedSnapshot = await getDocs(greenFlaggedCollectionRef);
+          console.log(currentUserId);
+    
+          greenFlaggedSnapshot.forEach((doc) => {
+            questionIds.push(doc.data().questionId);
+          });
+          console.log(questionIds);
+        } else {
+          // Fetch question IDs based on the selected topic and subtopic
+          // Adjust this part based on your actual data structure
+          const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/${selectedTopicId}/${selectedSubtopicId}`);
+          questionIds = response.data.map(question => question.id);
+        }
+    
+        // Store the question IDs in the state
+        setQuestions(questionIds);
       } catch (error) {
         console.error("Error fetching data from the API:", error);
       }
@@ -109,22 +162,9 @@ const Exam = () => {
     return () => clearInterval(timer);
   }, [remainingTime, answeredQuestions, questions.length]);
 
-  const db = getFirestore(app);
-  const auth = getAuth(app);
 
-  // Add this code to define currentUserId
-  const [currentUserId, setCurrentUserId] = useState(null);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setCurrentUserId(user.uid);
-      } else {
-        setCurrentUserId(null);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
+  
+  
 
   const getSubjectNameById = (subjectsData, subjectId) => {
     for (const subject of subjectsData) {
