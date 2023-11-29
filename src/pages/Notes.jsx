@@ -32,23 +32,23 @@ const Notes = () => {
       backgroundSize: 'cover',
       backgroundPosition: 'center center',
       display: 'flex',
+      alignItems:'center',
       flexDirection: 'column',
-      alignItems: 'center',
       justifyContent: 'flex-start',
       height: '100vh',
     }}
   >
       <Navbar2 />
-      <Box>
+      <Box style={{margin:'20px', minWidth:'1000px'}}>
         <Paper elevation={3} style={{ padding: '20px', width: '80%' }}>
-          <Typography variant="h5" style={{ color: 'white', textAlign: 'center', marginBottom: '20px' }}>
+          <Typography variant="h5" style={{ color: 'black', marginTop: '5px' }}>
             Notes
           </Typography>
           <List>
             {notes.map((note, index) => (
-              <ListItem key={index}>
-                <ListItemText primary={note.text} secondary={`User: ${note.user}, Question ID: ${note.questionId}`} />
-              </ListItem>
+              <ListItem key={index} style={{ padding: '10px', margin: '10px 0' }}>
+              <ListItemText primary={note.text} secondary={`User: ${note.user}, Question ID: ${note.questionId}`} />
+            </ListItem>
             ))}
           </List>
         </Paper>

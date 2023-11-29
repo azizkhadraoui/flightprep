@@ -38,9 +38,9 @@ const Comments = () => {
     }}
   >
     <Navbar2 />
-    <Box>
+    <Box style={{margin:'20px', minWidth:'1000px'}}>
         <Paper elevation={3} style={{ padding: '20px', width: '80%' }}>
-          <Typography variant="h5" style={{ color: 'white', textAlign: 'center', marginBottom: '20px' }}>
+          <Typography variant="h5" style={{ color: 'black', marginTop: '5px' }}>
             Comments
           </Typography>
           <List>

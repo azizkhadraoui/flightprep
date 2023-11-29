@@ -22,7 +22,6 @@ import {
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useLocation } from "react-router-dom";
 import FlightComp from "../components/questionelements/compass/FlightComp";
-import Canvas from "../components/questionelements/compass/Canvas";
 import subjectData from "./subjectData.json";
 
 const db = getFirestore(app);
@@ -312,14 +311,6 @@ const Exam = () => {
 
   const [showFlightComp, setShowFlightComp] = useState(false);
 
-  const openFlightComp = () => {
-    setShowFlightComp(true);
-  };
-
-  const closeFlightComp = () => {
-    setShowFlightComp(false);
-  };
-
   return (
     <div
       style={{
@@ -556,7 +547,7 @@ const Exam = () => {
             </Button>
             <Button
               variant="text"
-              onClick={openFlightComp}
+              onClick={() => setShowFlightComp(true)}
               sx={{
                 color: "#FFF",
                 fontFamily: "Mulish",
@@ -606,7 +597,7 @@ const Exam = () => {
                 currentQuestion={currentQuestion}
                 setCurrentQuestion={setCurrentQuestion}
               />
-            )}
+            )} 
           </div>
         </div>
       </div>
@@ -665,21 +656,7 @@ const Exam = () => {
         )}
       </div>
       <div>
-        {showFlightComp && (
-          <div
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent black background
-              zIndex: 9999, // Ensure it's above other content
-            }}
-          >
-            <Canvas />
-          </div>
-        )}
+      {showFlightComp && <FlightComp closeModal={() => setShowFlightComp(false)} />}
       </div>
     </div>
   );

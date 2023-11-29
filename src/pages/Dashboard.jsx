@@ -156,11 +156,11 @@ const Dashboard = () => {
             marginRight: "30px",
             cursor: "pointer",
           }}
+          onClick={() => history.push("/chapters")} // Updated here
         >
           <AddCircleOutlineIcon
             style={{ color: "#FFF", marginRight: "10px" }}
           />{" "}
-          {/* Add the icon */}
           <Typography
             style={{
               color: "#FFF",
@@ -200,9 +200,9 @@ const Dashboard = () => {
             marginRight: "30px",
             cursor: "pointer",
           }}
+          onClick={() => history.push("/alltests")} // Updated here
         >
           <SaveAltIcon style={{ color: "#FFF", marginRight: "10px" }} />{" "}
-          {/* Add the icon */}
           <Typography
             style={{
               color: "#FFF",

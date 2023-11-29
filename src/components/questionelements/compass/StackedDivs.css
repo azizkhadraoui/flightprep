@@ -4,7 +4,9 @@
   align-items: center;
   height: 500px;
   margin: 0;
-  background-color: #f0f0f0; /* Or any color you prefer */
+  height: 50%;
+  width: 50%;
+  background-color: transparent; /* Or any color you prefer */
 }
 .diagonal-div {
   width: 358px;
