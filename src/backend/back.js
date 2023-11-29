@@ -14,23 +14,27 @@ const pool = mysql.createPool({
     queueLimit: 0
 });
 
-// Set up middleware
 app.use(express.json());
 app.use(cors());
 
-// Define routes and handlers
 app.get("/", (req, res) => {
     res.json("This is the backend side");
 });
 
-app.get("/data/:xx/:yy", async (req, res) => {
+// Endpoint to fetch questions based on an array of question IDs
+app.post("/data/questions", async (req, res) => {
     try {
-        const xx = req.params.xx;
-        const yy = req.params.yy;
-        const q = `SELECT * FROM questions WHERE id LIKE '${xx}-${yy}%'`;
+        const questionIds = req.body.questionIds; // Assuming the frontend sends an array of question IDs in the request body
+        if (!questionIds || !Array.isArray(questionIds) || questionIds.length === 0) {
+            return res.status(400).json({ error: 'Invalid or empty questionIds array in the request body' });
+        }
 
-        const [rows, fields] = await pool.query(q);
-        
+        // Use parameterized queries to prevent SQL injection
+        const q = 'SELECT * FROM questions WHERE TRIM(id) IN (?)';
+        const [rows, fields] = await pool.query(q, [questionIds]);
+        //console.log("Rows from the database:", rows);
+        //console.log("Generated SQL Query:", pool.format(q, [questionIds])); 
+
         return res.json(rows);
     } catch (err) {
         console.error(err);
@@ -38,14 +42,30 @@ app.get("/data/:xx/:yy", async (req, res) => {
     }
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).send('Something broke!');
-    next(err); // Call next to pass the error to the next middleware
+// Endpoint to fetch questions based on xx and yy parameters
+app.get("/data/:xx/:yy", async (req, res) => {
+    try {
+        const xx = req.params.xx;
+        const yy = req.params.yy;
+
+        // Use parameterized queries to prevent SQL injection
+        const q = 'SELECT * FROM questions WHERE id LIKE ?';
+        const [rows, fields] = await pool.query(q, [`${xx}-${yy}%`]);
+
+        return res.json(rows);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'An error occurred while querying the database' });
+    }
 });
 
-// Start the server
+// Improved error handling middleware
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ error: 'Internal Server Error' });
+    next(err); 
+});
+
 app.listen(8800, () => {
     console.log("Connected to backend");
 });

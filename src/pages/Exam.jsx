@@ -1,4 +1,4 @@
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import Navbar2 from "../components/navbar/Navbar2";
 import { Box, Typography, Grid, Button } from "@mui/material";
@@ -31,45 +31,30 @@ const auth = getAuth(app);
 const Exam = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  
+
   // Get values for specific parameters
   const selectedSubtopicId = queryParams.get("subtopic");
   const selectedTopicId = queryParams.get("subject");
-  
+
   // Get the entire query string as an object
-  const queryString = queryParams.toString(); // Get the entire query string
+  const queryString = queryParams.toString();
   const allParams = Object.fromEntries(queryParams.entries());
-  
-  // Now, allParams is an object containing all parameters from the query string
-  
-  
+
   // Example usage of specific parameters
-  const filters = JSON.parse(allParams.filters || '{}'); // Parse the filters parameter as JSON
-  const numQuestions = parseInt(allParams.numQuestions || '0', 10); // Parse the numQuestions parameter as an integer
-  //console.log(filters);
+  const filters = JSON.parse(allParams.filters || '{}');
+  const numQuestions = parseInt(allParams.numQuestions || '0', 10);
+
   const [currentUserId, setCurrentUserId] = useState();
-  const isMounted = useRef(true); // Add this useRef import: import { useRef } from 'react';
-
   useEffect(() => {
-    isMounted.current = true;
-
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (isMounted.current) {
-        if (user) {
-          setCurrentUserId(user.uid);
-          console.log('User ID inside onAuthStateChanged:', user.uid);
-        } else {
-          setCurrentUserId(null);
-        }
+      if (user) {
+        setCurrentUserId(user.uid);
+      } else {
+        setCurrentUserId(null);
       }
     });
-
-    return () => {
-      isMounted.current = false;
-      unsubscribe(); // Cleanup function to unsubscribe when component unmounts
-    };
+    return () => unsubscribe();
   }, []);
-  
 
   const formatTime = (seconds) => {
     const hours = Math.floor(seconds / 3600);
@@ -88,17 +73,15 @@ const Exam = () => {
   );
 
   const [contentType, setContentType] = useState("question");
+
   const handleButtonClick = (buttonType) => {
     setContentType(buttonType);
   };
 
-  const [remainingTime, setRemainingTime] = useState(3600); // Initial time is 1 hour (3600 seconds)
+  const [remainingTime, setRemainingTime] = useState(3600);
 
-  const [showResults, setShowResults] = useState(false); // Whether to show results
+  const [showResults, setShowResults] = useState(false);
   const [correctlyAnsweredCount, setCorrectlyAnsweredCount] = useState(0);
-  //const questionId = questions[currentQuestion].id;
-  // Add this code to define currentUserId
- 
 
   const handleNextQuestion = () => {
     if (currentQuestion < questions.length - 1) {
@@ -109,77 +92,139 @@ const Exam = () => {
         return newAnswers;
       });
     }
-  };
-
+  };  
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        let questionIds = [];
-    
-        // Check if the greenFlagged filter is true
-        if (filters.greenFlagged) {
-          // Fetch question IDs from the greenFlagged collection under the current user
-          const greenFlaggedCollectionRef = collection(db, `users/${currentUserId}/greenFlagged`);
-          const greenFlaggedSnapshot = await getDocs(greenFlaggedCollectionRef);
-          console.log(currentUserId);
-    
-          greenFlaggedSnapshot.forEach((doc) => {
-            questionIds.push(doc.data().questionId);
-          });
-          console.log(questionIds);
-        } else {
-          // Fetch question IDs based on the selected topic and subtopic
-          // Adjust this part based on your actual data structure
-          const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/${selectedTopicId}/${selectedSubtopicId}`);
-          questionIds = response.data.map(question => question.id);
+    if (currentUserId && selectedSubtopicId) {
+      const fetchData = async () => {
+        try {
+          let questionIds = [];
+          if (Object.values(filters).some(filter => filter)) {  
+          if (filters.greenFlagged) {
+            const greenFlaggedCollectionRef = collection(db, `users/${currentUserId}/greenFlagged`);
+            const greenFlaggedSnapshot = await getDocs(greenFlaggedCollectionRef);
+  
+            greenFlaggedSnapshot.forEach((doc) => {
+              questionIds.push(doc.data().questionId);
+            });
+          }
+
+          if (filters.redFlaggedQuestions) {
+            const redFlaggedCollectionRef = collection(db, `users/${currentUserId}/redFlagged`);
+            const redFlaggedSnapshot = await getDocs(redFlaggedCollectionRef);
+  
+            redFlaggedSnapshot.forEach((doc) => {
+              questionIds.push(doc.data().questionId);
+            });
+          }
+
+          if (filters.yellowFlaggedQuestions) {
+            const yellowFlaggedCollectionRef = collection(db, `users/${currentUserId}/yellowFlagged`);
+            const yellowFlaggedSnapshot = await getDocs(yellowFlaggedCollectionRef);
+  
+            yellowFlaggedSnapshot.forEach((doc) => {
+              questionIds.push(doc.data().questionId);
+            });
+          }
+
+          if (filters.markedDoNotShow) {
+            const markedDoNotShowCollectionRef = collection(db, `users/${currentUserId}/dont`);
+            const markedDoNotShowSnapshot = await getDocs(markedDoNotShowCollectionRef);
+  
+            markedDoNotShowSnapshot.forEach((doc) => {
+              questionIds.push(doc.data().questionId);
+            });
+          }
+
+          if (filters.pinned) {
+            const pinnedCollectionRef = collection(db, `users/${currentUserId}/pinned`);
+            const pinnedSnapshot = await getDocs(pinnedCollectionRef);
+  
+            pinnedSnapshot.forEach((doc) => {
+              questionIds.push(doc.data().questionId);
+            });
+          }
+
+
+          if (filters.reviewQuestions) {
+            const reviewQuestionsCollectionRef = collection(db, `users/${currentUserId}/user_choices`);
+            const reviewQuestionsSnapshot = await getDocs(reviewQuestionsCollectionRef);
+  
+            reviewQuestionsSnapshot.forEach((doc) => {
+              questionIds.push(doc.data().questionId);
+            });
+          }
+
+
+          if (filters.incorrectlyAnswered) {
+            const reviewQuestionsCollectionRef = collection(db, `users/${currentUserId}/user_choices`);
+            const reviewQuestionsSnapshot = await getDocs(reviewQuestionsCollectionRef);
+        
+            reviewQuestionsSnapshot.forEach((doc) => {
+                // Check if the isCorrect field is false before pushing the questionId
+                if (doc.data().isCorrect === false) {
+                    questionIds.push(doc.data().questionId);
+                }
+            });
         }
-    
-        // Store the question IDs in the state
-        setQuestions(questionIds);
-      } catch (error) {
-        console.error("Error fetching data from the API:", error);
+
+
+        if (filters.studyTestWithCorrectAnswers) {
+          const reviewQuestionsCollectionRef = collection(db, `users/${currentUserId}/user_choices`);
+          const reviewQuestionsSnapshot = await getDocs(reviewQuestionsCollectionRef);
+      
+          reviewQuestionsSnapshot.forEach((doc) => {
+              // Check if the isCorrect field is false before pushing the questionId
+              if (doc.data().isCorrect === true) {
+                  questionIds.push(doc.data().questionId);
+              }
+          });
       }
-    };
 
-    fetchData();
-  }, [selectedSubtopicId]);
+        }
+  
+          // Perform API call with questionIds using Axios
+          if (questionIds.length > 0) {
+            const apiUrl = (`${process.env.REACT_APP_BACKEND_URL}/questions`);            
+            const apiResponse = await axios.post(apiUrl, { questionIds });
+            const data = apiResponse.data;
+            setQuestions(data);          }
+  
+          
+        } catch (error) {
+          console.error("Error fetching data from the API:", error);
+        }
+      };
+  
+      fetchData();
+    }
+  }, [currentUserId, selectedSubtopicId, filters, selectedTopicId]);
+  
 
-  // Use setInterval to update the remaining time every second
   useEffect(() => {
     const timer = setInterval(() => {
       if (remainingTime > 0) {
         setRemainingTime(remainingTime - 1);
       } else {
-        clearInterval(timer); // Stop the timer when it reaches zero
-        setShowResults(true); // Show results when the timer reaches zero
+        clearInterval(timer);
+        setShowResults(true);
 
-        // Calculate the percentage of correctly answered questions
-        const correctCount = answeredQuestions.filter(
-          (answer) => answer === true
-        ).length;
+        const correctCount = answeredQuestions.filter(answer => answer === true).length;
         const percentage = (correctCount / questions.length) * 100;
         setCorrectlyAnsweredCount(percentage);
       }
-    }, 1000); // Update every second
+    }, 1000);
 
-    // Cleanup the timer when the component unmounts
     return () => clearInterval(timer);
   }, [remainingTime, answeredQuestions, questions.length]);
-
-
-  
-  
 
   const getSubjectNameById = (subjectsData, subjectId) => {
     for (const subject of subjectsData) {
       const subtopic = subject.Subtopics.find((sub) => sub.ID === subjectId);
       if (subtopic) {
-        console.log(subtopic.Name)
         return subtopic.Name;
-        
       }
     }
-    return "Subject Not Found"; // Return a default value if no matching subject is found
+    return "Subject Not Found";
   };
 
   const handleFinishTest = async () => {
@@ -188,35 +233,33 @@ const Exam = () => {
         console.error("User not authenticated");
         return;
       }
-  
+
       const userChoicesCollection = collection(db, `users/${currentUserId}/tests`);
       const userChoicesSnapshot = await getDocs(userChoicesCollection);
-  
+
       const correctCount = userChoicesSnapshot.docs.reduce((count, doc) => {
         const data = doc.data();
         return data.isCorrect ? count + 1 : count;
       }, 0);
-  
+
       const totalQuestions = userChoicesSnapshot.size;
       const percentage = (correctCount / totalQuestions) * 100;
-      console.log("Correct Count:", correctCount);
-      console.log("Total Questions:", totalQuestions);
-  
-      setCorrectlyAnsweredCount(percentage); // Set the percentage of correct answers
-      setShowResults(true); // Show results
-  
+
+      setCorrectlyAnsweredCount(percentage);
+      setShowResults(true);
+
       const subtopicName = getSubjectNameById(subjectData, selectedSubtopicId);
       const date = serverTimestamp();
-  
+
       const examResult = {
         subtopicName,
         date,
         result: percentage,
       };
-  
+
       const resultsCollection = collection(db, "results");
       const subtopicDoc = await getDoc(resultsCollection.doc(examResult.subtopicName));
-  
+
       if (!subtopicDoc.exists()) {
         await addDoc(resultsCollection.doc(examResult.subtopicName), examResult);
         console.log("Result document created for subtopic:", examResult.subtopicName);
@@ -227,121 +270,44 @@ const Exam = () => {
       console.error("Error calculating correct answers or saving results: ", error);
     }
   };
-  
 
-  const handlePinClick = async (questionId) => {
+  const handleFlagClick = async (flagType) => {
     try {
       const questionId = questions[currentQuestion].id;
-      const pinFlaggedQuestionsRef = doc(
-        db,
-        `users/${currentUserId}/pinned`,
-        questionId
-      );
-      const pinFlaggedQuestionsDoc = await getDoc(pinFlaggedQuestionsRef);
+      const flaggedQuestionsRef = doc(db, `users/${currentUserId}/${flagType}`, questionId);
+      const flaggedQuestionsDoc = await getDoc(flaggedQuestionsRef);
 
-      if (!pinFlaggedQuestionsDoc.exists()) {
-        await setDoc(pinFlaggedQuestionsRef, {
+      if (!flaggedQuestionsDoc.exists()) {
+        await setDoc(flaggedQuestionsRef, {
           questionId: questionId,
         });
-        console.log("Question pinned successfully.");
+        console.log(`Question flagged with ${flagType} successfully.`);
       } else {
-        console.log("Question is already pinned.");
+        console.log(`Question is already flagged with ${flagType}.`);
       }
     } catch (error) {
-      console.error("Error pinning the question:", error);
+      console.error(`Error flagging the question with ${flagType}:`, error);
     }
   };
 
-  const handleGreenFlagClick = async (questionId) => {
-    try {
-      const questionId = questions[currentQuestion].id;
-      const greenFlaggedQuestionsRef = doc(
-        db,
-        `users/${currentUserId}/greenFlagged`,
-        questionId
-      );
-      const greenFlaggedQuestionsDoc = await getDoc(greenFlaggedQuestionsRef);
-
-      if (!greenFlaggedQuestionsDoc.exists()) {
-        await setDoc(greenFlaggedQuestionsRef, {
-          questionId: questionId,
-        });
-        console.log("Question flagged with a green flag successfully.");
-      } else {
-        console.log("Question is already flagged with a green flag.");
-      }
-    } catch (error) {
-      console.error("Error flagging the question with a green flag:", error);
-    }
+  const handleNoClick = async () => {
+    handleFlagClick("dont");
   };
 
-  const handleRedFlagClick = async (questionId) => {
-    try {
-      const questionId = questions[currentQuestion].id;
-      const redFlaggedQuestionsRef = doc(
-        db,
-        `users/${currentUserId}/redFlagged`,
-        questionId
-      );
-      const redFlaggedQuestionsDoc = await getDoc(redFlaggedQuestionsRef);
-
-      if (!redFlaggedQuestionsDoc.exists()) {
-        await setDoc(redFlaggedQuestionsRef, {
-          questionId: questionId,
-        });
-        console.log("Question flagged with a red flag successfully.");
-      } else {
-        console.log("Question is already flagged with a red flag.");
-      }
-    } catch (error) {
-      console.error("Error flagging the question with a red flag:", error);
-    }
+  const handlePinClick = async () => {
+    handleFlagClick("pinned");
   };
 
-  const handleYellowFlagClick = async (questionId) => {
-    try {
-      const questionId = questions[currentQuestion].id;
-      const yellowFlaggedQuestionsRef = doc(
-        db,
-        `users/${currentUserId}/yellowFlagged`,
-        questionId
-      );
-      const yellowFlaggedQuestionsDoc = await getDoc(yellowFlaggedQuestionsRef);
-
-      if (!yellowFlaggedQuestionsDoc.exists()) {
-        await setDoc(yellowFlaggedQuestionsRef, {
-          questionId: questionId,
-        });
-        console.log("Question flagged with a yellow flag successfully.");
-      } else {
-        console.log("Question is already flagged with a yellow flag.");
-      }
-    } catch (error) {
-      console.error("Error flagging the question with a yellow flag:", error);
-    }
+  const handleGreenFlagClick = async () => {
+    handleFlagClick("greenFlagged");
   };
 
-  const handleNoClick = async (questionId) => {
-    try {
-      const questionId = questions[currentQuestion].id;
-      const dontFlaggedQuestionsRef = doc(
-        db,
-        `users/${currentUserId}/dont`,
-        questionId
-      );
-      const dontFlaggedQuestionsDoc = await getDoc(dontFlaggedQuestionsRef);
+  const handleYellowFlagClick = async () => {
+    handleFlagClick("yellowFlagged");
+  };
 
-      if (!dontFlaggedQuestionsDoc.exists()) {
-        await setDoc(dontFlaggedQuestionsRef, {
-          questionId: questionId,
-        });
-        console.log('Question marked as "don\'t show" successfully.');
-      } else {
-        console.log('Question is already marked as "don\'t show".');
-      }
-    } catch (error) {
-      console.error('Error marking the question as "don\'t show":', error);
-    }
+  const handleRedFlagClick = async () => {
+    handleFlagClick("redFlagged");
   };
 
   const [showFlightComp, setShowFlightComp] = useState(false);
@@ -673,8 +639,7 @@ const Exam = () => {
           <QuestionsMatrix
             currentQuestion={currentQuestion}
             setCurrentQuestion={setCurrentQuestion}
-            subject={selectedTopicId}
-            subtopic={selectedSubtopicId}
+            data={questions}
           />
         </div>
         {showResults && (

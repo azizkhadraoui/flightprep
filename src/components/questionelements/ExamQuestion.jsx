@@ -69,9 +69,7 @@ const ExamQuestion = ({ questions, currentQuestion, setCurrentQuestion, selected
             <div
               key={key}
             >
-              {console.log(selectedAnswer)}
-              {console.log(key)}
-              {console.log(selectedAnswer === key)}
+
               <Card style={selectedAnswers[currentQuestion] === key ? { backgroundColor: '#FFA500', color: '#FFFFFF' } : null}
               onClick={() => handleAnswerClick(key)}>
                 <CardContent>

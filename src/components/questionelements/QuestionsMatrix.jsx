@@ -1,32 +1,19 @@
 import React, { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
-import axios from "axios";
 
 const QuestionsMatrix = ({
   currentQuestion,
   setCurrentQuestion,
-  subject,
-  subtopic,
+  data,
 }) => {
   const [questions, setQuestions] = useState([]);
   const [pinnedQuestions, setPinnedQuestions] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/${subject}/${subtopic}`
-        );
-        const data = response.data;
-        setQuestions(data);
-      } catch (error) {
-        console.error("Error fetching data from the API:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
+    // Set initial state after the component has mounted
+    setQuestions(data);
+  }, [data]);
 
   const goToQuestion = (questionNumber) => {
     if (questionNumber >= 1 && questionNumber <= questions.length) {
