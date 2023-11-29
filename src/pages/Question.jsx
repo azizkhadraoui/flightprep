@@ -7,10 +7,8 @@ import QuestionComponent from "../components/questionelements/QuestionComponent"
 import ExplanationComponent from "../components/questionelements/ExplanationComponent";
 import NotesComponent from "../components/questionelements/NoteComponent";
 import Comments from "../components/questionelements/Comments";
-import TestMatrix from "../components/questionelements/TestMatrix";
+import ExamMatrix from "../components/questionelements/ExamMatrix";
 import app from "../base.js";
-import QuestionsMatrix from "../components/questionelements/QuestionsMatrix";
-
 import {
   getFirestore,
   collection,
@@ -24,7 +22,6 @@ import {
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useLocation } from "react-router-dom";
 import FlightComp from "../components/questionelements/compass/FlightComp";
-import Canvas from "../components/questionelements/compass/Canvas";
 import subjectData from "./subjectData.json";
 
 const db = getFirestore(app);
@@ -293,16 +290,17 @@ const Question = () => {
       );
     }
   };
+  const [selectedAnswers, setSelectedAnswers] = useState(Array(questions.length).fill(null));
+
+const handleAnswerSelect = (questionIndex, selectedAnswer) => {
+  setSelectedAnswers(prevAnswers => {
+    const newAnswers = [...prevAnswers];
+    newAnswers[questionIndex] = selectedAnswer;
+    return newAnswers;
+  });
+};
 
   const [showFlightComp, setShowFlightComp] = useState(false);
-
-  const openFlightComp = () => {
-    setShowFlightComp(true);
-  };
-
-  const closeFlightComp = () => {
-    setShowFlightComp(false);
-  };
 
   return (
     <div
@@ -516,7 +514,7 @@ const Question = () => {
           </Button>
           <Button
             variant="text"
-            onClick={openFlightComp}
+            onClick={() => setShowFlightComp(true)}
             sx={{
               color: "#FFF",
               fontFamily: "Mulish",
@@ -541,14 +539,11 @@ const Question = () => {
         >
           {contentType === "question" && (
             <QuestionComponent
-              currentQuestion={questions[currentQuestion]}
-              questions={questions}
-
-              /*contentType={contentType}
-              selectedAnswer={selectedAnswer}
-              setSelectedAnswer={setSelectedAnswer}
-              answeredQuestions={answeredQuestions}*/
-            />
+            currentQuestion={questions[currentQuestion]}
+            questions={questions}
+            selectedAnswer={selectedAnswers[currentQuestion]}
+            onAnswerSelect={(selectedAnswer) => handleAnswerSelect(currentQuestion, selectedAnswer)}
+          />
           )}
           {contentType === "explanation" && (
             <ExplanationComponent
@@ -593,23 +588,6 @@ const Question = () => {
           </div>
         )}
       </div>
-      <div>
-        {showFlightComp && (
-          <div
-            style={{
-              position: "fixed",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-              backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent black background
-              zIndex: 9999, // Ensure it's above other content
-            }}
-          >
-            <Canvas />
-          </div>
-        )}
-      </div>
       <div
         style={{
           marginRight: "5px",
@@ -636,12 +614,15 @@ const Question = () => {
         >
           Finish Test
         </Button>
-        <QuestionsMatrix
-            currentQuestion={currentQuestion}
-            setCurrentQuestion={setCurrentQuestion}
-            subject={selectedTopicId}
-            subtopic={selectedSubtopicId}
-          />
+        <ExamMatrix
+  currentQuestion={currentQuestion}
+  setCurrentQuestion={setCurrentQuestion}
+  data={questions}
+  selectedAnswers={selectedAnswers}
+/>
+      </div>
+      <div>
+      {showFlightComp && <FlightComp closeModal={() => setShowFlightComp(false)} />}
       </div>
     </div>
   );

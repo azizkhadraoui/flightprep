@@ -3,14 +3,13 @@ import { Typography, Card, CardContent } from '@mui/material';
 import app from '../../base.js';
 import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import questionAnnexes from '../../components/questionelements/annexes/annexes.js';
-import QuestionsMatrix from './QuestionsMatrix';
+
 
 
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-const QuestionComponent = ({ questions, currentQuestion }) => {
+const QuestionComponent = ({ questions, currentQuestion, onAnswerSelect }) => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
@@ -47,6 +46,7 @@ const QuestionComponent = ({ questions, currentQuestion }) => {
     } catch (error) {
       console.error('Error writing document: ', error);
     }
+    onAnswerSelect(answerKey);
   };
 
   const isCorrectAnswer = (answerKey) => {
@@ -97,7 +97,6 @@ const QuestionComponent = ({ questions, currentQuestion }) => {
       ) : (
         <Typography variant="h6">Loading...</Typography>
       )}
-   
     </div>
   );
 };
