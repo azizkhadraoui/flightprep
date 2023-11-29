@@ -2,10 +2,12 @@ import React, { useState, useRef, useEffect } from "react";
 import Draggable from "react-draggable";
 import "./StackedDivs.css";
 
-const StackedDivs = () => {
+const E6B = ({ setRotation, setRotatableBounds}) => {
   const [rotation1, setRotation1] = useState(0);
   const divRef = useRef(null);
   const [divSize, setDivSize] = useState({ width: 0, height: 0 });
+  const rotatableRef = useRef(null);
+  
 
   useEffect(() => {
     if (divRef.current) {
@@ -15,16 +17,26 @@ const StackedDivs = () => {
       });
     }
   }, []);
+  useEffect(() => {
+    if (rotatableRef.current) {
+      const bounds = rotatableRef.current.getBoundingClientRect();
+      setRotatableBounds(bounds);
+    }
+  }, [rotation1]);
 
   const handleMouseDown = (e, currentRotation, setCurrentRotation) => {
     e.preventDefault();
 
     let lastPageX = e.pageX;
-
     function handleMouseMove(e) {
       const delta = lastPageX - e.pageX;
-      setCurrentRotation((prevRotation) => prevRotation - delta / 10);
+      setCurrentRotation((prevRotation) => {
+        const newRotation = prevRotation - delta / 10;
+        setRotation(newRotation);
+        return newRotation;
+      });
       lastPageX = e.pageX;
+      
     }
 
     function handleMouseUp() {
@@ -47,9 +59,8 @@ const StackedDivs = () => {
           <div className="top-div">
             <div
               className="rotatable"
-              style={{
-                transform: `rotate(${rotation1}deg)`,
-              }}
+              ref={rotatableRef}
+              style={{ transform: `rotate(${rotation1}deg)` }}
               onMouseDown={(e) => handleMouseDown(e, rotation1, setRotation1)}
             ></div>
           </div>
@@ -59,4 +70,4 @@ const StackedDivs = () => {
   );
 };
 
-export default StackedDivs;
+export default E6B;
