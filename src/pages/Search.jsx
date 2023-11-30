@@ -72,9 +72,7 @@ const Search = () => {
             fullWidth
             InputProps={{ style: { borderRadius: "10px", height: "50px" } }}
           />
-          <IconButton>
             <SearchIcon />
-          </IconButton>
         </Box>
         {questions.map((question) => (
           <Card key={question.id} sx={{ width: "750px", marginTop: "20px", cursor: 'pointer' }} onClick={() => handleCardClick(question.id)}>
