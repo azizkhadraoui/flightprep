@@ -24,6 +24,7 @@ import AllTests from "./pages/AllTests";
 import ComingSoon from "./pages/ComingSoon";
 import Canvas2 from "./components/questionelements/Canvas2";
 import Annexes from "./pages/Annexes";
+import Search from './pages/Search';
 
 const App = () => {
   return (
@@ -48,7 +49,8 @@ const App = () => {
           <Route exact path="/alltests" component={AllTests} />{" "}
           <Route exact path="/comingsoon" component={ComingSoon} />
           <Route exact path="/canvas" component={Canvas2} />{" "}
-          <Route exact path='/annexes' component={Annexes}/>
+          <Route exact path='/annexes' component={Annexes} />
+          <Route exact path='/search' component={Search}/>
         </div>{" "}
       </Router>{" "}
     </AuthProvider>
