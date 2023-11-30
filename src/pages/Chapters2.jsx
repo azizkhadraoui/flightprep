@@ -473,12 +473,12 @@ const Chapters2 = () => {
             <StyledSlider
               value={numQuestions}
               onChange={handleSliderChange}
-              min={1}
-              max={totalCount} // Set max to totalCount
+              min={0}   // Set min to 0 for 0%
+              max={100} // Set max to 100 for 100%
               valueLabelDisplay="auto"
-            />
+/>
             <Typography>
-              {numQuestions} / {totalCount}
+              {numQuestions}%
             </Typography>{" "}
           </Box>
         )}
@@ -495,7 +495,7 @@ const Chapters2 = () => {
             <Button
               variant="contained"
               color="secondary"
-              onClick={() => handleModeSelect("question")}
+              onClick={() => handleModeSelect("questions")}
             >
               Test
             </Button>

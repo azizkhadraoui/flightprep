@@ -32,25 +32,232 @@ const Question = () => {
   const queryParams = new URLSearchParams(location.search);
   const selectedSubtopicId = queryParams.get("subtopic");
   const selectedTopicId = queryParams.get("subject");
+  const allParams = Object.fromEntries(queryParams.entries());
+  const filters = JSON.parse(allParams.filters || '{}');
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [currentUserId, setCurrentUserId] = useState(null);
+  const numQuestions = parseInt(allParams.numQuestions || '0', 10);
+
+
 
   useEffect(() => {
-    // Fetch questions based on the selected subtopic ID
-    const fetchData = async () => {
-      try {
-        // Make an API request to fetch questions for the selected subtopic
-        // You can pass selectedSubtopicId to the API to filter questions
-        const response = await axios.get(
-          `${process.env.REACT_APP_BACKEND_URL}/${selectedTopicId}/${selectedSubtopicId}`
-        );
-        const data = response.data;
-        setQuestions(data);
-      } catch (error) {
-        console.error("Error fetching data from the API:", error);
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setCurrentUserId(user.uid);
+      } else {
+        setCurrentUserId(null);
       }
-    };
+    });
+    return () => unsubscribe();
+  }, []);
 
-    fetchData();
-  }, [selectedSubtopicId]);
+
+
+
+
+  useEffect(() => {
+    if (currentUserId && selectedSubtopicId) {
+      console.log(currentUserId)
+      const fetchData = async () => {
+        try {
+          let questionIds = [];
+          let questionIds2 = [];
+          if (Object.values(filters).some(filter => filter)) {  
+          if (filters.greenFlagged) {
+            const greenFlaggedCollectionRef = collection(db, `users/${currentUserId}/greenFlagged`);
+            const greenFlaggedSnapshot = await getDocs(greenFlaggedCollectionRef);
+  
+            greenFlaggedSnapshot.forEach((doc) => {
+              questionIds.push(doc.data().questionId);
+            });
+          }
+
+          if (filters.redFlaggedQuestions) {
+            const redFlaggedCollectionRef = collection(db, `users/${currentUserId}/redFlagged`);
+            const redFlaggedSnapshot = await getDocs(redFlaggedCollectionRef);
+  
+            redFlaggedSnapshot.forEach((doc) => {
+              questionIds.push(doc.data().questionId);
+            });
+          }
+
+          if (filters.yellowFlaggedQuestions) {
+            const yellowFlaggedCollectionRef = collection(db, `users/${currentUserId}/yellowFlagged`);
+            const yellowFlaggedSnapshot = await getDocs(yellowFlaggedCollectionRef);
+  
+            yellowFlaggedSnapshot.forEach((doc) => {
+              questionIds.push(doc.data().questionId);
+            });
+          }
+
+          if (filters.markedDoNotShow) {
+            const markedDoNotShowCollectionRef = collection(db, `users/${currentUserId}/dont`);
+            const markedDoNotShowSnapshot = await getDocs(markedDoNotShowCollectionRef);
+  
+            markedDoNotShowSnapshot.forEach((doc) => {
+              questionIds.push(doc.data().questionId);
+            });
+          }
+
+          if (filters.pinned) {
+            const pinnedCollectionRef = collection(db, `users/${currentUserId}/pinned`);
+            const pinnedSnapshot = await getDocs(pinnedCollectionRef);
+  
+            pinnedSnapshot.forEach((doc) => {
+              questionIds.push(doc.data().questionId);
+            });
+          }
+
+
+          if (filters.reviewQuestions) {
+            const reviewQuestionsCollectionRef = collection(db, `users/${currentUserId}/user_choices`);
+            const reviewQuestionsSnapshot = await getDocs(reviewQuestionsCollectionRef);
+  
+            reviewQuestionsSnapshot.forEach((doc) => {
+              questionIds.push(doc.data().questionId);
+            });
+          }
+
+
+          if (filters.incorrectlyAnswered) {
+            const reviewQuestionsCollectionRef = collection(db, `users/${currentUserId}/user_choices`);
+            const reviewQuestionsSnapshot = await getDocs(reviewQuestionsCollectionRef);
+        
+            reviewQuestionsSnapshot.forEach((doc) => {
+                // Check if the isCorrect field is false before pushing the questionId
+                if (doc.data().isCorrect === false) {
+                    questionIds.push(doc.data().questionId);
+                }
+            });
+        }
+
+
+        if (filters.studyTestWithCorrectAnswers) {
+          const reviewQuestionsCollectionRef = collection(db, `users/${currentUserId}/user_choices`);
+          const reviewQuestionsSnapshot = await getDocs(reviewQuestionsCollectionRef);
+      
+          reviewQuestionsSnapshot.forEach((doc) => {
+              // Check if the isCorrect field is false before pushing the questionId
+              if (doc.data().isCorrect === true) {
+                  questionIds.push(doc.data().questionId);
+              }
+          });
+      }
+
+
+      if (filters.haveNotesFor) {
+        const reviewQuestionsCollectionRef = collection(db, `users/${currentUserId}/notes`);
+        const reviewQuestionsSnapshot = await getDocs(reviewQuestionsCollectionRef);
+    
+        reviewQuestionsSnapshot.forEach((doc) => {
+          questionIds.push(doc.data().questionId);
+        });
+    }
+
+    if (filters.previouslyUnseenQuestions) {
+      const reviewQuestionsCollectionRef = collection(db, `users/${currentUserId}/user_choices`);
+      const reviewQuestionsSnapshot = await getDocs(reviewQuestionsCollectionRef);
+    
+      reviewQuestionsSnapshot.forEach((doc) => {
+        questionIds2.push(doc.data().questionId);
+      });
+    
+      // Make an HTTP request to the endpoint with the obtained questionIds
+      try {
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/${selectedTopicId}/${selectedSubtopicId}/exclude/${questionIds2.join(',')}`);
+        let data = response.data;
+            const percentage = Math.ceil((data.length / 100) * numQuestions);
+            console.log(percentage);
+            data = data.slice(0, percentage);
+        setQuestions(data); 
+        // Process the retrieved questions as needed
+      } catch (error) {
+        console.error('Error fetching questions:', error.message);
+      }
+    }
+
+
+    if (filters.last200RealExamQuestions || filters.onlyRealExamQuestions) {
+          try {
+        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/real-exam-true/${selectedTopicId}/${selectedSubtopicId}`);
+        let data = response.data;
+            const percentage = Math.ceil((data.length / 100) * numQuestions);
+            console.log(percentage);
+            data = data.slice(0, percentage);
+        setQuestions(data); 
+        // Process the retrieved questions as needed
+      } catch (error) {
+        console.error('Error fetching questions:', error.message);
+      }
+    }
+
+    if (filters.answerRecentlyChanged) {
+      try {
+    const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/recently-changed-true/${selectedTopicId}/${selectedSubtopicId}`);
+    let data = response.data;
+            const percentage = Math.ceil((data.length / 100) * numQuestions);
+            console.log(percentage);
+            data = data.slice(0, percentage);
+    setQuestions(data); 
+    // Process the retrieved questions as needed
+  } catch (error) {
+    console.error('Error fetching questions:', error.message);
+  }
+}
+
+if (filters.excludeRealExamQuestions) {
+  try {
+const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/real-exam-false-or-null/${selectedTopicId}/${selectedSubtopicId}`);
+let data = response.data;
+            const percentage = Math.ceil((data.length / 100) * numQuestions);
+            console.log(percentage);
+            data = data.slice(0, percentage);
+setQuestions(data); 
+// Process the retrieved questions as needed
+} catch (error) {
+console.error('Error fetching questions:', error.message);
+}
+}
+
+
+      
+
+        }
+        else{
+          try {
+            // Make an API request to fetch questions for the selected subtopic
+            // You can pass selectedSubtopicId to the API to filter questions
+            const response = await axios.get(
+              `${process.env.REACT_APP_BACKEND_URL}/${selectedTopicId}/${selectedSubtopicId}`
+            );
+            let data = response.data;
+            const percentage = Math.ceil((data.length / 100) * numQuestions);
+            console.log(percentage);
+            data = data.slice(0, percentage);
+            setQuestions(data);
+          } catch (error) {
+            console.error("Error fetching data from the API:", error);
+          }
+        }
+  
+          // Perform API call with questionIds using Axios
+          if (questionIds.length > 0) {
+            const percentage = Math.ceil((questionIds.length / 100) * numQuestions);
+            questionIds = questionIds.slice(0, percentage);
+            const apiUrl = (`${process.env.REACT_APP_BACKEND_URL}/questions`);            
+            const apiResponse = await axios.post(apiUrl, { questionIds });
+            const data = apiResponse.data;
+            setQuestions(data);          }
+  
+          
+        } catch (error) {
+          console.error("Error fetching data from the API:", error);
+        }
+      };
+  
+      fetchData();
+    }
+  }, [currentUserId]);
 
   const formatTime = (seconds) => {
     const hours = Math.floor(seconds / 3600);
@@ -63,7 +270,6 @@ const Question = () => {
 
   const [questions, setQuestions] = useState([]);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
-  const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answeredQuestions, setAnsweredQuestions] = useState(
     new Array(questions.length).fill(null)
   );
@@ -73,7 +279,6 @@ const Question = () => {
   const [showResults, setShowResults] = useState(false);
   const [correctlyAnsweredCount, setCorrectlyAnsweredCount] = useState(0);
 
-  const [currentUserId, setCurrentUserId] = useState(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -96,16 +301,7 @@ const Question = () => {
     return () => clearInterval(timer);
   }, [remainingTime, answeredQuestions, questions.length]);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setCurrentUserId(user.uid);
-      } else {
-        setCurrentUserId(null);
-      }
-    });
-    return () => unsubscribe();
-  }, []);
+  
 
   const handleButtonClick = (buttonType) => {
     setContentType(buttonType);

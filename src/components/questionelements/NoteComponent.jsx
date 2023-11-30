@@ -7,7 +7,7 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 const db = getFirestore(app);
 const auth = getAuth(app);
 
-const NotesComponent = ({ currentQuestion }) => {
+const NotesComponent = ({ currentQuestion,questions }) => {
   const [currentUserId, setCurrentUserId] = useState(null);
   const [notes, setNotes] = useState([]);
   const [newNote, setNewNote] = useState('');
@@ -59,7 +59,7 @@ const NotesComponent = ({ currentQuestion }) => {
       if (currentUserId && newNote.trim() !== '') {
         // Save the new note to Firestore under the user's current user id
         await addDoc(collection(db, `users/${currentUserId}/notes`), {
-          questionId: currentQuestion,
+          questionId: questions[currentQuestion].id,
           text: newNote,
         });
 
