@@ -10,8 +10,25 @@ import StraightenIcon from "@mui/icons-material/Straighten";
 import Rotate90DegreesCcwIcon from "@mui/icons-material/Rotate90DegreesCcw";
 import GpsFixedIcon from "@mui/icons-material/GpsFixed";
 import { useParams } from 'react-router-dom';
+import { getStorage, ref, getDownloadURL } from "firebase/storage";
+import { getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { onAuthStateChanged } from "firebase/auth";
+import app from "../../base.js";
+import { useLocation } from "react-router-dom";
+
+
+const db = getFirestore(app);
+const auth = getAuth(app);
 
 const DrawingComponent = () => {
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const  imageUrl = queryParams.get("img");
+  console.log(imageUrl);
+  const [imgUrl, setImgUrl] = useState(null);
+  const [imgWidth, setImgWidth] = useState(0);
+  const [imgHeight, setImgHeight] = useState(0);
   const [mode, setMode] = useState("line");
   const [lines, setLines] = useState([]);
   const isDrawing = React.useRef(false);
@@ -24,8 +41,31 @@ const DrawingComponent = () => {
   const [distances, setDistances] = useState([]);
   const [crosshairLines, setCrosshairLines] = useState([]);
   const [measurements, setMeasurements] = useState([]);
-  
 
+  useEffect(() => {
+    const fetchImage = async () => {
+      try {
+        const storage = getStorage(app);
+        const imgRef = ref(storage, imageUrl);
+        const downloadURL = await getDownloadURL(imgRef);
+        setImgUrl(downloadURL);
+      } catch (error) {
+        console.error("Error fetching image:", error);
+      }
+    };
+
+    fetchImage();
+  }, [imageUrl]);
+
+  const img = new window.Image();
+  img.src = imgUrl;
+
+  useEffect(() => {
+    img.onload = function () {
+      setImgWidth(this.width);
+      setImgHeight(this.height);
+    };
+  }, [imgUrl]);
 
   const handleMouseDown = (e) => {
     isDrawing.current = true;
@@ -212,22 +252,6 @@ const DrawingComponent = () => {
   };
 
 
-  const { imageUrl } = useParams();
-  const img = new window.Image();
-  img.src = imageUrl;
-
-  const [imgWidth, setImgWidth] = useState(0);
-  const [imgHeight, setImgHeight] = useState(0);
-
-  useEffect(() => {
-    img.onload = function() {
-      setImgWidth(this.width);
-      setImgHeight(this.height);
-    };
-  }, [imageUrl]);
-  
-
-
   return (
     <div style={{ display: "flex", height: "100vh" }}>
       <div
@@ -322,6 +346,7 @@ const DrawingComponent = () => {
             {getToolInfo()}
           </div>
         )}
+        {imgUrl && (
         <Stage
           width={800}
           height={600}
@@ -375,6 +400,7 @@ const DrawingComponent = () => {
             ))}
           </Layer>
         </Stage>
+        )}
       </div>
       <div style={{ marginTop: "10px" }}>
         {measurements.map((measurement, index) => (

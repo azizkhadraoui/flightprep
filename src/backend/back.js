@@ -1,6 +1,8 @@
 import express from "express";
 import mysql from "mysql2/promise";
 import cors from "cors";
+import { escape } from "mysql2";
+
 
 const app = express();
 
@@ -51,6 +53,7 @@ app.get("/data/:xx/:yy", async (req, res) => {
         // Use parameterized queries to prevent SQL injection
         const q = 'SELECT * FROM questions WHERE id LIKE ?';
         const [rows, fields] = await pool.query(q, [`${xx}-${yy}%`]);
+        console.log(pool.format(q, [`${xx}-${yy}%`]));
 
         return res.json(rows);
     } catch (err) {
@@ -58,6 +61,24 @@ app.get("/data/:xx/:yy", async (req, res) => {
         return res.status(500).json({ error: 'An error occurred while querying the database' });
     }
 });
+
+
+app.get("/data/search/s/:qu", async (req, res) => {
+    try {
+        const qu = req.params.qu;
+        const q = 'SELECT * FROM questions WHERE question LIKE ?';
+        const queryString = `%${qu}%`; 
+        const [rows, fields] = await pool.query(q, [queryString]);
+        console.log(pool.format(q, [queryString]));
+
+        return res.json(rows);
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: 'An error occurred while querying the database' });
+    }
+});
+
+
 
 // Endpoint to fetch questions based on xx and yy parameters, excluding specified ids
 app.get("/data/:xx/:yy/exclude/:excludedIds", async (req, res) => {

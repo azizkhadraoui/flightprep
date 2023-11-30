@@ -70,6 +70,11 @@ const Chapters2 = () => {
     answerRecentlyChanged: false,
     onlyRealExamQuestions: false,
   });
+  const isAnyFilterSelected = Object.values(filters).some(Boolean);
+  console.log("Subject:", subject);
+  console.log("Subtopic:", subtopic);
+  console.log("Filters:", filters);
+  console.log("IsAnyFilterSelected:", isAnyFilterSelected);
   const [numQuestions, setNumQuestions] = useState(0);
   const history = useHistory();
   const [showAllFilters, setShowAllFilters] = useState(false);
@@ -498,7 +503,7 @@ const Chapters2 = () => {
             variant="contained"
             color="secondary"
             onClick={() => handleModeSelect("questions")}
-            disabled={!subject || !subtopic}
+            disabled={!(subject && subtopic) && !isAnyFilterSelected}
           >
             Test
           </Button>
@@ -506,7 +511,7 @@ const Chapters2 = () => {
             variant="contained"
             color="secondary"
             onClick={() => handleModeSelect("exam")}
-            disabled={!subject || !subtopic}
+            disabled={!(subject && subtopic) && !isAnyFilterSelected}
           >
             Exam
           </Button>

@@ -4,6 +4,7 @@ import app from "../../base.js";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useHistory } from "react-router-dom";
+import { getStorage, ref, getDownloadURL } from "firebase/storage";
 
 const db = getFirestore(app);
 const auth = getAuth(app);
@@ -17,6 +18,7 @@ const ExamQuestion = ({
 }) => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const [annexeUrl, setAnnexeUrl] = useState(null);
   const history = useHistory();
 
   useEffect(() => {
@@ -30,6 +32,29 @@ const ExamQuestion = ({
 
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    const fetchAnnexe = async () => {
+      try {
+        const annexePath = questions[currentQuestion]?.annexe;
+        console.log(annexePath);
+        if (annexePath) {
+          const storage = getStorage(app);
+          const annexeRef = ref(storage, annexePath);
+          const downloadURL = await getDownloadURL(annexeRef);
+          setAnnexeUrl(downloadURL);
+        } else {
+          // If there is no annexe for the current question, reset annexeUrl
+          setAnnexeUrl(null);
+        }
+      } catch (error) {
+        console.error("Error fetching annexe:", error);
+      }
+    };
+  
+    fetchAnnexe();
+  }, [questions, currentQuestion]);
+  
 
   const handleAnswerClick = async (answerKey) => {
     if (!currentUserId) {
@@ -78,17 +103,18 @@ const ExamQuestion = ({
           <Typography variant="h6" color="white">
             {questions[currentQuestion]?.question}
           </Typography>
-          <div
-            onClick={() =>
-              history.push(`/canvas/${questions[currentQuestion]?.imageUrl}`)
-            }
-          >
-            <img
-              src={questions[currentQuestion]?.imageUrl}
-              alt="question related"
-              style={{ width: "100px", height: "100px" }}
-            />
-          </div>
+
+          {/* Conditionally render the image */}
+          {annexeUrl && (
+            <div onClick={() => history.push(`/canvas?img=${questions[currentQuestion]?.annexe}`)}>
+              <img
+                src={annexeUrl}
+                alt="question related"
+                style={{ width: "100%", height: "100%", marginBottom: "16px"  }}
+              />
+            </div>
+          )}
+
           {["A", "B", "C", "D"].map((key) => (
             <div key={key}>
               <Card

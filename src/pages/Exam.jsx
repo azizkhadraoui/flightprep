@@ -94,7 +94,7 @@ const Exam = () => {
     }
   };  
   useEffect(() => {
-    if (currentUserId && selectedSubtopicId) {
+    if (currentUserId) {
       console.log(currentUserId)
       const fetchData = async () => {
         try {

@@ -10,24 +10,31 @@ const Search = () => {
   const [questions, setQuestions] = useState([]);
   const history = useHistory();
 
-  useEffect(() => {
-    if (searchInput) {
-      axios
-        .get(`${process.env.REACT_APP_BACKEND_URL}/search?query=${searchInput}`)
-        .then((response) => {
-          setQuestions(response.data);
-        })
-        .catch((error) => {
-          console.error("Error fetching questions:", error.message);
-        });
-    } else {
-      setQuestions([]);
-    }
-  }, [searchInput]);
-
   const handleCardClick = (questionId) => {
-    history.push(`/question/${questionId}`);
+    // Define the logic for handling card click here
+    // For example, you can navigate to a specific route
+   // history.push(`/questions/${questionId}`);
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        if (searchInput) {
+          const response = await axios.get(
+            `${process.env.REACT_APP_BACKEND_URL}/search/s/${searchInput}`
+          );
+          setQuestions(response.data);
+        } else {
+          setQuestions([]);
+        }
+      } catch (error) {
+        console.error("Error fetching questions:", error.message);
+      }
+    };
+
+    fetchData();
+  }, [searchInput]);
+  console.log();
 
   return (
     <div
@@ -52,7 +59,7 @@ const Search = () => {
           borderRadius: "10px",
           maxWidth: "1000px",
           padding: "20px",
-          marginTop:'50px',
+          marginTop: "50px",
         }}
       >
         <Box
@@ -72,11 +79,17 @@ const Search = () => {
             fullWidth
             InputProps={{ style: { borderRadius: "10px", height: "50px" } }}
           />
+          <IconButton>
             <SearchIcon />
+          </IconButton>
         </Box>
         {questions.map((question) => (
-          <Card key={question.id} sx={{ width: "750px", marginTop: "20px", cursor: 'pointer' }} onClick={() => handleCardClick(question.id)}>
-            <CardContent>{question.text}</CardContent>
+          <Card
+            key={question.id}
+            sx={{ width: "750px", marginTop: "20px", cursor: "pointer" }}
+            onClick={() => handleCardClick(question.id)}
+          >
+            <CardContent>{question.question}</CardContent>
           </Card>
         ))}
       </Box>

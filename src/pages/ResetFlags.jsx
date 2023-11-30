@@ -1,17 +1,38 @@
 import React, { useState, useEffect } from 'react';
-import { Typography, TableContainer, Table, TableHead, TableBody, TableRow, TableCell, Paper, IconButton, Collapse, Box, Button } from '@mui/material';
+import Navbar2 from "../components/navbar/Navbar2";
+import {
+  Typography,
+  TableContainer,
+  Table,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Paper,
+  IconButton,
+  Collapse,
+  Box,
+  Button,
+} from '@mui/material';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
-import { getFirestore, collection, getDocs, doc, deleteDoc } from 'firebase/firestore';
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  deleteDoc,
+  where,
+  query,
+} from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
-import { useAuth } from '../Auth';
 import app from '../base';
 
 const FlaggedQuestions = () => {
   const [flaggedData, setFlaggedData] = useState({});
   const [open, setOpen] = useState({});
   const [deletedCategories, setDeletedCategories] = useState([]);
-  const auth = useAuth(); // Use your authentication context hook to get the user's ID
+  const auth = getAuth(app);
   const [currentUserId, setCurrentUserId] = useState(null);
 
   useEffect(() => {
@@ -26,24 +47,35 @@ const FlaggedQuestions = () => {
   }, [auth]);
 
   useEffect(() => {
-    const FetchFlaggedData = async () => {
+    const fetchFlaggedData = async () => {
       try {
-        const db = getFirestore(app);
-        const pinnedQuestions = [];
-        const yellowFlaggedQuestions = [];
-        const redFlaggedQuestions = [];
-        const greenFlaggedQuestions = [];
-        const dontShowQuestions = [];
-        
-        // Rest of your data fetching code...
+        if (!currentUserId) return;
 
-        const flaggedDataObject = {
-          Pinned: pinnedQuestions,
-          YellowFlagged: yellowFlaggedQuestions,
-          RedFlagged: redFlaggedQuestions,
-          GreenFlagged: greenFlaggedQuestions,
-          DontShow: dontShowQuestions,
-        };
+        const db = getFirestore(app);
+
+        // Define your collection paths for each category under the current user's ID
+        const collectionPaths = [
+          `users/${currentUserId}/yellowFlagged`,
+          `users/${currentUserId}/redFlagged`,
+          `users/${currentUserId}/greenFlagged`,
+          `users/${currentUserId}/dont`,
+        ];
+
+        const flaggedDataObject = {};
+
+        // Fetch flagged questions for each category
+        for (const categoryPath of collectionPaths) {
+          const q = query(collection(db, categoryPath));
+          const querySnapshot = await getDocs(q);
+
+          const questions = [];
+          querySnapshot.forEach((doc) => {
+            questions.push(doc.id);
+          });
+
+          const category = categoryPath.split('/').pop();
+          flaggedDataObject[category] = questions;
+        }
 
         setFlaggedData(flaggedDataObject);
 
@@ -58,49 +90,34 @@ const FlaggedQuestions = () => {
     };
 
     if (currentUserId) {
-      FetchFlaggedData();
+      fetchFlaggedData();
     }
-  }, [auth, currentUserId]);
+  }, [currentUserId]);
 
   const handleExpandClick = (category) => {
-    setOpen({
-      ...open,
-      [category]: !open[category],
-    });
+    setOpen((prevOpen) => ({
+      ...prevOpen,
+      [category]: !prevOpen[category],
+    }));
   };
 
   const handleUnflag = async (category) => {
     try {
-      const db = getFirestore();
-      const userId = auth.currentUser.uid;
-      let collectionPath = '';
+      if (!currentUserId) return;
 
-      switch (category) {
-        case 'Pinned':
-          collectionPath = `users/${userId}/pinned`;
-          break;
-        case 'YellowFlagged':
-          collectionPath = `users/${userId}/yellowFlagged`;
-          break;
-        case 'RedFlagged':
-          collectionPath = `users/${userId}/redFlagged`;
-          break;
-        case 'GreenFlagged':
-          collectionPath = `users/${userId}/greenFlagged`;
-          break;
-        case 'DontShow':
-          collectionPath = `users/${userId}/dont`;
-          break;
-        default:
-          break;
-      }
+      const db = getFirestore(app);
 
-      const querySnapshot = await getDocs(collection(db, collectionPath));
+      // Define your collection path for the selected category under the current user's ID
+      const collectionPath = `users/${currentUserId}/${category}`;
+
+      const q = query(collection(db, collectionPath));
+      const querySnapshot = await getDocs(q);
+
       querySnapshot.forEach(async (doc) => {
         await deleteDoc(doc.ref);
       });
 
-      setDeletedCategories([...deletedCategories, category]);
+      setDeletedCategories((prevDeletedCategories) => [...prevDeletedCategories, category]);
 
       const updatedFlaggedData = { ...flaggedData };
       delete updatedFlaggedData[category];
@@ -111,26 +128,20 @@ const FlaggedQuestions = () => {
   };
 
   return (
-    <div>
-      <Typography variant="h4" style={{ color: '#FFF' }}>
+    <div style={{ textAlign: 'center' }}>
+      <Navbar2 />
+      <Typography variant="h4" style={{ color: '#FFF', marginBottom: '20px' }}>
         Your Flagged Questions
       </Typography>
       {Object.keys(flaggedData).map((category) => (
-        <div key={category}>
-          <TableContainer component={Paper} style={{ marginTop: '20px' }}>
+        <div key={category} style={{ display: 'inline-block', margin: '20px' }}>
+          <TableContainer component={Paper}>
             <Table>
               <TableHead>
                 <TableRow>
                   <TableCell>
-                    <IconButton
-                      onClick={() => handleExpandClick(category)}
-                      size="small"
-                    >
-                      {open[category] ? (
-                        <KeyboardArrowUpIcon />
-                      ) : (
-                        <KeyboardArrowDownIcon />
-                      )}
+                    <IconButton onClick={() => handleExpandClick(category)} size="small">
+                      {open[category] ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                     </IconButton>
                     {category}
                   </TableCell>
@@ -140,6 +151,7 @@ const FlaggedQuestions = () => {
                       size="small"
                       color="secondary"
                       onClick={() => handleUnflag(category)}
+                      style={{ marginLeft: '10px' }} // Adjust the margin as needed
                     >
                       UnFlag
                     </Button>
