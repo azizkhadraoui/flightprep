@@ -16,25 +16,23 @@ const FlightComp = ({ closeModal }) => {
   const [rotatableBounds1, setRotatableBounds1] = useState(null);
   const [rotatableBounds2, setRotatableBounds2] = useState(null);
   const [rotatableBounds3, setRotatableBounds3] = useState(null);
-  
-
 
   const handleMouseDown = (e) => {
     isDrawing.current = true;
     const pos = e.target.getStage().getPointerPosition();
-    if ((rotatableBounds && pos.x > rotatableBounds.left && pos.x < rotatableBounds.right && pos.y > rotatableBounds.top && pos.y < rotatableBounds.bottom) ||
-    (rotatableBounds1 && pos.x > rotatableBounds1.left && pos.x < rotatableBounds1.right && pos.y > rotatableBounds1.top && pos.y < rotatableBounds1.bottom) ||
-    (rotatableBounds2 && pos.x > rotatableBounds2.left && pos.x < rotatableBounds2.right && pos.y > rotatableBounds2.top && pos.y < rotatableBounds2.bottom) ||
-    (rotatableBounds3 && pos.x > rotatableBounds3.left && pos.x < rotatableBounds3.right && pos.y > rotatableBounds3.top && pos.y < rotatableBounds3.bottom)) {
-  return;
-}
+    if (activeComponent === "CR3" && (
+      (rotatableBounds && pos.x > rotatableBounds.left && pos.x < rotatableBounds.right && pos.y > rotatableBounds.top && pos.y < rotatableBounds.bottom) ||
+      (rotatableBounds1 && pos.x > rotatableBounds1.left && pos.x < rotatableBounds1.right && pos.y > rotatableBounds1.top && pos.y < rotatableBounds1.bottom) ||
+      (rotatableBounds2 && pos.x > rotatableBounds2.left && pos.x < rotatableBounds2.right && pos.y > rotatableBounds2.top && pos.y < rotatableBounds2.bottom) ||
+      (rotatableBounds3 && pos.x > rotatableBounds3.left && pos.x < rotatableBounds3.right && pos.y > rotatableBounds3.top && pos.y < rotatableBounds3.bottom))) {
+      return;
+    }
     if (drawingMode === "line") {
       setLines([...lines, { points: [pos.x, pos.y, pos.x, pos.y] }]);
     } else if (drawingMode === "dot") {
       setDots([...dots, { x: pos.x, y: pos.y }]);
     }
   };
-
   const handleMouseMove = (e) => {
     if (!isDrawing.current || drawingMode !== "line") {
       return;
@@ -64,68 +62,68 @@ const FlightComp = ({ closeModal }) => {
 
   return (
     <div
-  style={{
-    position: "fixed",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-  }}
->
-  <div style={{ position: "absolute", top: 0, zIndex: 1 }}>
-    <Button variant="contained" onClick={closeModal}>
-      X
-    </Button>
-    <Button variant="contained" onClick={() => setActiveComponent("E6B")}>
-      E6B
-    </Button>
-    <Button variant="contained" onClick={() => setActiveComponent("CR3")}>
-      CR3
-    </Button>
-    {activeComponent && (
-      <>
-        <Button variant="contained" onClick={() => setDrawingMode("line")}>
-          Draw Line
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100%",
+        height: "100%",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+      }}
+    >
+      <div style={{ position: "absolute", top: 0, zIndex: 1 }}>
+        <Button variant="contained" onClick={closeModal}>
+          X
         </Button>
-        <Button variant="contained" onClick={() => setDrawingMode("dot")}>
-          Draw Dot
+        <Button variant="contained" onClick={() => setActiveComponent("E6B")}>
+          E6B
         </Button>
-        <Button variant="contained" onClick={eraseAll}>
-          Erase All
+        <Button variant="contained" onClick={() => setActiveComponent("CR3")}>
+          CR3
         </Button>
-      </>
-    )}
-  </div>
+        {activeComponent && (
+          <>
+            <Button variant="contained" onClick={() => setDrawingMode("line")}>
+              Draw Line
+            </Button>
+            <Button variant="contained" onClick={() => setDrawingMode("dot")}>
+              Draw Dot
+            </Button>
+            <Button variant="contained" onClick={eraseAll}>
+              Erase All
+            </Button>
+          </>
+        )}
+      </div>
       <div style={{ position: "absolute", top: "50px" }}>
-  <Stage
-    width={window.innerWidth}
-    height={window.innerHeight}
-    onMouseDown={handleMouseDown}
-    onMousemove={handleMouseMove}
-    onMouseup={handleMouseUp}
-  >
-    <Layer>
-      {lines.map((line, i) => (
-        <Line key={i} points={line.points} stroke="red" />
-      ))}
-      {dots.map((dot, i) => (
-        <Circle key={i} x={dot.x} y={dot.y} radius={2} fill="red" />
-      ))}
-    </Layer>
-  </Stage>
-</div>
-  {activeComponent === "E6B" && (
-  <div style={{ width: "50%", height: "50%"}}>
-    <E6B setRotation={setRotationE6B} setRotatableBounds={setRotatableBounds} />
-  </div>
-)}
-  {activeComponent === "CR3" && (
-    <div style={{ width: "50%", height: "50%" }}>
-      <CR3 setRotation={setRotationCR3} setRotatableBounds1={setRotatableBounds1} setRotatableBounds2={setRotatableBounds2} setRotatableBounds3={setRotatableBounds3}/>
+        <Stage
+          width={window.innerWidth}
+          height={window.innerHeight}
+          onMouseDown={handleMouseDown}
+          onMousemove={handleMouseMove}
+          onMouseup={handleMouseUp}
+        >
+          <Layer>
+            {lines.map((line, i) => (
+              <Line key={i} points={line.points} stroke="red" />
+            ))}
+            {dots.map((dot, i) => (
+              <Circle key={i} x={dot.x} y={dot.y} radius={2} fill="red" />
+            ))}
+          </Layer>
+        </Stage>
+      </div>
+      {activeComponent === "E6B" && (
+        <div style={{ width: "50%", height: "50%"}}>
+          <E6B setRotation={setRotationE6B} setRotatableBounds={setRotatableBounds} />
+        </div>
+      )}
+      {activeComponent === "CR3" && (
+        <div style={{ width: "50%", height: "50%" }}>
+          <CR3 setRotation={setRotationCR3} setRotatableBounds1={setRotatableBounds1} setRotatableBounds2={setRotatableBounds2} setRotatableBounds3={setRotatableBounds3}/>
+        </div>
+      )}
     </div>
-  )}
-</div>
   );
 };
 
