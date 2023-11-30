@@ -3,6 +3,7 @@ import { Typography, Card, CardContent } from '@mui/material';
 import app from '../../base.js';
 import { getFirestore, doc, setDoc } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
+import { useHistory } from 'react-router-dom';
 
 
 
@@ -13,6 +14,8 @@ const QuestionComponent = ({ questions, currentQuestion, onAnswerSelect }) => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showCorrectAnswer, setShowCorrectAnswer] = useState(false);
   const [currentUserId, setCurrentUserId] = useState(null);
+  const history = useHistory();
+
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -65,8 +68,11 @@ const QuestionComponent = ({ questions, currentQuestion, onAnswerSelect }) => {
       
       {questions.length > 0 ? (
         <div>
-          <Typography variant="h6">{currentQuestion?.question}</Typography>
-          
+          <Typography variant="h6" color="white">{currentQuestion?.question}</Typography>
+          <Typography variant="h6" color="white">{questions[currentQuestion]?.question}</Typography>
+          <div onClick={() => history.push(`/canvas/${questions[currentQuestion]?.imageUrl}`)}>
+            <img src={questions[currentQuestion]?.imageUrl} alt="question related" style={{width: '100px', height: '100px'}}/>
+          </div>
           {['A', 'B', 'C', 'D'].map((key) => (
             <Card
               key={key}
@@ -95,7 +101,7 @@ const QuestionComponent = ({ questions, currentQuestion, onAnswerSelect }) => {
           ))}
         </div>
       ) : (
-        <Typography variant="h6">Loading...</Typography>
+        <Typography variant="h6" color="white">Loading...</Typography>
       )}
     </div>
   );

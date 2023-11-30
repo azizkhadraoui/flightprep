@@ -9,6 +9,7 @@ import PanoramaFishEyeIcon from "@mui/icons-material/PanoramaFishEye";
 import StraightenIcon from "@mui/icons-material/Straighten";
 import Rotate90DegreesCcwIcon from "@mui/icons-material/Rotate90DegreesCcw";
 import GpsFixedIcon from "@mui/icons-material/GpsFixed";
+import { useParams } from 'react-router-dom';
 
 const DrawingComponent = () => {
   const [mode, setMode] = useState("line");
@@ -23,6 +24,7 @@ const DrawingComponent = () => {
   const [distances, setDistances] = useState([]);
   const [crosshairLines, setCrosshairLines] = useState([]);
   const [measurements, setMeasurements] = useState([]);
+  
 
 
   const handleMouseDown = (e) => {
@@ -209,6 +211,23 @@ const DrawingComponent = () => {
     setCrosshairLines([]); 
   };
 
+
+  const { imageUrl } = useParams();
+  const img = new window.Image();
+  img.src = imageUrl;
+
+  const [imgWidth, setImgWidth] = useState(0);
+  const [imgHeight, setImgHeight] = useState(0);
+
+  useEffect(() => {
+    img.onload = function() {
+      setImgWidth(this.width);
+      setImgHeight(this.height);
+    };
+  }, [imageUrl]);
+  
+
+
   return (
     <div style={{ display: "flex", height: "100vh" }}>
       <div
@@ -311,7 +330,7 @@ const DrawingComponent = () => {
           onMouseup={handleMouseUp}
         >
           <Layer>
-            <Rect width={800} height={800} fill="white" justifyContent='center' alignItems='center' />
+          <Rect width={imgWidth} height={imgHeight} fillPatternImage={img} fillPatternRepeat='no-repeat' />
             {lines.map((line, i) => (
               <React.Fragment key={i}>
                 {(line.tool === "line" ||
