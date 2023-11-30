@@ -256,6 +256,7 @@ const Dashboard = () => {
               lineHeight: "normal",
               textTransform: "uppercase",
             }}
+            onClick={() => history.push("/search")}
           >
             Search
           </Typography>
@@ -298,6 +299,7 @@ const Dashboard = () => {
               lineHeight: "normal",
               textTransform: "uppercase",
             }}
+            onClick={() => history.push("/alltests")}
           >
             Reports
           </Typography>
