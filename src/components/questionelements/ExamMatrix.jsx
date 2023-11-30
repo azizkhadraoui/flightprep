@@ -18,6 +18,7 @@ const ExamMatrix = ({
   const goToQuestion = (questionNumber) => {
     if (questionNumber >= 1 && questionNumber <= questions.length) {
       setCurrentQuestion(questionNumber - 1);
+      selectedAnswers[questionNumber - 1] = null;
     }
   };
 
