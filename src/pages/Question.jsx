@@ -445,6 +445,8 @@ console.error('Error fetching questions:', error.message);
         db,
         `users/${currentUserId}/user_choices`
       );
+      const testsCollection = collection(db, `users/${currentUserId}/tests`);
+
       const userChoicesSnapshot = await getDocs(userChoicesCollection);
 
       const correctCount = userChoicesSnapshot.docs.reduce((count, doc) => {
@@ -454,6 +456,20 @@ console.error('Error fetching questions:', error.message);
 
       const totalQuestions = userChoicesSnapshot.size;
       const percentage = (correctCount / totalQuestions) * 100;
+      const testResult2 = {
+        subtopic: selectedSubtopicId,
+        topic: selectedTopicId,
+        date: serverTimestamp(),
+        result: percentage,
+      };
+      const existingTestDoc = await getDoc(doc(testsCollection));
+
+    if (!existingTestDoc.exists()) {
+      await addDoc(testsCollection, { ...testResult2 });
+      } else {
+      console.log('Test result already exists:', existingTestDoc.data());
+      }
+
 
       setCorrectlyAnsweredCount(percentage); // Set the percentage of correct answers
       setShowResults(true); // Show results
@@ -469,16 +485,7 @@ console.error('Error fetching questions:', error.message);
       };
 
       // Check if a document for this test already exists, and if not, create it
-      const testsCollection = collection(db, "tests");
-      const testDoc = await getDoc(
-        testsCollection.doc(testResult.subtopicName)
-      );
-
-      if (!testDoc.exists()) {
-        await addDoc(testsCollection.doc(testResult.subtopicName), testResult);
-      } else {
-        console.log("Document already exists for this test.");
-      }
+  
     } catch (error) {
       console.error(
         "Error calculating correct answers or saving test results: ",

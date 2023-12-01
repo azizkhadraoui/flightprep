@@ -33,7 +33,7 @@ const QuestionComponent = ({ questions, currentQuestion, onAnswerSelect }) => {
   useEffect(() => {
     const fetchAnnexe = async () => {
       try {
-        const annexePath = questions[currentQuestion]?.annexe;
+        const annexePath = currentQuestion.annexe;
         console.log(annexePath);
         if (annexePath) {
           const storage = getStorage(app);
