@@ -16,23 +16,89 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import SaveAltIcon from "@mui/icons-material/SaveAlt";
 import SearchIcon from "@mui/icons-material/Search";
 import AssessmentIcon from "@mui/icons-material/Assessment";
+import  { useEffect, useState } from "react";
+import app from "../base.js";
+import {
+  getFirestore,
+  collection,
+  getDocs,
+  doc,
+  setDoc,
+  addDoc,
+  serverTimestamp,
+  getDoc,
+} from "firebase/firestore";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 const Dashboard = () => {
+  const db = getFirestore(app);
+  const auth = getAuth(app);
   const history = useHistory();
-  const options = {
-    chart: {
-      id: "basic-line-chart",
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setCurrentUserId(user.uid);
+      } else {
+        setCurrentUserId(null);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+  const [currentUserId, setCurrentUserId] = useState(null);
+
+  const [chartData, setChartData] = useState({
+    options: {
+      chart: {
+        id: "basic-line-chart",
+      },
+      xaxis: {
+        categories: [],
+      },
     },
-    xaxis: {
-      categories: ["Test 1", "Test 2", "Test 3", "Test 4", "Test 5"],
-    },
-  };
-  const series = [
-    {
-      name: "Scores",
-      data: [30, 40, 45, 50, 49],
-    },
-  ];
+    series: [
+      {
+        name: "Scores",
+        data: [],
+      },
+    ],
+  });
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const dates = [];
+      const scores = [];
+      try {
+        const testsCollection = collection(db, `users/${currentUserId}/tests`);
+        const querySnapshot = await getDocs(testsCollection);
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const originalDate = new Date(data.date);
+          dates.push(originalDate.toDateString());
+          scores.push(parseFloat(data.result.toFixed(1)));
+        });
+        setChartData({
+          options: {
+            chart: {
+              id: "basic-line-chart",
+            },
+            xaxis: {
+              categories: dates,
+            },
+          },
+          series: [
+            {
+              name: "Scores",
+              data: scores,
+            },
+          ],
+        });
+      } catch (error) {
+        console.error("Error getting documents: ", error);
+      }
+    };
+
+    fetchData();
+  }, [currentUserId]);
 
   return (
     <div
@@ -137,11 +203,11 @@ const Dashboard = () => {
           }}
         >
           <Chart
-            options={options}
-            series={series}
-            type="line"
-            width="100%"
-            height="100%"
+          options={chartData.options}
+          series={chartData.series}
+          type="line"
+          width="100%"
+          height="100%"
           />
         </div>
       </div>
@@ -332,6 +398,7 @@ const Dashboard = () => {
             alignItems: "center",
             justifyContent: "center",
           }}
+          onClick={() => history.push("/alltests")}
         >
           <RemoveRedEyeIcon style={{ color: "#FFF", marginRight: "10px" }} />{" "}
           {/* Add the icon */}

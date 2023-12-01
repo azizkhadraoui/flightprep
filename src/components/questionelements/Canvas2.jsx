@@ -358,7 +358,7 @@ const DrawingComponent = () => {
             onMouseDown={handleMouseDown}
             onMousemove={handleMouseMove}
             onMouseup={handleMouseUp}
-            style={{ position: "absolute", top: 0, left: 0, opacity: 0 }}
+            style={{ position: "absolute", top: 0, left: 0 }}
           >
             <Layer>
               {lines.map((line, i) => (

@@ -459,7 +459,7 @@ console.error('Error fetching questions:', error.message);
       const testResult2 = {
         subtopic: selectedSubtopicId,
         topic: selectedTopicId,
-        date: serverTimestamp(),
+        date: Date().toString(),
         result: percentage,
       };
       const existingTestDoc = await getDoc(doc(testsCollection));
