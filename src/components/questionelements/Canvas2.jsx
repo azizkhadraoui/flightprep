@@ -9,7 +9,7 @@ import PanoramaFishEyeIcon from "@mui/icons-material/PanoramaFishEye";
 import StraightenIcon from "@mui/icons-material/Straighten";
 import Rotate90DegreesCcwIcon from "@mui/icons-material/Rotate90DegreesCcw";
 import GpsFixedIcon from "@mui/icons-material/GpsFixed";
-import { useParams } from 'react-router-dom';
+import { useParams } from "react-router-dom";
 import { getStorage, ref, getDownloadURL } from "firebase/storage";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
@@ -17,14 +17,13 @@ import { onAuthStateChanged } from "firebase/auth";
 import app from "../../base.js";
 import { useLocation } from "react-router-dom";
 
-
 const db = getFirestore(app);
 const auth = getAuth(app);
 
 const DrawingComponent = () => {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
-  const  imageUrl = queryParams.get("img");
+  const imageUrl = queryParams.get("img");
   console.log(imageUrl);
   const [imgUrl, setImgUrl] = useState(null);
   const [imgWidth, setImgWidth] = useState(0);
@@ -124,8 +123,7 @@ const DrawingComponent = () => {
       };
 
       setCrosshairLines([verticalLine, horizontalLine]);
-    }
-    else if (mode === "perpendicular") {
+    } else if (mode === "perpendicular") {
       let lastLine = lines[lines.length - 1];
       const dx = point.x - lastLine.start.x;
       const dy = point.y - lastLine.start.y;
@@ -248,9 +246,8 @@ const DrawingComponent = () => {
     setDistanceLines([]);
     setAngleLines([]);
     setArcs([]);
-    setCrosshairLines([]); 
+    setCrosshairLines([]);
   };
-
 
   return (
     <div style={{ display: "flex", height: "100vh" }}>
@@ -311,7 +308,15 @@ const DrawingComponent = () => {
           </IconButton>
         </Tooltip>
       </div>
-      <div style={{ position: "relative", flex: 1 }}>
+      <div
+        style={{
+          position: "relative",
+          flex: 1,
+          backgroundImage: `url(${imgUrl})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+        }}
+      >
         {mode === "distance" && (
           <div
             style={{
@@ -347,59 +352,64 @@ const DrawingComponent = () => {
           </div>
         )}
         {imgUrl && (
-        <Stage
-          width={800}
-          height={600}
-          onMouseDown={handleMouseDown}
-          onMousemove={handleMouseMove}
-          onMouseup={handleMouseUp}
-        >
-          <Layer>
-          <Rect width={imgWidth} height={imgHeight} fillPatternImage={img} fillPatternRepeat='no-repeat' />
-            {lines.map((line, i) => (
-              <React.Fragment key={i}>
-                {(line.tool === "line" ||
-                  line.tool === "distance" ||
-                  line.tool === "angle") && (
-                  <Line points={line.points} stroke="red" />
-                )}
-                {line.tool === "dot" && (
-                  <Circle
-                    x={line.points[0]}
-                    y={line.points[1]}
-                    radius={2}
-                    fill="red"
-                  />
-                )}
-                {line.tool === "perpendicular" && (
-                  <Line points={line.points} stroke="red" />
-                )}
-                {line.tool === "ellipse" && (
-                  <Ellipse
-                    x={line.points[0]}
-                    y={line.points[1]}
-                    radiusX={Math.abs(line.points[2] - line.points[0]) / 2}
-                    radiusY={Math.abs(line.points[3] - line.points[1]) / 2}
-                    fill="transparent"
-                    stroke="red"
-                  />
-                )}
-              </React.Fragment>
-            ))}
-            {angleLines.map((line, i) => (
-              <Line key={i} points={line.points} stroke="blue" />
-            ))}
-            {arcs.map((arc, i) => (
-              <Path key={i} data={arc.data} stroke="blue" fill="transparent" />
-            ))}
-            {distanceLines.map((line, i) => (
-              <Line key={i} points={line.points} stroke="green" />
-            ))}
-            {crosshairLines.map((line, index) => (
-              <Line key={index} points={line.points} stroke={line.stroke} />
-            ))}
-          </Layer>
-        </Stage>
+          <Stage
+            width={imgWidth}
+            height={imgHeight}
+            onMouseDown={handleMouseDown}
+            onMousemove={handleMouseMove}
+            onMouseup={handleMouseUp}
+            style={{ position: "absolute", top: 0, left: 0, opacity: 0 }}
+          >
+            <Layer>
+              {lines.map((line, i) => (
+                <React.Fragment key={i}>
+                  {(line.tool === "line" ||
+                    line.tool === "distance" ||
+                    line.tool === "angle") && (
+                    <Line points={line.points} stroke="red" />
+                  )}
+                  {line.tool === "dot" && (
+                    <Circle
+                      x={line.points[0]}
+                      y={line.points[1]}
+                      radius={2}
+                      fill="red"
+                    />
+                  )}
+                  {line.tool === "perpendicular" && (
+                    <Line points={line.points} stroke="red" />
+                  )}
+                  {line.tool === "ellipse" && (
+                    <Ellipse
+                      x={line.points[0]}
+                      y={line.points[1]}
+                      radiusX={Math.abs(line.points[2] - line.points[0]) / 2}
+                      radiusY={Math.abs(line.points[3] - line.points[1]) / 2}
+                      fill="transparent"
+                      stroke="red"
+                    />
+                  )}
+                </React.Fragment>
+              ))}
+              {angleLines.map((line, i) => (
+                <Line key={i} points={line.points} stroke="blue" />
+              ))}
+              {arcs.map((arc, i) => (
+                <Path
+                  key={i}
+                  data={arc.data}
+                  stroke="blue"
+                  fill="transparent"
+                />
+              ))}
+              {distanceLines.map((line, i) => (
+                <Line key={i} points={line.points} stroke="green" />
+              ))}
+              {crosshairLines.map((line, index) => (
+                <Line key={index} points={line.points} stroke={line.stroke} />
+              ))}
+            </Layer>
+          </Stage>
         )}
       </div>
       <div style={{ marginTop: "10px" }}>
