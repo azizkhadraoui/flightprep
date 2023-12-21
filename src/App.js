@@ -25,6 +25,7 @@ import ComingSoon from "./pages/ComingSoon";
 import Canvas2 from "./components/questionelements/Canvas2";
 import Annexes from "./pages/Annexes";
 import Search from './pages/Search';
+import About from './pages/About';
 
 const App = () => {
   return (
@@ -50,7 +51,8 @@ const App = () => {
           <Route exact path="/comingsoon" component={ComingSoon} />
           <Route exact path="/canvas" component={Canvas2} />{" "}
           <Route exact path='/annexes' component={Annexes} />
-          <Route exact path='/search' component={Search}/>
+          <Route exact path='/search' component={Search} />
+          <Route exact path='/about' component={About} />
         </div>{" "}
       </Router>{" "}
     </AuthProvider>
