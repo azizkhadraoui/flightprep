@@ -9,8 +9,11 @@ const FlightComp = ({ closeModal }) => {
   const [rotationCR3, setRotationCR3] = useState(0);
   const [activeComponent, setActiveComponent] = useState(null);
   const [drawingMode, setDrawingMode] = useState(null);
-  const [lines, setLines] = useState([]);
-  const [dots, setDots] = useState([]);
+  const [drawingModeActive, setDrawingModeActive] = useState(false);
+  const [linesE6B, setLinesE6B] = useState([]);
+  const [dotsE6B, setDotsE6B] = useState([]);
+  const [linesCR3, setLinesCR3] = useState([]);
+  const [dotsCR3, setDotsCR3] = useState([]);
   const isDrawing = useRef(false);
   const [rotatableBounds, setRotatableBounds] = useState(null);
   const [rotatableBounds1, setRotatableBounds1] = useState(null);
@@ -28,27 +31,46 @@ const FlightComp = ({ closeModal }) => {
       return;
     }
     if (drawingMode === "line") {
-      setLines([...lines, { points: [pos.x, pos.y, pos.x, pos.y] }]);
+      if (activeComponent === "E6B") {
+        setLinesE6B([...linesE6B, { points: [pos.x, pos.y, pos.x, pos.y] }]);
+      } else if (activeComponent === "CR3") {
+        setLinesCR3([...linesCR3, { points: [pos.x, pos.y, pos.x, pos.y] }]);
+      }
     } else if (drawingMode === "dot") {
-      setDots([...dots, { x: pos.x, y: pos.y }]);
+      if (activeComponent === "E6B") {
+        setDotsE6B([...dotsE6B, { x: pos.x, y: pos.y }]);
+      } else if (activeComponent === "CR3") {
+        setDotsCR3([...dotsCR3, { x: pos.x, y: pos.y }]);
+      }
     }
   };
+  
   const handleMouseMove = (e) => {
     if (!isDrawing.current || drawingMode !== "line") {
       return;
     }
-   
+  
     const stage = e.target.getStage();
     const point = stage.getPointerPosition();
-    let lastLine = lines[lines.length - 1];
+    let lastLine;
+    if (activeComponent === "E6B") {
+      lastLine = linesE6B[linesE6B.length - 1];
+    } else if (activeComponent === "CR3") {
+      lastLine = linesCR3[linesCR3.length - 1];
+    }
     lastLine.points = [
       lastLine.points[0],
       lastLine.points[1],
       point.x,
       point.y,
     ];
-    lines.splice(lines.length - 1, 1, lastLine);
-    setLines(lines.concat());
+    if (activeComponent === "E6B") {
+      linesE6B.splice(linesE6B.length - 1, 1, lastLine);
+      setLinesE6B(linesE6B.concat());
+    } else if (activeComponent === "CR3") {
+      linesCR3.splice(linesCR3.length - 1, 1, lastLine);
+      setLinesCR3(linesCR3.concat());
+    }
   };
 
   const handleMouseUp = () => {
@@ -56,8 +78,13 @@ const FlightComp = ({ closeModal }) => {
   };
 
   const eraseAll = () => {
-    setLines([]);
-    setDots([]);
+    if (activeComponent === "E6B") {
+      setLinesE6B([]);
+      setDotsE6B([]);
+    } else if (activeComponent === "CR3") {
+      setLinesCR3([]);
+      setDotsCR3([]);
+    }
   };
 
   return (
@@ -83,14 +110,17 @@ const FlightComp = ({ closeModal }) => {
         </Button>
         {activeComponent && (
           <>
-            <Button variant="contained" onClick={() => setDrawingMode("line")}>
+            <Button variant="contained" onClick={() => { setDrawingMode("line"); setDrawingModeActive(true); }}>
               Draw Line
             </Button>
-            <Button variant="contained" onClick={() => setDrawingMode("dot")}>
+            <Button variant="contained" onClick={() => { setDrawingMode("dot"); setDrawingModeActive(true); }}>
               Draw Dot
             </Button>
             <Button variant="contained" onClick={eraseAll}>
               Erase All
+            </Button>
+            <Button variant="contained" onClick={() => setDrawingModeActive(false)}>
+              Toggle Drawing Mode
             </Button>
           </>
         )}
@@ -104,10 +134,10 @@ const FlightComp = ({ closeModal }) => {
           onMouseup={handleMouseUp}
         >
           <Layer>
-            {lines.map((line, i) => (
+            {(activeComponent === "E6B" ? linesE6B : linesCR3).map((line, i) => (
               <Line key={i} points={line.points} stroke="red" />
             ))}
-            {dots.map((dot, i) => (
+            {(activeComponent === "E6B" ? dotsE6B : dotsCR3).map((dot, i) => (
               <Circle key={i} x={dot.x} y={dot.y} radius={2} fill="red" />
             ))}
           </Layer>
@@ -115,12 +145,12 @@ const FlightComp = ({ closeModal }) => {
       </div>
       {activeComponent === "E6B" && (
         <div style={{ width: "50%", height: "50%"}}>
-          <E6B setRotation={setRotationE6B} setRotatableBounds={setRotatableBounds} />
+          <E6B setRotation={setRotationE6B} setRotatableBounds={setRotatableBounds} drawingModeActive={drawingModeActive} />
         </div>
       )}
       {activeComponent === "CR3" && (
         <div style={{ width: "50%", height: "50%" }}>
-          <CR3 setRotation={setRotationCR3} setRotatableBounds1={setRotatableBounds1} setRotatableBounds2={setRotatableBounds2} setRotatableBounds3={setRotatableBounds3}/>
+                    <CR3 setRotation={setRotationCR3} setRotatableBounds1={setRotatableBounds1} setRotatableBounds2={setRotatableBounds2} setRotatableBounds3={setRotatableBounds3} drawingModeActive={drawingModeActive} />
         </div>
       )}
     </div>
