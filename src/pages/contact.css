@@ -1,0 +1,56 @@
+body {
+  background-image: url("../../public/loginbackground.svg");
+  background-size: cover;
+  background-position: center center;
+  background-attachment: fixed;
+  margin: 0;
+  height: 100vh;
+}
+
+/* Adjust background size when the collapse list is open */
+body.collapse-open {
+  background-size: auto;
+}
+
+h1 {
+  color: white;
+}
+
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.form-container {
+  flex-direction: column;
+}
+
+.form-column {
+  margin-right: 20px;
+  margin-bottom: 10px;
+}
+
+.input-field,
+.message-input {
+  width: 100%;
+ 
+}
+
+
+@media only screen and (max-width: 600px) {
+  .form-container {
+    flex-direction: column;
+   
+  }
+
+  .form-column {
+    margin-right: 0;
+    
+  }
+
+  .input-field,
+  .message-input {
+    width: 100%;
+  }
+}

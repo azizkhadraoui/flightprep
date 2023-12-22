@@ -1,0 +1,41 @@
+/* Styles for the question grid container */
+.question-grid-container {
+    display: flex;
+    justify-content: center;
+  }
+  
+  /* Styles for the question rectangle */
+  .question-rectangle {
+    width: 61px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 500;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    margin: 5px; /* 5px margin between rectangles and rows */
+    cursor: pointer;
+  }
+  
+  /* Styles for the current question */
+  .current-question {
+    border: 1px solid white;
+    background-color: white;
+    color: #F1870C;
+  }
+  
+  /* Styles for answered questions */
+  .answered-question {
+    background-color: green; /* Change to your desired color */
+  }
+  .answered-question.red {
+    background-color: red; /* Change to your desired red color */
+  }
+  
+  /* Styles for unanswered questions */
+  .unanswered-question {
+    background-color: rgba(241, 135, 12, 0.71); /* Change to your desired color */
+  }
+  
