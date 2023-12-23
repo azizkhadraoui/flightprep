@@ -207,3 +207,8 @@
         text-align: center;
     }
 }
+.explanation-cell {
+    max-height: 200px; /* adjust as needed */
+    width: 300px; /* adjust as needed */
+    overflow: auto;
+}
