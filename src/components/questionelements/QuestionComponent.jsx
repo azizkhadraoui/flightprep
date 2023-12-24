@@ -52,10 +52,6 @@ const QuestionComponent = ({ questions, currentQuestion, onAnswerSelect }) => {
     fetchAnnexe();
   }, [questions, currentQuestion]);
   
-  const handleNextQuestion = () => {
-    currentQuestion((prevQuestion) => prevQuestion + 1);
-    setSelectedAnswer(null);
-  };
 
   const handleAnswerClick = async (answerKey) => {
     if (!currentUserId) {
@@ -78,7 +74,6 @@ const QuestionComponent = ({ questions, currentQuestion, onAnswerSelect }) => {
       console.error('Error writing document: ', error);
     }
     onAnswerSelect(answerKey);
-    handleNextQuestion();
   };
 
   const isCorrectAnswer = (answerKey) => {

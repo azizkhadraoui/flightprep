@@ -34,6 +34,8 @@ const Dashboard = () => {
   const db = getFirestore(app);
   const auth = getAuth(app);
   const history = useHistory();
+  const [tests, setTests] = useState([]);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
@@ -45,6 +47,36 @@ const Dashboard = () => {
     return () => unsubscribe();
   }, []);
   const [currentUserId, setCurrentUserId] = useState(null);
+
+  useEffect(() => {
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    let currentUser = null;
+  
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        currentUser = user.uid;
+      }
+    });
+  
+    const fetchData = async () => {
+      const testsCollection = collection(db, `users/${currentUser}/tests`);
+      const testsSnapshot = await getDocs(testsCollection);
+      const testsData = testsSnapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+  
+      // Sort tests by date in descending order
+      testsData.sort((a, b) => b.date - a.date);
+  
+      setTests(testsData);
+    };
+  
+    fetchData();
+  
+    return () => unsubscribe();
+  }, []);
 
   const [chartData, setChartData] = useState({
     options: {
@@ -295,7 +327,7 @@ const Dashboard = () => {
               marginTop: "40px",
             }}
           >
-            Create a study or exam test
+            See your Previous Exams
           </Typography>
         </div>
         <div
@@ -310,7 +342,6 @@ const Dashboard = () => {
           }}
         >
           <SearchIcon style={{ color: "#FFF", marginRight: "10px" }} />{" "}
-          {/* Add the icon */}
           <Typography
             style={{
               color: "#FFF",
@@ -338,7 +369,7 @@ const Dashboard = () => {
               marginTop: "40px",
             }}
           >
-            Create a study or exam test
+            Look for Questions
           </Typography>
         </div>
         <div
@@ -381,7 +412,7 @@ const Dashboard = () => {
               marginTop: "40px",
             }}
           >
-            Create a study or exam test
+            Your Reports
           </Typography>
         </div>
       </div>
@@ -401,7 +432,6 @@ const Dashboard = () => {
           onClick={() => history.push("/alltests")}
         >
           <RemoveRedEyeIcon style={{ color: "#FFF", marginRight: "10px" }} />{" "}
-          {/* Add the icon */}
           <Typography
             style={{
               color: "#FFF",
@@ -627,61 +657,36 @@ const Dashboard = () => {
             The Last Saved Tests
           </div>
           <div>
-            <ul style={{ listStyleType: "none", padding: 0 }}>
-              <li>
-                <span
-                  style={{
-                    color: "#FFF",
-                    fontFamily: "Mulish",
-                    fontSize: "14px",
-                    fontStyle: "normal",
-                    fontWeight: 700,
-                    textTransform: "uppercase",
-                  }}
-                >
-                  Test 1
-                </span>
-                <span
-                  style={{
-                    color: "#FFF",
-                    fontFamily: "Mulish",
-                    fontSize: "14px",
-                    fontStyle: "normal",
-                    fontWeight: 700,
-                    textTransform: "uppercase",
-                  }}
-                >
-                  - Date 1
-                </span>
-              </li>
-              <li>
-                <span
-                  style={{
-                    color: "#FFF",
-                    fontFamily: "Mulish",
-                    fontSize: "14px",
-                    fontStyle: "normal",
-                    fontWeight: 700,
-                    textTransform: "uppercase",
-                  }}
-                >
-                  Test 2
-                </span>
-                <span
-                  style={{
-                    color: "#FFF",
-                    fontFamily: "Mulish",
-                    fontSize: "14px",
-                    fontStyle: "normal",
-                    fontWeight: 700,
-                    textTransform: "uppercase",
-                  }}
-                >
-                  - Date 2
-                </span>
-              </li>
-              {/* Add more list items as needed */}
-            </ul>
+          <ul style={{ listStyleType: 'none', padding: 0 }}>
+  {tests.slice(0, 5).map((test) => (
+    <li key={test.id}>
+      <span
+        style={{
+          color: '#FFF',
+          fontFamily: 'Mulish',
+          fontSize: '14px',
+          fontStyle: 'normal',
+          fontWeight: 700,
+          textTransform: 'uppercase',
+        }}
+      >
+        {test.score}
+      </span>
+      <span
+        style={{
+          color: '#FFF',
+          fontFamily: 'Mulish',
+          fontSize: '14px',
+          fontStyle: 'normal',
+          fontWeight: 700,
+          textTransform: 'uppercase',
+        }}
+      >
+        - {new Date(test.date.seconds * 1000).toLocaleDateString()}
+      </span>
+    </li>
+  ))}
+</ul>
           </div>
           <button
             style={{
