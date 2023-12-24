@@ -162,7 +162,7 @@ app.get("/data/recently-changed-true/:xx/:yy", async (req, res) => {
 // Endpoint to fetch all questions
 app.get('/api/questions', async (req, res) => {
     try {
-        const q = 'SELECT * FROM questions';
+        const q = 'SELECT * FROM questions limit 100';
         const [rows, fields] = await pool.query(q);
         return res.json(rows);
     } catch (err) {

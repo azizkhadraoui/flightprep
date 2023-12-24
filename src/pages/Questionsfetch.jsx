@@ -13,6 +13,8 @@ function QuestionsFetch() {
   const [subject, setSubject] = useState("");
   const [subtopic, setSubtopic] = useState("");
   const [showFilters, setShowFilters] = useState(false);
+  const [searchInput, setSearchInput] = useState("");
+
   const recordsPerPage = 5;
   const lastIndex = currentPage * recordsPerPage;
   const firstIndex = lastIndex - recordsPerPage;
@@ -28,9 +30,13 @@ function QuestionsFetch() {
   };
 
   useEffect(() => {
-    let url = "http://localhost:8800/api/questions";
-    if (subject) url += `?subject=${subject}`;
-    if (subtopic) url += `&subtopic=${subtopic}`;
+    let url = "http://localhost:8800/data";
+    if (subject && subtopic) {
+      url += `/${subject}/${subtopic}`;
+    } else {
+      url = 'http://localhost:8800/api/questions';
+    }
+    console.log(url);
 
     axios
       .get(url)
@@ -76,6 +82,34 @@ function QuestionsFetch() {
       setCurrentPage(currentPage + 1);
     }
   }
+
+  const handleSearch = () => {
+    // Trigger search here
+    const fetchData = async () => {
+      try {
+        if (searchInput) {
+          const response = await axios.get(
+            `${process.env.REACT_APP_BACKEND_URL}/search/s/${searchInput}`
+          );
+          setQuestions(response.data);
+        } else {
+          // If search input is empty, fetch all questions
+          const url = subject && subtopic
+            ? `http://localhost:8800/data/${subject}/${subtopic}`
+            : 'http://localhost:8800/api/questions';
+
+          const response = await axios.get(url);
+          setQuestions(response.data);
+        }
+      } catch (error) {
+        console.error("Error fetching questions:", error.message);
+      }
+    };
+
+    fetchData();
+  };
+
+
   return (
     <div className="container-fluid">
       <div className="row">
@@ -149,11 +183,18 @@ function QuestionsFetch() {
                 </div>
                 <div className="col-sm-9 col-xs-12 text-right">
                   <div className="btn_group">
-                    <input
-                      type="text"
-                      className="form-control"
-                      placeholder="Search"
-                    />
+                  <input
+            type="text"
+            onChange={(e) => setSearchInput(e.target.value)}
+            className="form-control"
+            placeholder="Search"
+          />
+          <button
+            className="btn btn-secondary ml-2"
+            onClick={handleSearch}
+          >
+            Search
+          </button>
                   </div>
                 </div>
               </div>

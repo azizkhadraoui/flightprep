@@ -6,6 +6,7 @@ import Home from "./Home";
 import Signup1 from "./pages/signup1";
 import { AuthProvider } from "./Auth";
 import PrivateRoute from "./PrivateRoute";
+import PrivateAdminRoute from "./adminRoutes";
 import Infos from "./infos";
 import Login from "./pages/login";
 import ResetPassword from "./pages/password_reset";
@@ -54,7 +55,7 @@ const App = () => {
           <Route exact path="/canvas" component={Canvas2} />
           <Route exact path='/annexes' component={Annexes} />
           <Route exact path='/search' component={Search} />
-          <Route exact path='/questionsfetch' component={Questionsfetch} />
+          <PrivateAdminRoute exact path='/admin' component={Questionsfetch} />
           <Route exact path='/create' component={CreateQuestion} />
           <Route exact path='/update/:id' component={UpdateQuestion} />
         </div>

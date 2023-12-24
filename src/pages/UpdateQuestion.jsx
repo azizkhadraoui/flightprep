@@ -5,6 +5,7 @@ import "./updateQuestion.css";
 
 function UpdateQuestion() {
   const { id } = useParams();
+  console.log(id);
   const [formData, setFormData] = useState({
     question: "",
     A: "",
@@ -25,6 +26,7 @@ function UpdateQuestion() {
   const [question, setQuestion] = useState(null);
 
   useEffect(() => {
+    console.log('http://localhost:8800/api/getQuestion/${id}')
     if (id) {
       axios
         .get(`http://localhost:8800/api/getQuestion/${id}`)
@@ -86,7 +88,7 @@ function UpdateQuestion() {
           </label>
           <input
             type="text"
-            placeholder={question.question}
+            placeholder={question?.question}
             className="form-control"
             value={formData.question}
             onChange={(e) => handleInputChange(e, "question")}
@@ -98,7 +100,7 @@ function UpdateQuestion() {
           </label>
           <input
             type="text"
-            placeholder={question.A}
+            placeholder={question?.A}
             className="form-control"
             value={formData.A}
             onChange={(e) => handleInputChange(e, "A")}
@@ -110,7 +112,7 @@ function UpdateQuestion() {
           </label>
           <input
             type="text"
-            placeholder={question.B}
+            placeholder={question?.B}
             className="form-control"
             value={formData.B}
             onChange={(e) => handleInputChange(e, "B")}
@@ -122,7 +124,7 @@ function UpdateQuestion() {
           </label>
           <input
             type="text"
-            placeholder={question.C}
+            placeholder={question?.C}
             className="form-control"
             value={formData.C}
             onChange={(e) => handleInputChange(e, "C")}
@@ -134,7 +136,7 @@ function UpdateQuestion() {
           </label>
           <input
             type="text"
-            placeholder={question.D}
+            placeholder={question?.D}
             className="form-control"
             value={formData.D}
             onChange={(e) => handleInputChange(e, "D")}
@@ -144,7 +146,7 @@ function UpdateQuestion() {
           <label htmlFor="">Correct</label>
           <input
             type="text"
-            placeholder={question.correct}
+            placeholder={question?.correct}
             className="form-control"
             value={formData.correct}
             onChange={(e) => handleInputChange(e, "correct")}
@@ -157,7 +159,7 @@ function UpdateQuestion() {
           <textarea
             rows="4"
             cols="50"
-            placeholder={question.exp}
+            placeholder={question?.exp}
             className="form-control"
             value={formData.exp}
             onChange={(e) => handleInputChange(e, "exp")}
@@ -169,7 +171,7 @@ function UpdateQuestion() {
           </label>
           <input
             type="text"
-            placeholder={question.status}
+            placeholder={question?.status}
             className="form-control"
             value={formData.status}
             onChange={(e) => handleInputChange(e, "status")}
@@ -181,7 +183,7 @@ function UpdateQuestion() {
           </label>
           <input
             type="text"
-            placeholder={question.seen_in}
+            placeholder={question?.seen_in}
             className="form-control"
             value={formData.seen_in}
             onChange={(e) => handleInputChange(e, "seen_in")}
@@ -193,7 +195,7 @@ function UpdateQuestion() {
           </label>
           <input
             type="text"
-            placeholder={question.free_trial}
+            placeholder={question?.free_trial}
             className="form-control"
             value={formData.free_trial}
             onChange={(e) => handleInputChange(e, "free_trial")}
@@ -205,7 +207,7 @@ function UpdateQuestion() {
           </label>
           <input
             type="text"
-            placeholder={question.compass}
+            placeholder={question?.compass}
             className="form-control"
             value={formData.compass}
             onChange={(e) => handleInputChange(e, "compass")}
@@ -216,7 +218,7 @@ function UpdateQuestion() {
           <input
             id="iddInput"
             type="number"
-            placeholder={question.idd}
+            placeholder={question?.idd}
             className="form-control"
             value={formData.idd}
             onChange={(e) => handleInputChange(e, "idd")}
@@ -228,7 +230,7 @@ function UpdateQuestion() {
           </label>
           <input
             type="number"
-            placeholder={question.real_exam}
+            placeholder={question?.real_exam}
             className="form-control"
             value={formData.real_exam}
             onChange={(e) => handleInputChange(e, "real_exam")}
@@ -240,7 +242,7 @@ function UpdateQuestion() {
           </label>
           <input
             type="number"
-            placeholder={question.recently_changed}
+            placeholder={question?.recently_changed}
             className="form-control"
             value={formData.recently_changed}
             onChange={(e) => handleInputChange(e, "recently_changed")}

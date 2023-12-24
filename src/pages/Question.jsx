@@ -57,6 +57,7 @@ const Question = () => {
 
   useEffect(() => {
     if (currentUserId) {
+      console.log(`${process.env.REACT_APP_BACKEND_URL}/${selectedTopicId}/${selectedSubtopicId}`);
       console.log(currentUserId)
       const fetchData = async () => {
         try {

@@ -22,6 +22,7 @@ const TestMatrix = ({
           ...question,
           isCorrect: false,
           isAnswered: false,
+          color: "#FFA500", // Set initial color to orange
         }));
         setQuestions(data);
       } catch (error) {

@@ -39,7 +39,8 @@ const ExamMatrix = ({
       const isCurrentQuestion = index === currentQuestion;
       const selectedAnswer = selectedAnswers[index];
       const isAnsweredCorrectly = selectedAnswer === question.correct;
-      const isAnswered = selectedAnswer !== null;
+      const isAnswered =
+        selectedAnswer !== null && selectedAnswer !== undefined;
 
       const buttonStyle = {
         backgroundColor: isCurrentQuestion
@@ -48,7 +49,7 @@ const ExamMatrix = ({
           ? isAnsweredCorrectly
             ? "green"
             : "red"
-          : "#FFA500",
+          : "orange", // Set to orange for unanswered questions
         color: isCurrentQuestion ? "#000000" : "#FFFFFF",
       };
 
