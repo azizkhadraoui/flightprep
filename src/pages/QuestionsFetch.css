@@ -212,3 +212,11 @@
     width: 300px; /* adjust as needed */
     overflow: auto;
 }
+.idColumn {
+    width: 15%; /* Adjust this value as needed */
+  }
+  
+  .questionColumn {
+    width: 30%; /* Adjust this value as needed */
+  }
+  

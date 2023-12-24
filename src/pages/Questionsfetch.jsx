@@ -3,11 +3,16 @@ import axios from "axios";
 import { Link } from "react-router-dom";
 import Box from "@mui/material/Box";
 import "./QuestionsFetch.css";
+import { Select, MenuItem, FormControl, InputLabel } from "@mui/material";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import subjectData from "./subjectData.json";
 
 function QuestionsFetch() {
   const [questions, setQuestions] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
-  const [showFullExplanation, setShowFullExplanation] = useState(null);
+  const [subject, setSubject] = useState("");
+  const [subtopic, setSubtopic] = useState("");
+  const [showFilters, setShowFilters] = useState(false);
   const recordsPerPage = 5;
   const lastIndex = currentPage * recordsPerPage;
   const firstIndex = lastIndex - recordsPerPage;
@@ -23,8 +28,12 @@ function QuestionsFetch() {
   };
 
   useEffect(() => {
+    let url = "http://localhost:8800/api/questions";
+    if (subject) url += `?subject=${subject}`;
+    if (subtopic) url += `&subtopic=${subtopic}`;
+
     axios
-      .get("http://localhost:8800/api/questions")
+      .get(url)
       .then((res) => {
         console.log("Data fetched successfully:", res.data);
         setQuestions(res.data);
@@ -32,7 +41,7 @@ function QuestionsFetch() {
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, []);
+  }, [subject, subtopic]);
 
   const handleDeleteQuestion = async (questionId) => {
     try {
@@ -86,6 +95,57 @@ function QuestionsFetch() {
                   <Link to="/create" className="btn btn-secondary mb-3">
                     Add Question +
                   </Link>
+                  <button
+                    onClick={() => setShowFilters(!showFilters)}
+                    className="btn btn-secondary mb-3 ml-3"
+                  >
+                    Filters <FilterListIcon />
+                  </button>
+                  {showFilters && (
+                    <>
+                      <FormControl
+                        variant="outlined"
+                        className="filterFormControl"
+                      >
+                        <InputLabel id="subject-label">Subject</InputLabel>
+                        <Select
+                          labelId="subject-label"
+                          value={subject}
+                          onChange={(e) => setSubject(e.target.value)}
+                          label="Subject"
+                        >
+                          {subjectData.map((subject) => (
+                            <MenuItem value={subject.Code}>
+                              {subject.Name}
+                            </MenuItem>
+                          ))}
+                        </Select>
+                      </FormControl>
+
+                      {subject && (
+                        <FormControl
+                          variant="outlined"
+                          className="filterFormControl"
+                        >
+                          <InputLabel id="subtopic-label">Subtopic</InputLabel>
+                          <Select
+                            labelId="subtopic-label"
+                            value={subtopic}
+                            onChange={(e) => setSubtopic(e.target.value)}
+                            label="Subtopic"
+                          >
+                            {subjectData
+                              .find((s) => s.Code === subject)
+                              .Subtopics.map((subtopic) => (
+                                <MenuItem value={subtopic.ID}>
+                                  {subtopic.Name}
+                                </MenuItem>
+                              ))}
+                          </Select>
+                        </FormControl>
+                      )}
+                    </>
+                  )}
                 </div>
                 <div className="col-sm-9 col-xs-12 text-right">
                   <div className="btn_group">
@@ -102,20 +162,11 @@ function QuestionsFetch() {
               <table className="table table-bordered">
                 <thead>
                   <tr>
-                    <th>ID</th>
-                    <th>Question</th>
-                    <th>Option A</th>
-                    <th>Option B</th>
-                    <th>Option C</th>
-                    <th>Option D</th>
-                    <th>Correct Answer</th>
-                    <th>Explanation</th>
+                    <th className="idColumn">ID</th>
+                    <th className="questionColumn">Question</th>
                     <th>Status</th>
                     <th>Seen In</th>
                     <th>Free Trial</th>
-                    <th>Compass</th>
-                    <th>Annexe</th>
-                    <th>IDD</th>
                     <th>Real Exam</th>
                     <th>Recently Changed</th>
                     <th>Actions</th>
@@ -124,40 +175,11 @@ function QuestionsFetch() {
                 <tbody>
                   {records.map((question) => (
                     <tr key={question.id}>
-                      <td>{question.id}</td>
-                      <td>{question.question}</td>
-                      <td>{question.A}</td>
-                      <td>{question.B}</td>
-                      <td>{question.C}</td>
-                      <td>{question.D}</td>
-                      <td>{question.correct}</td>
-                      <td className="explanation-cell">
-                        {question.exp.length > 100 &&
-                        showFullExplanation !== question.id
-                          ? `${question.exp.substring(0, 100)}...`
-                          : question.exp}
-                        {question.exp.length > 100 && (
-                          <button
-                            onClick={() =>
-                              setShowFullExplanation(
-                                showFullExplanation === question.id
-                                  ? null
-                                  : question.id
-                              )
-                            }
-                          >
-                            {showFullExplanation === question.id
-                              ? "See Less"
-                              : "See More"}
-                          </button>
-                        )}
-                      </td>
+                      <td className="idColumn">{question.id}</td>
+                      <td className="questionColumn">{question.question}</td>
                       <td>{question.status}</td>
                       <td>{question.seen_in}</td>
                       <td>{question.free_trial}</td>
-                      <td>{question.compass}</td>
-                      <td>{question.annexe}</td>
-                      <td>{question.idd}</td>
                       <td>{question.real_exam ? "Yes" : "No"}</td>
                       <td>{question.recently_changed ? "Yes" : "No"}</td>
                       <td className="d-flex justify-content-center align-items-center">
