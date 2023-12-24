@@ -55,6 +55,15 @@ const ExamQuestion = ({
     fetchAnnexe();
   }, [questions, currentQuestion]);
   
+  const handleNextQuestion = () => {
+    setCurrentQuestion((prevQuestion) => prevQuestion + 1);
+    setSelectedAnswers((prevAnswers) => {
+      const newAnswers = [...prevAnswers];
+      newAnswers[currentQuestion + 1] = null;
+      return newAnswers;
+    });
+  };
+
 
   const handleAnswerClick = async (answerKey) => {
     if (!currentUserId) {
@@ -90,6 +99,8 @@ const ExamQuestion = ({
       newAnswers[currentQuestion] = answerKey;
       return newAnswers;
     });
+
+    handleNextQuestion();
   };
 
   useEffect(() => {
