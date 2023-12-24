@@ -72,7 +72,7 @@ const ExamQuestion = ({
     }
 
     const isCorrectAnswer =
-      answerKey === questions[currentQuestion].correct.toUpperCase();
+    answerKey === questions[currentQuestion].correct.toUpperCase();
     const questionId = questions[currentQuestion].id;
 
     try {

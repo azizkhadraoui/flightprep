@@ -152,19 +152,55 @@ function UpdateQuestion() {
             onChange={(e) => handleInputChange(e, "correct")}
           />
         </div>
-        <div className="col-12 mb-2">
-          <label htmlFor="" className="form-label">
-            Explanation
-          </label>
-          <textarea
-            rows="4"
-            cols="50"
-            placeholder={question?.exp}
-            className="form-control"
-            value={formData.exp}
-            onChange={(e) => handleInputChange(e, "exp")}
-          ></textarea>
-        </div>
+
+<div className="col-12 mb-2">
+  <label htmlFor="" className="form-label">
+    Explanation
+  </label>
+  <textarea
+    rows="4"
+    cols="50"
+    placeholder={question?.exp}
+    className="form-control"
+    value={formData.exp}
+    onChange={(e) => handleInputChange(e, "exp")}
+  ></textarea>
+</div>
+
+{/* Add annex button */}
+<div className="col-12 mb-2">
+  <label htmlFor="annexInput" className="form-label">
+    Add Annex
+  </label>
+  <input
+    id="annexInput"
+    type="file"
+    className="form-control"
+    onChange={(e) => handleFileChange(e, "annexe")}
+  />
+</div>
+{formData.annexe && (
+  <div className="col-12 mb-2">
+    <img
+      src={`data:${formData.annexe.type};base64,${formData.annexe.data}`}
+      alt={formData.annexe.name}
+      className="image-preview"
+    />
+  </div>
+)}
+
+<div className="col-12 mb-2">
+  <label htmlFor="annexNameInput" className="form-label">
+    Annex Name
+  </label>
+  <input
+    id="annexNameInput"
+    type="text"
+    className="form-control"
+    value={formData.annexe ? formData.annexe.name : ''}
+    onChange={(e) => handleInputChange(e, "annexe.name")}
+  />
+</div>
         <div className="col-md-3 mb-2">
           <label htmlFor="" className="form-label">
             Status

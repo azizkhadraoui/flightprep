@@ -60,3 +60,44 @@ body {
 
     }
 }
+/* Style for the image preview */
+.image-preview {
+    width: 300px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 20px;
+    border: none;
+    border-bottom: 1px solid #555;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+/* Style for the file input */
+/* Style for the file input button */
+#annexInput {
+    border-radius: 20px;
+    border: none;
+    border-bottom: 1px solid #555;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    cursor: pointer;
+}
+
+/* Style for the annex name input */
+#annexNameInput {
+    border-radius: 20px;
+    border: none;
+    border-bottom: 1px solid #555;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+}
+/* Style for the file input button */
+.custom-file-upload {
+    border-radius: 20px;
+    border: none;
+    border-bottom: 1px solid #555;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    cursor: pointer;
+    padding: 10px;
+    display: inline-block;
+}
