@@ -160,7 +160,7 @@ app.get("/data/recently-changed-true/:xx/:yy", async (req, res) => {
     }
 });
 // Endpoint to fetch all questions
-app.get('/api/questions', async (req, res) => {
+app.get('/data/questions', async (req, res) => {
     try {
         const q = 'SELECT * FROM questions limit 100';
         const [rows, fields] = await pool.query(q);
@@ -172,7 +172,7 @@ app.get('/api/questions', async (req, res) => {
 });
 
 // Endpoint to delete a question by ID
-app.delete('/api/remove/:id', async (req, res) => {
+app.delete('/data/remove/:id', async (req, res) => {
     try {
         const questionId = req.params.id;
         console.log('DELETE request received');
@@ -202,7 +202,7 @@ app.delete('/api/remove/:id', async (req, res) => {
 
 
 // Endpoint to create a new question with annexe file
-app.post('/api/create', upload.single('annexe'), async (req, res) => {
+app.post('/data/create', upload.single('annexe'), async (req, res) => {
     try {
         const questionData = req.body;
         const annexeFile = req.file; 
@@ -240,7 +240,7 @@ app.post('/api/create', upload.single('annexe'), async (req, res) => {
 });
 
 // Endpoint to update a question by ID
-app.put('/api/update/:id', async (req, res) => {
+app.put('/data/update/:id', async (req, res) => {
     try {
         const questionId = req.params.id;
         const updatedQuestionData = req.body;
@@ -299,7 +299,7 @@ app.put('/api/update/:id', async (req, res) => {
 });
 
 // Endpoint to get question details by ID
-app.get('/api/getQuestion/:id', async (req, res) => {
+app.get('/data/getQuestion/:id', async (req, res) => {
     const id = req.params.id;
 
     try {

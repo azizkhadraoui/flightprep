@@ -43,26 +43,26 @@ const App = () => {
           <Route exact path="/signup" component={Signup1} />
           <Route exact path="/reset" component={ResetPassword} />
           <Route exact path="/home" component={LandingPage} />
-          <Route exact path="/chapters" component={Chapters} />
-          <Route exact path="/questions" component={Question} />
+          <PrivateRoute exact path="/chapters" component={Chapters} />
+          <PrivateRoute exact path="/questions" component={Question} />
           <PrivateRoute exact path="/contact" component={Contact} />
           <PrivateRoute exact path="/subscription" component={Subscription} />
-          <Route exact path="/exam" component={Exam} />
+          <PrivateRoute exact path="/exam" component={Exam} />
           <PrivateRoute exact path="/dashboard" component={Dashboard} />
-          <Route exact path="/profile" component={Profile} />
-          <Route exact path="/reset-flags" component={ResetFlags} />
-          <Route exact path="/notes" component={Notes} />
-          <Route exact path="/comments" component={Comments} />
-          <Route exact path="/alltests" component={AllTests} />
-          <Route exact path="/comingsoon" component={ComingSoon} />
-          <Route exact path="/canvas" component={Canvas2} />
-          <Route exact path='/annexes' component={Annexes} />
+          <PrivateRoute exact path="/profile" component={Profile} />
+          <PrivateRoute exact path="/reset-flags" component={ResetFlags} />
+          <PrivateRoute exact path="/notes" component={Notes} />
+          <PrivateRoute exact path="/comments" component={Comments} />
+          <PrivateRoute exact path="/alltests" component={AllTests} />
+          <PrivateRoute exact path="/comingsoon" component={ComingSoon} />
+          <PrivateRoute exact path="/canvas" component={Canvas2} />
+          <PrivateRoute exact path='/annexes' component={Annexes} />
           <Route exact path='/about' component={About} />
-          <Route exact path='/search' component={Search} />
+          <PrivateRoute exact path='/search' component={Search} />
           <PrivateAdminRoute exact path='/admin' component={Questionsfetch} />
-          <Route exact path='/create' component={CreateQuestion} />
-          <Route exact path='/update/:id' component={UpdateQuestion} />
-          <Route exact path='/cr3' component={CR3} />
+          <PrivateAdminRoute exact path='/create' component={CreateQuestion} />
+          <PrivateAdminRoute exact path='/update/:id' component={UpdateQuestion} />
+          <PrivateAdminRoute exact path='/cr3' component={CR3} />
 
         </div>
       </Router>

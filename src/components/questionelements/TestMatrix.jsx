@@ -63,6 +63,9 @@ const TestMatrix = ({
           ? "red"
           : "#FFA500",
         color: isCurrentQuestion ? "#000000" : "#FFFFFF",
+        margin: "2px", 
+        padding: "5px 10px", 
+        fontSize: "0.85rem", 
       };
 
       return (

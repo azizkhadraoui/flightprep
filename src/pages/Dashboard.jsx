@@ -1,44 +1,43 @@
-import React, { useEffect, useState } from "react";
-import Navbar2 from "../components/navbar/Navbar2";
-import Chart from "react-apexcharts";
-import { useHistory } from "react-router-dom";
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import React, { useEffect, useState } from 'react';
+import Navbar2 from '../components/navbar/Navbar2';
+import { useHistory } from 'react-router-dom';
+import {
+  getFirestore, collection, getDocs, 
+} from 'firebase/firestore';
+import {
+  Box, Grid, Paper, Typography, Button
+} from '@mui/material';
+import Chart from 'react-apexcharts';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import Grid from "@mui/material/Grid";
-import Paper from "@mui/material/Paper";
-import Button from "@mui/material/Button";
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import SaveAltIcon from "@mui/icons-material/SaveAlt";
-import SearchIcon from "@mui/icons-material/Search";
-import AssessmentIcon from "@mui/icons-material/Assessment";
-import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
-import InfoIcon from "@mui/icons-material/Info";
-import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import FlagIcon from "@mui/icons-material/Flag";
-import FeedbackIcon from "@mui/icons-material/Feedback";
-import BookIcon from "@mui/icons-material/Book";
-import AnnouncementIcon from "@mui/icons-material/Announcement";
-import ContactMailIcon from "@mui/icons-material/ContactMail";
-
-import app from "../base.js";
+import app from '../base.js';
+import AddCircleOutlineIcon from '@mui/icons-material/AddCircleOutline';
+import SaveAltIcon from '@mui/icons-material/SaveAlt';
+import SearchIcon from '@mui/icons-material/Search';
+import AssessmentIcon from '@mui/icons-material/Assessment';
+import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
+import InfoIcon from '@mui/icons-material/Info';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import FlagIcon from '@mui/icons-material/Flag';
+import FeedbackIcon from '@mui/icons-material/Feedback';
+import BookIcon from '@mui/icons-material/Book';
+import AnnouncementIcon from '@mui/icons-material/Announcement';
+import ContactMailIcon from '@mui/icons-material/ContactMail';
 
 const Dashboard = () => {
+  const history = useHistory();
+  const db = getFirestore(app);
+  const auth = getAuth(app);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [tests, setTests] = useState([]);
   const [chartData, setChartData] = useState({
     options: {
-      chart: { id: "basic-line-chart" },
+      chart: { id: 'basic-line-chart' },
       xaxis: { categories: [] },
     },
-    series: [{ name: "Scores", data: [] }],
+    series: [{ name: 'Scores', data: [] }],
   });
 
-  const history = useHistory();
-  const db = getFirestore(app);
-  const auth = getAuth(app);
-
+  // Authentication state listener
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUserId(user ? user.uid : null);
@@ -46,59 +45,47 @@ const Dashboard = () => {
     return () => unsubscribe();
   }, [auth]);
 
+  // Fetching test data
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const currentUser = auth.currentUser;
-        const testsCollection = collection(
-          db,
-          `users/${currentUser.uid}/tests`
-        );
-        const testsSnapshot = await getDocs(testsCollection);
-        const testsData = testsSnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
+      if (currentUserId) {
+        try {
+          const testsCollection = collection(db, `users/${currentUserId}/tests`);
+          const testsSnapshot = await getDocs(testsCollection);
+          const testsData = testsSnapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
 
-        testsData.sort((a, b) => b.date - a.date);
-        setTests(testsData);
-      } catch (error) {
-        console.error("Error getting documents: ", error);
-      }
-    };
-
-    fetchData();
-  }, [auth, db]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const dates = [];
-        const scores = [];
-        const testsCollection = collection(db, `users/${currentUserId}/tests`);
-        const querySnapshot = await getDocs(testsCollection);
-
-        querySnapshot.forEach((doc) => {
-          const data = doc.data();
-          const originalDate = new Date(data.date);
-          dates.push(originalDate.toDateString());
-          scores.push(parseFloat(data.result.toFixed(1)));
-        });
-
-        setChartData({
-          options: {
-            chart: { id: "basic-line-chart" },
-            xaxis: { categories: dates },
-          },
-          series: [{ name: "Scores", data: scores }],
-        });
-      } catch (error) {
-        console.error("Error getting documents: ", error);
+          testsData.sort((a, b) => b.date - a.date);
+          setTests(testsData);
+        } catch (error) {
+          console.error('Error getting documents: ', error);
+        }
       }
     };
 
     fetchData();
   }, [currentUserId, db]);
+
+  // Chart data handling
+  useEffect(() => {
+    const dates = [];
+    const scores = [];
+    tests.forEach((test) => {
+      const originalDate = new Date(test.date);
+      dates.push(originalDate.toDateString());
+      scores.push(parseFloat(test.result.toFixed(1)));
+    });
+
+    setChartData({
+      options: {
+        chart: { id: 'basic-line-chart' },
+        xaxis: { categories: dates },
+      },
+      series: [{ name: 'Scores', data: scores }],
+    });
+  }, [tests]);
 
   const actionButtons = [
     { text: "New Test", route: "/chapters", icon: <AddCircleOutlineIcon /> },
@@ -319,7 +306,7 @@ const renderAdditionalActions = () => {
             {tests.slice(0, 5).map((test) => (
               <li key={test.id}>
                 <Typography variant="subtitle2" color="textPrimary">
-                  {test.score} - {new Date(test.date.seconds * 1000).toLocaleDateString()}
+                  {test.result.toFixed(2)}%  - {new Date(test.date).toLocaleDateString()}
                 </Typography>
               </li>
             ))}

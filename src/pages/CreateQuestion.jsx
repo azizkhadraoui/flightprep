@@ -26,7 +26,7 @@ function CreateQuestion() {
 
         try {
             // Make a POST request to the backend to create a new question
-            const response = await axios.post('http://localhost:8800/api/create', formData);
+            const response = await axios.post(`${process.env.REACT_APP_BACKEND_URL}/create`, formData);
 
             // Check if the question was created successfully
             if (response.data.success) {

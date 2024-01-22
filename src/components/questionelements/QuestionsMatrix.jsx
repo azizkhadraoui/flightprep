@@ -11,7 +11,6 @@ const QuestionsMatrix = ({
   const [pinnedQuestions, setPinnedQuestions] = useState([]);
 
   useEffect(() => {
-    // Set initial state after the component has mounted
     setQuestions(data);
   }, [data]);
 
@@ -31,20 +30,29 @@ const QuestionsMatrix = ({
     });
   };
 
+  const buttonStyle = {
+    margin: "2px", // Reduce the margin
+    padding: "6px 12px", // Adjust padding
+  };
+
+  const gridItemStyle = {
+    padding: "4px", // Reduce the padding of each grid item
+  };
+
   const renderQuestions = () => {
     return questions.map((question, index) => {
       const questionNumber = index + 1;
       const isPinned = pinnedQuestions.includes(questionNumber);
 
       return (
-        <Grid item xs={2} key={index}>
+        <Grid item xs={2} key={index} style={gridItemStyle}>
           <Button
             onClick={() => goToQuestion(questionNumber)}
-            style={
-              index === currentQuestion
-                ? { backgroundColor: "#FFA500", color: "#FFFFFF" }
-                : { backgroundColor: "#FFFFFF", color: "#000000" }
-            }
+            style={{
+              ...buttonStyle,
+              backgroundColor: index === currentQuestion ? "#FFA500" : "#FFFFFF",
+              color: index === currentQuestion ? "#FFFFFF" : "#000000",
+            }}
           >
             {isPinned && (
               <span
@@ -57,26 +65,16 @@ const QuestionsMatrix = ({
             )}
             {questionNumber}
           </Button>
-          <Button onClick={() => togglePin(questionNumber)}>Pin</Button>
+          <Button style={buttonStyle} onClick={() => togglePin(questionNumber)}>
+            Pin
+          </Button>
         </Grid>
       );
     });
   };
 
-  const renderPinnedQuestions = () => {
-    return pinnedQuestions.map((pinnedNumber) => (
-      <div
-        key={pinnedNumber}
-        style={{ border: "1px solid black", padding: "5px" }}
-      >
-        {`Pinned Question ${pinnedNumber}`}
-      </div>
-    ));
-  };
-
   return (
     <div>
-      <div>{renderPinnedQuestions()}</div>
       <Grid container spacing={1}>
         {renderQuestions()}
       </Grid>

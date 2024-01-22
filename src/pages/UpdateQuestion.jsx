@@ -30,10 +30,10 @@ function UpdateQuestion() {
   const [question, setQuestion] = useState(null);
 
   useEffect(() => {
-    console.log('http://localhost:8800/api/getQuestion/${id}')
+    //console.log('http://localhost:8800/api/getQuestion/${id}')
     if (id) {
       axios
-        .get(`http://localhost:8800/api/getQuestion/${id}`)
+        .get(`${process.env.REACT_APP_BACKEND_URL}/getQuestion/${id}`)
         .then((response) => {
           setFormData(response.data);
           setQuestion(response.data); // Set the fetched question
@@ -86,7 +86,7 @@ function UpdateQuestion() {
       }
     
       // Make a PUT request to update the question with the updated form data
-      await axios.put(`http://localhost:8800/api/update/${id}`, formData);
+      await axios.put(`${process.env.REACT_APP_BACKEND_URL}/update/${id}`, formData);
   
       // Optionally, you can reset the form or navigate to another page
       alert("Question updated successfully");

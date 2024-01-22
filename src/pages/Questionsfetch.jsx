@@ -30,11 +30,11 @@ function QuestionsFetch() {
   };
 
   useEffect(() => {
-    let url = "http://localhost:8800/data";
+    let url = process.env.REACT_APP_BACKEND_URL;
     if (subject && subtopic) {
       url += `/${subject}/${subtopic}`;
     } else {
-      url = 'http://localhost:8800/api/questions';
+      url = `${process.env.REACT_APP_BACKEND_URL}/questions`;
     }
     console.log(url);
 
@@ -52,7 +52,7 @@ function QuestionsFetch() {
   const handleDeleteQuestion = async (questionId) => {
     try {
       const response = await axios.delete(
-        `http://localhost:8800/api/remove/${questionId}`
+        `${process.env.REACT_APP_BACKEND_URL}/remove/${questionId}`
       );
 
       if (response.data.success) {
@@ -95,8 +95,8 @@ function QuestionsFetch() {
         } else {
           // If search input is empty, fetch all questions
           const url = subject && subtopic
-            ? `http://localhost:8800/data/${subject}/${subtopic}`
-            : 'http://localhost:8800/api/questions';
+            ? `${process.env.REACT_APP_BACKEND_URL}/${subject}/${subtopic}`
+            : `${process.env.REACT_APP_BACKEND_URL}/questions`;
 
           const response = await axios.get(url);
           setQuestions(response.data);
