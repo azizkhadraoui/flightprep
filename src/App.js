@@ -29,6 +29,8 @@ import Search from './pages/Search';
 import Questionsfetch from './pages/Questionsfetch'; 
 import CreateQuestion from "./pages/CreateQuestion";
 import UpdateQuestion from "./pages/UpdateQuestion";
+import About from './pages/About';
+
 
 const App = () => {
   return (
@@ -54,6 +56,7 @@ const App = () => {
           <Route exact path="/comingsoon" component={ComingSoon} />
           <Route exact path="/canvas" component={Canvas2} />
           <Route exact path='/annexes' component={Annexes} />
+          <Route exact path='/about' component={About} />
           <Route exact path='/search' component={Search} />
           <PrivateAdminRoute exact path='/admin' component={Questionsfetch} />
           <Route exact path='/create' component={CreateQuestion} />

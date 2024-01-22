@@ -18,7 +18,6 @@ const ExamQuestion = ({
 }) => {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
-  const [annexeUrl, setAnnexeUrl] = useState(null);
   const history = useHistory();
 
   useEffect(() => {
@@ -33,27 +32,6 @@ const ExamQuestion = ({
     return () => unsubscribe();
   }, []);
 
-  useEffect(() => {
-    const fetchAnnexe = async () => {
-      try {
-        const annexePath = questions[currentQuestion]?.annexe;
-        console.log(annexePath);
-        if (annexePath) {
-          const storage = getStorage(app);
-          const annexeRef = ref(storage, annexePath);
-          const downloadURL = await getDownloadURL(annexeRef);
-          setAnnexeUrl(downloadURL);
-        } else {
-          // If there is no annexe for the current question, reset annexeUrl
-          setAnnexeUrl(null);
-        }
-      } catch (error) {
-        console.error("Error fetching annexe:", error);
-      }
-    };
-  
-    fetchAnnexe();
-  }, [questions, currentQuestion]);
   
   const handleNextQuestion = () => {
     setCurrentQuestion((prevQuestion) => prevQuestion + 1);
@@ -116,10 +94,10 @@ const ExamQuestion = ({
           </Typography>
 
           {/* Conditionally render the image */}
-          {annexeUrl && (
+          {questions[currentQuestion]?.annexe && (
             <div onClick={() => history.push(`/canvas?img=${questions[currentQuestion]?.annexe}`)}>
               <img
-                src={annexeUrl}
+                src={questions[currentQuestion]?.annexe}
                 alt="question related"
                 style={{ width: "100%", height: "100%", marginBottom: "16px"  }}
               />

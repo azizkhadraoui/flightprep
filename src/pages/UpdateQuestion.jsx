@@ -2,8 +2,12 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import "./updateQuestion.css";
+import { getStorage, ref, uploadString, getDownloadURL } from "firebase/storage";
+import app from '../base';
+
 
 function UpdateQuestion() {
+  const storage = getStorage(app);
   const { id } = useParams();
   console.log(id);
   const [formData, setFormData] = useState({
@@ -67,11 +71,23 @@ function UpdateQuestion() {
   };
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
-      // Make a PUT request to update the question
+      // Upload image to Firebase Storage
+      const imageFieldName = "annexe"; // Change this to match your form field name for the image
+      const imageField = formData[imageFieldName];
+  
+      if (imageField && imageField.data) {
+        const storageRef = ref(storage, `images/${imageField.name}`);
+        const snapshot = await uploadString(storageRef, imageField.data, "base64");
+        const url = await getDownloadURL(snapshot.ref);
+        console.log(url);
+        formData.annexe.name=url;
+      }
+    
+      // Make a PUT request to update the question with the updated form data
       await axios.put(`http://localhost:8800/api/update/${id}`, formData);
-
+  
       // Optionally, you can reset the form or navigate to another page
       alert("Question updated successfully");
     } catch (error) {
@@ -79,6 +95,12 @@ function UpdateQuestion() {
       alert("An error occurred while updating the question");
     }
   };
+console.log(formData);
+
+
+
+
+
   return (
     <div className="container mt-5">
       <form encType="multipart/form-data" className="row g-3">
@@ -182,25 +204,17 @@ function UpdateQuestion() {
 {formData.annexe && (
   <div className="col-12 mb-2">
     <img
-      src={`data:${formData.annexe.type};base64,${formData.annexe.data}`}
-      alt={formData.annexe.name}
-      className="image-preview"
-    />
+  src={
+    formData.annexe && formData.annexe.type
+      ? `data:${formData.annexe.type};base64,${formData.annexe.data}`
+      : formData.annexe
+  }
+  alt={formData.annexe ? formData.annexe.name : 'default-alt-text'}
+  className="image-preview"
+/>
   </div>
 )}
 
-<div className="col-12 mb-2">
-  <label htmlFor="annexNameInput" className="form-label">
-    Annex Name
-  </label>
-  <input
-    id="annexNameInput"
-    type="text"
-    className="form-control"
-    value={formData.annexe ? formData.annexe.name : ''}
-    onChange={(e) => handleInputChange(e, "annexe.name")}
-  />
-</div>
         <div className="col-md-3 mb-2">
           <label htmlFor="" className="form-label">
             Status
@@ -249,17 +263,7 @@ function UpdateQuestion() {
             onChange={(e) => handleInputChange(e, "compass")}
           />
         </div>
-        <div className="col-md-4 mb-2">
-          <label htmlFor="iddInput">IDD</label>
-          <input
-            id="iddInput"
-            type="number"
-            placeholder={question?.idd}
-            className="form-control"
-            value={formData.idd}
-            onChange={(e) => handleInputChange(e, "idd")}
-          />
-        </div>
+  
         <div className="col-md-4 mb-2">
           <label htmlFor="" className="form-label">
             Real Exam

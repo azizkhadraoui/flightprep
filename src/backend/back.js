@@ -240,16 +240,11 @@ app.post('/api/create', upload.single('annexe'), async (req, res) => {
 });
 
 // Endpoint to update a question by ID
-app.put('/api/update/:id', upload.single('annexe'), async (req, res) => {
+app.put('/api/update/:id', async (req, res) => {
     try {
         const questionId = req.params.id;
         const updatedQuestionData = req.body;
-        const annexeValue = null;
-
-        if (req.file && req.file.buffer) {
-            annexeValue = req.file.buffer.toString('base64');
-        }
-        console.log('Received data for update:', updatedQuestionData);
+        //console.log('Received data for update:', updatedQuestionData);
 
         const q = `
             UPDATE questions
@@ -282,7 +277,7 @@ app.put('/api/update/:id', upload.single('annexe'), async (req, res) => {
             updatedQuestionData.seen_in,
             updatedQuestionData.free_trial,
             updatedQuestionData.compass,
-            annexeValue,
+            updatedQuestionData.annexe.name,
             updatedQuestionData.idd,
             updatedQuestionData.real_exam,
             updatedQuestionData.recently_changed,
