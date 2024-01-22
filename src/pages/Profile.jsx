@@ -178,37 +178,39 @@ const Profile = () => {
         </div>
         <div className="right-section">
           <StyledForm className="form">
-            {Object.entries(formFields).map(([field, value]) => (
-              <Card key={field} className="card">
-                <CardContent>
-                  {editMode[field] ? (
-                    <TextField
-                      variant="outlined"
-                      margin="normal"
-                      required
-                      fullWidth
-                      id={field}
-                      label={field.charAt(0).toUpperCase() + field.slice(1)}
-                      name={field}
-                      autoComplete={field}
-                      autoFocus
-                      value={value}
-                      onChange={(e) =>
-                        setFormFields({
-                          ...formFields,
-                          [field]: e.target.value,
-                        })
-                      }
-                    />
-                  ) : (
-                    <Typography variant="body1">{value}</Typography>
-                  )}
-                  <IconButton onClick={() => toggleEditMode(field)}>
-                    <EditIcon />
-                  </IconButton>
-                </CardContent>
-              </Card>
-            ))}
+          {Object.entries(formFields).map(([field, value]) => (
+  <Card key={field} className="card">
+    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
+      <CardContent>
+        {editMode[field] ? (
+          <TextField
+            variant="outlined"
+            margin="normal"
+            required
+            fullWidth
+            id={field}
+            label={field.charAt(0).toUpperCase() + field.slice(1)}
+            name={field}
+            autoComplete={field}
+            autoFocus
+            value={value}
+            onChange={(e) =>
+              setFormFields({
+                ...formFields,
+                [field]: e.target.value,
+              })
+            }
+          />
+        ) : (
+          <Typography variant="body1">{value}</Typography>
+        )}
+      </CardContent>
+      <IconButton onClick={() => toggleEditMode(field)}>
+        <EditIcon />
+      </IconButton>
+    </div>
+  </Card>
+))}
             {Object.values(editMode).some((value) => value) && (
               <StyledButton
                 type="button"

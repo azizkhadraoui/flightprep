@@ -31,6 +31,7 @@ import CreateQuestion from "./pages/CreateQuestion";
 import UpdateQuestion from "./pages/UpdateQuestion";
 import About from './pages/About';
 
+import CR3 from './components/questionelements/compass/CR3.jsx';
 
 const App = () => {
   return (
@@ -61,6 +62,8 @@ const App = () => {
           <PrivateAdminRoute exact path='/admin' component={Questionsfetch} />
           <Route exact path='/create' component={CreateQuestion} />
           <Route exact path='/update/:id' component={UpdateQuestion} />
+          <Route exact path='/cr3' component={CR3} />
+
         </div>
       </Router>
     </AuthProvider>

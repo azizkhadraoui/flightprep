@@ -154,7 +154,7 @@ const Chapters2 = () => {
           Start by picking your options
         </Typography>
 
-        <StyledFormControl>
+        <StyledFormControl style={{width:"700px"}}>
           <InputLabel>Subject</InputLabel>
           <Select value={subject} onChange={handleSubjectChange}>
             {subjectData.map((subject) => (
@@ -163,7 +163,7 @@ const Chapters2 = () => {
           </Select>
         </StyledFormControl>
 
-        <StyledFormControl>
+        <StyledFormControl  style={{width:"700px"}}>
           <InputLabel>Subtopic</InputLabel>
           <Select value={subtopic} onChange={handleSubtopicChange}>
             {subject &&

@@ -41,8 +41,8 @@ const Exam = () => {
   const allParams = Object.fromEntries(queryParams.entries());
 
   // Example usage of specific parameters
-  const filters = JSON.parse(allParams.filters || '{}');
-  const numQuestions = parseInt(allParams.numQuestions || '0', 10);
+  const filters = JSON.parse(allParams.filters || "{}");
+  const numQuestions = parseInt(allParams.numQuestions || "0", 10);
   const [currentUserId, setCurrentUserId] = useState(0);
 
   useEffect(() => {
@@ -66,7 +66,9 @@ const Exam = () => {
   };
 
   const [questions, setQuestions] = useState([]);
-  const [selectedAnswers, setSelectedAnswers] = useState(Array(questions.length).fill(null));
+  const [selectedAnswers, setSelectedAnswers] = useState(
+    Array(questions.length).fill(null)
+  );
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [answeredQuestions, setAnsweredQuestions] = useState(
     new Array(questions.length).fill(null)
@@ -86,217 +88,286 @@ const Exam = () => {
   const handleNextQuestion = () => {
     if (currentQuestion < questions.length - 1) {
       setCurrentQuestion(currentQuestion + 1);
-      setSelectedAnswers(prevAnswers => {
+      setSelectedAnswers((prevAnswers) => {
         const newAnswers = [...prevAnswers];
         newAnswers[currentQuestion + 1] = null;
         return newAnswers;
       });
     }
-  };  
+  };
+  const handlePreviousQuestion = () => {
+    if (currentQuestion > 0) {
+      setCurrentQuestion(currentQuestion - 1);
+      setSelectedAnswers((prevAnswers) => {
+        const newAnswers = [...prevAnswers];
+        newAnswers[currentQuestion - 1] = null;
+        return newAnswers;
+      });
+    }
+  };
   useEffect(() => {
     if (currentUserId) {
-      console.log(currentUserId)
+      console.log(currentUserId);
       const fetchData = async () => {
         try {
           let questionIds = [];
           let questionIds2 = [];
-          if (Object.values(filters).some(filter => filter)) {  
-          if (filters.greenFlagged) {
-            const greenFlaggedCollectionRef = collection(db, `users/${currentUserId}/greenFlagged`);
-            const greenFlaggedSnapshot = await getDocs(greenFlaggedCollectionRef);
-  
-            greenFlaggedSnapshot.forEach((doc) => {
-              questionIds.push(doc.data().questionId);
-            });
-          }
+          if (Object.values(filters).some((filter) => filter)) {
+            if (filters.greenFlagged) {
+              const greenFlaggedCollectionRef = collection(
+                db,
+                `users/${currentUserId}/greenFlagged`
+              );
+              const greenFlaggedSnapshot = await getDocs(
+                greenFlaggedCollectionRef
+              );
 
-          if (filters.redFlaggedQuestions) {
-            const redFlaggedCollectionRef = collection(db, `users/${currentUserId}/redFlagged`);
-            const redFlaggedSnapshot = await getDocs(redFlaggedCollectionRef);
-  
-            redFlaggedSnapshot.forEach((doc) => {
-              questionIds.push(doc.data().questionId);
-            });
-          }
+              greenFlaggedSnapshot.forEach((doc) => {
+                questionIds.push(doc.data().questionId);
+              });
+            }
 
-          if (filters.yellowFlaggedQuestions) {
-            const yellowFlaggedCollectionRef = collection(db, `users/${currentUserId}/yellowFlagged`);
-            const yellowFlaggedSnapshot = await getDocs(yellowFlaggedCollectionRef);
-  
-            yellowFlaggedSnapshot.forEach((doc) => {
-              questionIds.push(doc.data().questionId);
-            });
-          }
+            if (filters.redFlaggedQuestions) {
+              const redFlaggedCollectionRef = collection(
+                db,
+                `users/${currentUserId}/redFlagged`
+              );
+              const redFlaggedSnapshot = await getDocs(redFlaggedCollectionRef);
 
-          if (filters.markedDoNotShow) {
-            const markedDoNotShowCollectionRef = collection(db, `users/${currentUserId}/dont`);
-            const markedDoNotShowSnapshot = await getDocs(markedDoNotShowCollectionRef);
-  
-            markedDoNotShowSnapshot.forEach((doc) => {
-              questionIds.push(doc.data().questionId);
-            });
-          }
+              redFlaggedSnapshot.forEach((doc) => {
+                questionIds.push(doc.data().questionId);
+              });
+            }
 
-          if (filters.pinned) {
-            const pinnedCollectionRef = collection(db, `users/${currentUserId}/pinned`);
-            const pinnedSnapshot = await getDocs(pinnedCollectionRef);
-  
-            pinnedSnapshot.forEach((doc) => {
-              questionIds.push(doc.data().questionId);
-            });
-          }
+            if (filters.yellowFlaggedQuestions) {
+              const yellowFlaggedCollectionRef = collection(
+                db,
+                `users/${currentUserId}/yellowFlagged`
+              );
+              const yellowFlaggedSnapshot = await getDocs(
+                yellowFlaggedCollectionRef
+              );
 
+              yellowFlaggedSnapshot.forEach((doc) => {
+                questionIds.push(doc.data().questionId);
+              });
+            }
 
-          if (filters.reviewQuestions) {
-            const reviewQuestionsCollectionRef = collection(db, `users/${currentUserId}/user_choices`);
-            const reviewQuestionsSnapshot = await getDocs(reviewQuestionsCollectionRef);
-  
-            reviewQuestionsSnapshot.forEach((doc) => {
-              questionIds.push(doc.data().questionId);
-            });
-          }
+            if (filters.markedDoNotShow) {
+              const markedDoNotShowCollectionRef = collection(
+                db,
+                `users/${currentUserId}/dont`
+              );
+              const markedDoNotShowSnapshot = await getDocs(
+                markedDoNotShowCollectionRef
+              );
 
+              markedDoNotShowSnapshot.forEach((doc) => {
+                questionIds.push(doc.data().questionId);
+              });
+            }
 
-          if (filters.incorrectlyAnswered) {
-            const reviewQuestionsCollectionRef = collection(db, `users/${currentUserId}/user_choices`);
-            const reviewQuestionsSnapshot = await getDocs(reviewQuestionsCollectionRef);
-        
-            reviewQuestionsSnapshot.forEach((doc) => {
+            if (filters.pinned) {
+              const pinnedCollectionRef = collection(
+                db,
+                `users/${currentUserId}/pinned`
+              );
+              const pinnedSnapshot = await getDocs(pinnedCollectionRef);
+
+              pinnedSnapshot.forEach((doc) => {
+                questionIds.push(doc.data().questionId);
+              });
+            }
+
+            if (filters.reviewQuestions) {
+              const reviewQuestionsCollectionRef = collection(
+                db,
+                `users/${currentUserId}/user_choices`
+              );
+              const reviewQuestionsSnapshot = await getDocs(
+                reviewQuestionsCollectionRef
+              );
+
+              reviewQuestionsSnapshot.forEach((doc) => {
+                questionIds.push(doc.data().questionId);
+              });
+            }
+
+            if (filters.incorrectlyAnswered) {
+              const reviewQuestionsCollectionRef = collection(
+                db,
+                `users/${currentUserId}/user_choices`
+              );
+              const reviewQuestionsSnapshot = await getDocs(
+                reviewQuestionsCollectionRef
+              );
+
+              reviewQuestionsSnapshot.forEach((doc) => {
                 // Check if the isCorrect field is false before pushing the questionId
                 if (doc.data().isCorrect === false) {
-                    questionIds.push(doc.data().questionId);
-                }
-            });
-        }
-
-
-        if (filters.studyTestWithCorrectAnswers) {
-          const reviewQuestionsCollectionRef = collection(db, `users/${currentUserId}/user_choices`);
-          const reviewQuestionsSnapshot = await getDocs(reviewQuestionsCollectionRef);
-      
-          reviewQuestionsSnapshot.forEach((doc) => {
-              // Check if the isCorrect field is false before pushing the questionId
-              if (doc.data().isCorrect === true) {
                   questionIds.push(doc.data().questionId);
+                }
+              });
+            }
+
+            if (filters.studyTestWithCorrectAnswers) {
+              const reviewQuestionsCollectionRef = collection(
+                db,
+                `users/${currentUserId}/user_choices`
+              );
+              const reviewQuestionsSnapshot = await getDocs(
+                reviewQuestionsCollectionRef
+              );
+
+              reviewQuestionsSnapshot.forEach((doc) => {
+                // Check if the isCorrect field is false before pushing the questionId
+                if (doc.data().isCorrect === true) {
+                  questionIds.push(doc.data().questionId);
+                }
+              });
+            }
+
+            if (filters.haveNotesFor) {
+              const reviewQuestionsCollectionRef = collection(
+                db,
+                `users/${currentUserId}/notes`
+              );
+              const reviewQuestionsSnapshot = await getDocs(
+                reviewQuestionsCollectionRef
+              );
+
+              reviewQuestionsSnapshot.forEach((doc) => {
+                questionIds.push(doc.data().questionId);
+              });
+            }
+
+            if (filters.previouslyUnseenQuestions) {
+              const reviewQuestionsCollectionRef = collection(
+                db,
+                `users/${currentUserId}/user_choices`
+              );
+              const reviewQuestionsSnapshot = await getDocs(
+                reviewQuestionsCollectionRef
+              );
+
+              reviewQuestionsSnapshot.forEach((doc) => {
+                questionIds2.push(doc.data().questionId);
+              });
+
+              // Make an HTTP request to the endpoint with the obtained questionIds
+              try {
+                const response = await axios.get(
+                  `${
+                    process.env.REACT_APP_BACKEND_URL
+                  }/${selectedTopicId}/${selectedSubtopicId}/exclude/${questionIds2.join(
+                    ","
+                  )}`
+                );
+                let data = response.data;
+                const percentage = Math.ceil(
+                  (data.length / 100) * numQuestions
+                );
+                console.log(percentage);
+                data = data.slice(0, percentage);
+                setQuestions(data);
+                // Process the retrieved questions as needed
+              } catch (error) {
+                console.error("Error fetching questions:", error.message);
               }
-          });
-      }
+            }
 
+            if (
+              filters.last200RealExamQuestions ||
+              filters.onlyRealExamQuestions
+            ) {
+              try {
+                const response = await axios.get(
+                  `${process.env.REACT_APP_BACKEND_URL}/real-exam-true/${selectedTopicId}/${selectedSubtopicId}`
+                );
+                let data = response.data;
+                const percentage = Math.ceil(
+                  (data.length / 100) * numQuestions
+                );
+                console.log(percentage);
+                data = data.slice(0, percentage);
+                setQuestions(data);
+                // Process the retrieved questions as needed
+              } catch (error) {
+                console.error("Error fetching questions:", error.message);
+              }
+            }
 
-      if (filters.haveNotesFor) {
-        const reviewQuestionsCollectionRef = collection(db, `users/${currentUserId}/notes`);
-        const reviewQuestionsSnapshot = await getDocs(reviewQuestionsCollectionRef);
-    
-        reviewQuestionsSnapshot.forEach((doc) => {
-          questionIds.push(doc.data().questionId);
-        });
-    }
+            if (filters.answerRecentlyChanged) {
+              try {
+                const response = await axios.get(
+                  `${process.env.REACT_APP_BACKEND_URL}/recently-changed-true/${selectedTopicId}/${selectedSubtopicId}`
+                );
+                let data = response.data;
+                const percentage = Math.ceil(
+                  (data.length / 100) * numQuestions
+                );
+                console.log(percentage);
+                data = data.slice(0, percentage);
+                setQuestions(data);
+                // Process the retrieved questions as needed
+              } catch (error) {
+                console.error("Error fetching questions:", error.message);
+              }
+            }
 
-    if (filters.previouslyUnseenQuestions) {
-      const reviewQuestionsCollectionRef = collection(db, `users/${currentUserId}/user_choices`);
-      const reviewQuestionsSnapshot = await getDocs(reviewQuestionsCollectionRef);
-    
-      reviewQuestionsSnapshot.forEach((doc) => {
-        questionIds2.push(doc.data().questionId);
-      });
-    
-      // Make an HTTP request to the endpoint with the obtained questionIds
-      try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/${selectedTopicId}/${selectedSubtopicId}/exclude/${questionIds2.join(',')}`);
-        let data = response.data;
-            const percentage = Math.ceil((data.length / 100) * numQuestions);
-            console.log(percentage);
-            data = data.slice(0, percentage);
-        setQuestions(data); 
-        // Process the retrieved questions as needed
-      } catch (error) {
-        console.error('Error fetching questions:', error.message);
-      }
-    }
-
-
-    if (filters.last200RealExamQuestions || filters.onlyRealExamQuestions) {
-          try {
-        const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/real-exam-true/${selectedTopicId}/${selectedSubtopicId}`);
-        let data = response.data;
-            const percentage = Math.ceil((data.length / 100) * numQuestions);
-            console.log(percentage);
-            data = data.slice(0, percentage);
-        setQuestions(data); 
-        // Process the retrieved questions as needed
-      } catch (error) {
-        console.error('Error fetching questions:', error.message);
-      }
-    }
-
-    if (filters.answerRecentlyChanged) {
-      try {
-    const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/recently-changed-true/${selectedTopicId}/${selectedSubtopicId}`);
-    let data = response.data;
-            const percentage = Math.ceil((data.length / 100) * numQuestions);
-            console.log(percentage);
-            data = data.slice(0, percentage);
-    setQuestions(data); 
-    // Process the retrieved questions as needed
-  } catch (error) {
-    console.error('Error fetching questions:', error.message);
-  }
-}
-
-if (filters.excludeRealExamQuestions) {
-  try {
-const response = await axios.get(`${process.env.REACT_APP_BACKEND_URL}/real-exam-false-or-null/${selectedTopicId}/${selectedSubtopicId}`);
-let data = response.data;
-            const percentage = Math.ceil((data.length / 100) * numQuestions);
-            console.log(percentage);
-            data = data.slice(0, percentage);
-setQuestions(data); 
-// Process the retrieved questions as needed
-} catch (error) {
-console.error('Error fetching questions:', error.message);
-}
-}
-
-
-      
-
-        }
-        else{
-          try {
-            // Make an API request to fetch questions for the selected subtopic
-            // You can pass selectedSubtopicId to the API to filter questions
-            const response = await axios.get(
-              `${process.env.REACT_APP_BACKEND_URL}/${selectedTopicId}/${selectedSubtopicId}`
-            );
-            let data = response.data;
-            const percentage = Math.ceil((data.length / 100) * numQuestions);
-            console.log(percentage);
-            data = data.slice(0, percentage);
-            setQuestions(data);
-          } catch (error) {
-            console.error("Error fetching data from the API:", error);
+            if (filters.excludeRealExamQuestions) {
+              try {
+                const response = await axios.get(
+                  `${process.env.REACT_APP_BACKEND_URL}/real-exam-false-or-null/${selectedTopicId}/${selectedSubtopicId}`
+                );
+                let data = response.data;
+                const percentage = Math.ceil(
+                  (data.length / 100) * numQuestions
+                );
+                console.log(percentage);
+                data = data.slice(0, percentage);
+                setQuestions(data);
+                // Process the retrieved questions as needed
+              } catch (error) {
+                console.error("Error fetching questions:", error.message);
+              }
+            }
+          } else {
+            try {
+              // Make an API request to fetch questions for the selected subtopic
+              // You can pass selectedSubtopicId to the API to filter questions
+              const response = await axios.get(
+                `${process.env.REACT_APP_BACKEND_URL}/${selectedTopicId}/${selectedSubtopicId}`
+              );
+              let data = response.data;
+              const percentage = Math.ceil((data.length / 100) * numQuestions);
+              console.log(percentage);
+              data = data.slice(0, percentage);
+              setQuestions(data);
+            } catch (error) {
+              console.error("Error fetching data from the API:", error);
+            }
           }
-        }
-  
+
           // Perform API call with questionIds using Axios
           if (questionIds.length > 0) {
-            const percentage = Math.ceil((questionIds.length / 100) * numQuestions);
+            const percentage = Math.ceil(
+              (questionIds.length / 100) * numQuestions
+            );
             questionIds = questionIds.slice(0, percentage);
-            const apiUrl = (`${process.env.REACT_APP_BACKEND_URL}/questions`);            
+            const apiUrl = `${process.env.REACT_APP_BACKEND_URL}/questions`;
             const apiResponse = await axios.post(apiUrl, { questionIds });
             const data = apiResponse.data;
-            setQuestions(data);          }
-  
-          
+            setQuestions(data);
+          }
         } catch (error) {
           console.error("Error fetching data from the API:", error);
         }
       };
-  
+
       fetchData();
     }
   }, [currentUserId]);
-  
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -306,7 +377,9 @@ console.error('Error fetching questions:', error.message);
         clearInterval(timer);
         setShowResults(true);
 
-        const correctCount = answeredQuestions.filter(answer => answer === true).length;
+        const correctCount = answeredQuestions.filter(
+          (answer) => answer === true
+        ).length;
         const percentage = (correctCount / questions.length) * 100;
         setCorrectlyAnsweredCount(percentage);
       }
@@ -332,7 +405,10 @@ console.error('Error fetching questions:', error.message);
         return;
       }
 
-      const userChoicesCollection = collection(db, `users/${currentUserId}/tests`);
+      const userChoicesCollection = collection(
+        db,
+        `users/${currentUserId}/tests`
+      );
       const userChoicesSnapshot = await getDocs(userChoicesCollection);
 
       const correctCount = userChoicesSnapshot.docs.reduce((count, doc) => {
@@ -356,23 +432,41 @@ console.error('Error fetching questions:', error.message);
       };
 
       const resultsCollection = collection(db, "results");
-      const subtopicDoc = await getDoc(resultsCollection.doc(examResult.subtopicName));
+      const subtopicDoc = await getDoc(
+        resultsCollection.doc(examResult.subtopicName)
+      );
 
       if (!subtopicDoc.exists()) {
-        await addDoc(resultsCollection.doc(examResult.subtopicName), examResult);
-        console.log("Result document created for subtopic:", examResult.subtopicName);
+        await addDoc(
+          resultsCollection.doc(examResult.subtopicName),
+          examResult
+        );
+        console.log(
+          "Result document created for subtopic:",
+          examResult.subtopicName
+        );
       } else {
-        console.log("Result document already exists for subtopic:", examResult.subtopicName);
+        console.log(
+          "Result document already exists for subtopic:",
+          examResult.subtopicName
+        );
       }
     } catch (error) {
-      console.error("Error calculating correct answers or saving results: ", error);
+      console.error(
+        "Error calculating correct answers or saving results: ",
+        error
+      );
     }
   };
 
   const handleFlagClick = async (flagType) => {
     try {
       const questionId = questions[currentQuestion].id;
-      const flaggedQuestionsRef = doc(db, `users/${currentUserId}/${flagType}`, questionId);
+      const flaggedQuestionsRef = doc(
+        db,
+        `users/${currentUserId}/${flagType}`,
+        questionId
+      );
       const flaggedQuestionsDoc = await getDoc(flaggedQuestionsRef);
 
       if (!flaggedQuestionsDoc.exists()) {
@@ -409,274 +503,113 @@ console.error('Error fetching questions:', error.message);
   };
 
   const [showFlightComp, setShowFlightComp] = useState(false);
-
   return (
-    <div
-      style={{
-        backgroundImage: `url("/loginbackground.svg")`,
-        backgroundSize: "cover",
-        backgroundPosition: "center center",
-        height: "100vh",
-      }}
-    >
+    <div>
       <Navbar2 />
-      <div
-        style={{
-          width: 500,
-          height: 60,
-        }}
-      >
-        <Box
-          display="flex"
-          justifyContent="space-between"
-          padding="20px"
-          width="80%"
-        >
-          <Grid container alignItems="center">
-            <Typography
-              variant="h6"
-              sx={{
-                width: "200px",
-                height: "20px",
-                flexShrink: 0,
-                color: "#F1870C",
-                textAlign: "center",
-                fontFamily: "Mulish",
-                fontSize: "32px",
-                fontWeight: 800,
-                paddingRight: "20px", // Add padding to the right
-              }}
+      <div className="exam-container">
+        <div className="left-box">
+          <Box className="navigation-timer-box">
+            <Button
+              onClick={handlePreviousQuestion}
+              className="prev-question"
+              disabled={currentQuestion === 0} 
             >
+              <img src="/arrow.svg" alt="Previous Arrow" />
+            </Button>
+            <Typography variant="h6" className="question-number">
               QN°{currentQuestion + 1}/{questions.length}
             </Typography>
-
-            <Grid
-              item
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                marginTop: "40px",
-              }}
+            <div className="timer">
+              <img src="/clock.svg" alt="Clock" />
+              <Typography variant="body1">
+                Time Left: {formatTime(remainingTime)}
+              </Typography>
+            </div>
+            <Button
+              onClick={handleNextQuestion}
+              className="next-question"
+              disabled={currentQuestion === questions.length - 1} 
             >
-              <Button
-                style={{ width: "30px", height: "30px" }}
-                onClick={handlePinClick}
-              >
-                <img
-                  src="/pin.svg"
-                  alt="Pin"
-                  style={{ width: "100%", height: "100%" }}
-                />
-              </Button>
-
-              <Button
-                style={{ width: "30px", height: "30px" }}
-                onClick={handleGreenFlagClick}
-              >
-                <img
-                  src="/greenflag.svg"
-                  alt="Green Flag"
-                  style={{ width: "100%", height: "100%" }}
-                />
-              </Button>
-
-              <Button
-                style={{ width: "30px", height: "30px" }}
-                onClick={handleYellowFlagClick}
-              >
-                <img
-                  src="/yellowflag.svg"
-                  alt="Red Flag"
-                  style={{ width: "100%", height: "100%" }}
-                />
-              </Button>
-
-              <Button
-                style={{ width: "30px", height: "30px" }}
-                onClick={handleRedFlagClick}
-              >
-                <img
-                  src="/redflag.svg"
-                  alt="Yellow Flag"
-                  style={{ width: "100%", height: "100%" }}
-                />
-              </Button>
-
-              <Button
-                style={{ width: "30px", height: "30px" }}
-                onClick={handleNoClick}
-              >
-                <img
-                  src="/no.svg"
-                  alt="No"
-                  style={{ width: "100%", height: "100%" }}
-                />
-              </Button>
-            </Grid>
-          </Grid>
-
-          <Grid container alignItems="left" marginLeft={"500px"}>
-            <Grid item>
-              <img
-                src="/clock.svg"
-                alt="Clock"
-                style={{ marginRight: "8px" }}
-              />
-            </Grid>
-          </Grid>
-          <Grid container alignItems="left">
-            <Grid item>
-              <div>
-                <Typography
-                  variant="body1"
-                  sx={{ fontSize: "18px", color: "#FFF", marginRight: "8px" }}
-                >
-                  Time Left: {formatTime(remainingTime)}
-                </Typography>
-              </div>
-            </Grid>
-          </Grid>
-          <Grid container alignItems="left">
-            <Grid item>
-              <Button onClick={handleNextQuestion}>
-                <img src="/arrow.svg" alt="Arrow" />
-              </Button>
-            </Grid>
-          </Grid>
-        </Box>
-        <div
-          style={{
-            width: 500,
-            height: 60,
-          }}
-        >
-          <Box
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            marginTop="20px"
-            marginLeft="20px"
-          >
+              <img src="/arrow.svg" alt="Next Arrow" />
+            </Button>
+          </Box>
+          <div className="flagging-buttons">
+            <Button onClick={handlePinClick} className="pin-btn">
+              <img src="/pin.svg" alt="Pin" />
+            </Button>
+            <Button onClick={handleGreenFlagClick} className="green-flag-btn">
+              <img src="/greenflag.svg" alt="Green Flag" />
+            </Button>
+            <Button onClick={handleYellowFlagClick} className="yellow-flag-btn">
+              <img src="/yellowflag.svg" alt="Yellow Flag" />
+            </Button>
+            <Button onClick={handleRedFlagClick} className="red-flag-btn">
+              <img src="/redflag.svg" alt="Red Flag" />
+            </Button>
+            <Button onClick={handleNoClick} className="no-btn">
+              <img src="/no.svg" alt="No" />
+            </Button>
+          </div>
+          <div className="button-group">
             <Button
               variant="text"
               onClick={() => handleButtonClick("question")}
-              sx={{
-                color: "#FFF",
-                fontFamily: "Mulish",
-                fontSize: "16px", // Reduced font size
-                fontWeight: 800,
-                marginLeft: "30px", // Space between buttons
-                "&:hover": {
-                  color: "#F1870C",
-                },
-              }}
+              className="question-btn"
             >
-              <img src="/play.svg" alt="" />
+              <img src="/play.svg" alt="Question" />
               Question
             </Button>
             <Button
               variant="text"
               onClick={() => handleButtonClick("explanation")}
-              sx={{
-                color: "#FFF",
-                fontFamily: "Mulish",
-                fontSize: "16px", // Reduced font size
-                fontWeight: 800,
-                marginLeft: "90px", // Space between buttons
-
-                "&:hover": {
-                  color: "#F1870C",
-                },
-              }}
+              className="explanation-btn"
             >
-              <img src="/explanation.svg" alt="" />
+              <img src="/explanation.svg" alt="Explanation" />
               Explanation
             </Button>
             <Button
               variant="text"
               onClick={() => handleButtonClick("statistics")}
-              sx={{
-                color: "#FFF",
-                fontFamily: "Mulish",
-                fontSize: "16px", // Reduced font size
-                fontWeight: 800,
-                marginLeft: "90px", // Space between buttons
-                "&:hover": {
-                  color: "#F1870C",
-                },
-              }}
+              className="statistics-btn"
             >
-              <img src="/statistics.svg" alt="" />
+              <img src="/statistics.svg" alt="Statistics" />
               Statistics
             </Button>
             <Button
               variant="text"
               onClick={() => handleButtonClick("comments")}
-              sx={{
-                color: "#FFF",
-                fontFamily: "Mulish",
-                fontSize: "16px", // Reduced font size
-                fontWeight: 800,
-                marginLeft: "90px", // Space between buttons
-                "&:hover": {
-                  color: "#F1870C",
-                },
-              }}
+              className="comments-btn"
             >
-              <img src="/comments.svg" alt="" />
+              <img src="/comments.svg" alt="Comments" />
               Comments
             </Button>
             <Button
               variant="text"
               onClick={() => handleButtonClick("notes")}
-              sx={{
-                color: "#FFF",
-                fontFamily: "Mulish",
-                fontSize: "16px", // Reduced font size
-                fontWeight: 800,
-                marginLeft: "90px", // Space between buttons
-                "&:hover": {
-                  color: "#F1870C",
-                },
-              }}
+              className="notes-btn"
             >
-              <img src="/notes.svg" alt="" />
+              <img src="/notes.svg" alt="Notes" />
               Notes
             </Button>
             <Button
               variant="text"
               onClick={() => setShowFlightComp(true)}
-              sx={{
-                color: "#FFF",
-                fontFamily: "Mulish",
-                fontSize: "16px", // Reduced font size
-                fontWeight: 800,
-                marginLeft: "90px", // Space between buttons
-                "&:hover": {
-                  color: "#F1870C",
-                },
-              }}
+              className="flt-comp-btn"
             >
-              <img src="/compass.svg" alt="" />
+              <img src="/compass.svg" alt="Flt Comp" />
               Flt Comp
             </Button>
-          </Box>
-          <div
-            display="flex"
-            justifyContent="space-between"
-            alignItems="center"
-            marginTop="20px"
-            PaddingLeft="40px"
-          >
+          </div>
+
+          <div className="content-area">
             {contentType === "question" && (
               <ExamQuestion
-              questions={questions}
-              currentQuestion={currentQuestion}
-              setCurrentQuestion={setCurrentQuestion}
-              selectedAnswers={selectedAnswers}
-              setSelectedAnswers={setSelectedAnswers}
-            />
+                questions={questions}
+                currentQuestion={currentQuestion}
+                setCurrentQuestion={setCurrentQuestion}
+                selectedAnswers={selectedAnswers}
+                setSelectedAnswers={setSelectedAnswers}
+              />
             )}
             {contentType === "explanation" && (
               <ExplanationComponent
@@ -696,33 +629,14 @@ console.error('Error fetching questions:', error.message);
                 currentQuestion={currentQuestion}
                 setCurrentQuestion={setCurrentQuestion}
               />
-            )} 
+            )}
           </div>
         </div>
-      </div>
-      <div style={{ display: "flex", justifyContent: "flex-end" }}>
-        <div
-          style={{
-            marginRight: "5px",
-            marginLeft: "5px",
-            width: "300px", // Adjust the width as needed
-            height: "400px", // Adjust the height as needed
-            overflow: "auto",
-          }}
-        >
+        <div className="right-box">
           <Button
             variant="contained"
             onClick={handleFinishTest}
-            sx={{
-              color: "#FFF",
-              backgroundColor: "#F1870C",
-              fontFamily: "Mulish",
-              fontSize: "16px",
-              fontWeight: 800,
-              "&:hover": {
-                backgroundColor: "#F1870C",
-              },
-            }}
+            className="finish-test"
           >
             Finish Test
           </Button>
@@ -732,20 +646,11 @@ console.error('Error fetching questions:', error.message);
             data={questions}
           />
         </div>
+        {showFlightComp && (
+          <FlightComp closeModal={() => setShowFlightComp(false)} />
+        )}
         {showResults && (
-          <div
-            style={{
-              position: "fixed",
-              top: "50%",
-              right: "50px", // Adjust the right position as needed
-              transform: "translateY(-50%)",
-              backgroundColor: "#F1870C",
-              padding: "20px",
-              borderRadius: "10px",
-              boxShadow: "0 0 10px rgba(0, 0, 0, 0.5)",
-              color: "#FFF",
-            }}
-          >
+          <div className="results-overlay">
             <Typography variant="h4">Test Finished!</Typography>
             <Typography variant="body1">
               You answered {correctlyAnsweredCount.toFixed(2)}% of the questions
@@ -753,9 +658,6 @@ console.error('Error fetching questions:', error.message);
             </Typography>
           </div>
         )}
-      </div>
-      <div>
-      {showFlightComp && <FlightComp closeModal={() => setShowFlightComp(false)} />}
       </div>
     </div>
   );

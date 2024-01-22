@@ -1,41 +1,171 @@
-/* Styles for the question grid container */
-.question-grid-container {
-    display: flex;
-    justify-content: center;
+.exam-container {
+  display: flex;
+  flex-direction: row; /* Align children horizontally */
+  padding: 20px;
+  gap: 20px;
+  background-image: "/loginbackground.svg";
+  background-size: cover;
+  background-position: center center;
+  height: calc(100vh - 60px); /* Adjust for navbar height if necessary */
+}
+
+.left-box {
+  flex-basis: 60%; /* Allocate 65% of the space to the left box */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.right-box {
+  flex-basis: 40%; /* Allocate 35% of the space to the right box */
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Style for the box containing navigation and timer */
+.navigation-timer-box {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  gap: 10px; /* Adjust the gap between elements as needed */
+}
+
+/* Style for the previous question button */
+.prev-question img {
+  transform: rotate(180deg); /* Flip the arrow to point to the previous question */
+}
+
+/* Style for the question number indicator */
+.question-number {
+  color: #F1870C; /* Orange color for the question number */
+  font-family: "Mulish";
+  font-size: 32px;
+  font-weight: 800;
+}
+
+/* Style for disabled buttons */
+button:disabled {
+  opacity: 0.5; /* Make the button appear faded */
+  cursor: not-allowed; /* Change the cursor to indicate the action is not allowed */
+}
+
+
+/* Style for the timer and its icon */
+.timer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #FFF; /* White color for the timer text */
+}
+
+.timer img {
+  width: 24px; /* Adjust size as needed */
+  height: 24px; /* Adjust size as needed */
+}
+
+
+.flagging-buttons button img {
+  width: 24px; /* Adjust size as needed */
+  height: 24px; /* Adjust size as needed */
+}
+
+.button-group {
+  display: flex;
+  flex-direction: row; /* Align buttons in a row */
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: space-evenly;
+}
+
+.button-group button {
+  flex-grow: 1;
+  max-width: none; /* Allow buttons to grow */
+}
+
+.content-area {
+  flex-grow: 1;
+  padding: 20px;
+  background-color: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  overflow-y: auto;
+}
+
+.finish-test {
+  align-self: center; /* Center button in its container */
+  color: #FFF;
+  background-color: #F1870C;
+  font-family: "Mulish";
+  font-size: 16px;
+  font-weight: 800;
+}
+
+.right-box {
+  align-items: center; /* Center items in the right box */
+}
+
+@media (max-width: 768px) {
+  .exam-container {
+    flex-direction: column;
   }
-  
-  /* Styles for the question rectangle */
-  .question-rectangle {
-    width: 61px;
-    height: 28px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-    font-weight: 500;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    margin: 5px; /* 5px margin between rectangles and rows */
-    cursor: pointer;
+
+  .left-box, .right-box {
+    width: 100%; /* Full width for smaller screens */
   }
-  
-  /* Styles for the current question */
-  .current-question {
-    border: 1px solid white;
-    background-color: white;
-    color: #F1870C;
+
+  .button-group {
+    flex-direction: column; /* Stack buttons vertically */
+    align-items: center; /* Center buttons */
   }
-  
-  /* Styles for answered questions */
-  .answered-question {
-    background-color: green; /* Change to your desired color */
+
+  .flagging-buttons {
+    justify-content: center; /* Center flagging buttons */
   }
-  .answered-question.red {
-    background-color: red; /* Change to your desired red color */
+
+  .finish-test {
+    width: 100%; /* Full width for the finish test button */
+    margin-top: 20px; /* Add some space above the finish test button */
   }
-  
-  /* Styles for unanswered questions */
-  .unanswered-question {
-    background-color: rgba(241, 135, 12, 0.71); /* Change to your desired color */
+
+  .right-box {
+    align-items: center; /* Center items in the right box */
   }
-  
+}
+
+/* Responsive styles for small-sized screens, such as mobile phones */
+@media (max-width: 480px) {
+  .question-number {
+    font-size: 24px; /* Smaller font size for question number */
+  }
+
+  .timer img {
+    width: 20px; /* Smaller clock icon */
+    height: 20px; /* Smaller clock icon */
+  }
+
+  .flagging-buttons button img {
+    width: 20px; /* Smaller flag icons */
+    height: 20px; /* Smaller flag icons */
+  }
+
+  .button-group button {
+    padding: 10px 0; /* Adjust padding for better touch targets */
+  }
+
+  .content-area {
+    padding: 10px; /* Smaller padding for content area */
+  }
+
+  .results-overlay {
+    padding: 10px; /* Smaller padding for results overlay */
+    font-size: 14px; /* Smaller font size for results text */
+  }
+}
+
+/* Ensure that the QuestionsMatrix is centered within its container */
+.questions-matrix {
+  width: 100%; /* Full width of its container */
+  margin: 20px 0; /* Margin above and below */
+  /* Additional styling for the matrix if needed */
+}
